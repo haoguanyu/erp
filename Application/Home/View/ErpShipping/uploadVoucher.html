@@ -1,0 +1,330 @@
+<include file="./Application/Home/View/headers.html"/>
+<link href="__TPL__lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+<style>
+    .btn-upload{position: relative; display:inline-block;height:36px; *display:inline;overflow:hidden;vertical-align:middle;cursor:pointer}
+    .upload-url{cursor: pointer}
+    .input-file{position:absolute; right:0; top:0; cursor: pointer; z-index:1; font-size:30em; *font-size:30px;opacity:0;filter: alpha(opacity=0)}
+    .btn-upload .input-text{ width:auto}
+    .form-group .upload-btn{ margin-left:-1px}
+</style>
+<script type="text/javascript" src="__TPL__lib/webuploader/0.1.5/webuploader.min.js"></script>
+<style>
+    img {
+        max-height:100%;
+        max-width:100%;
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+        <!--<div id="information" class="tabCon">-->
+        <div id="information" >
+            <form action="" method="post" class="form form-horizontal">
+                <div class="row cl">
+                    <div class="row cl col-sm-12">
+                        <label class="form-label col-xs-2 col-sm-2">出库单凭证：</label>
+                        <div class="formControls col-xs-10 col-sm-10">
+                            <volist name="data.order.outbound_order_photo" id="vo" key="k">
+                                <a href="javascript:;" alt="出库单凭证" onclick="openNewWin('<{$vo}>','出库单凭证')" >
+                                    <img src="<{$vo}>"  width="30%" height="30%" alt="出库单凭证">
+                                </a>
+                            </volist>
+                        </div>
+                    </div>
+                </div>
+                <div class="row cl">
+                    <div class="row cl col-sm-12">
+                        <label class="form-label col-xs-2 col-sm-2">铅封图：</label>
+                        <div class="formControls col-xs-10 col-sm-10">
+                            <volist name="data.order.seal_photo" id="vo" key="k">
+                                <a href="javascript:;" alt="铅封图" onclick="openNewWin('<{$vo}>','铅封图')" >
+                                    <!--<option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>-->
+                                    <img src="<{$vo}>" alt=""  width="30%" height="30%" alt="铅封图" >
+                                </a>
+                            </volist>
+                        </div>
+                    </div>
+                </div>
+                <div class="row cl">
+                    <div class="row cl col-sm-12">
+                        <label class="form-label col-xs-2 col-sm-2">温密图：</label>
+                        <div class="formControls col-xs-10 col-sm-10">
+                            <volist name="data.order.temperature_density_photo" id="vo" key="k">
+                                <a href="javascript:;" alt="温密图" onclick="openNewWin('<{$vo}>','温密图')" >
+                                    <!--<option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>-->
+                                    <img src="<{$vo}>" alt=""  width="30%" height="30%"  >
+                                </a>
+                            </volist>
+                        </div>
+                    </div>
+                </div>
+                <div class="row cl">
+                    <div class="row cl col-sm-12">
+                        <label class="form-label col-xs-2 col-sm-2">油样图：</label>
+                        <div class="formControls col-xs-10 col-sm-10">
+                            <volist name="data.order.oil_sample_photo" id="vo" key="k">
+                                <a href="javascript:;" alt="油样图" onclick="openNewWin('<{$vo}>','油样图')" >
+                                    <!--<option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>-->
+                                    <img src="<{$vo}>" alt=""  width="30%" height="30%"  >
+                                </a>
+                            </volist>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row cl col-sm-12" style="margin-top:50px; margin-bottom: 50px;">
+        <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-4">
+            <a class="btn btn-primary radius" id="close_no" style="height:auto;margin-left: 80px;">关闭</a>
+        </div>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    // 关闭窗口
+    $('#close_no').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+    function openNewWin(url, title)
+    {
+        window.open(url, title);
+    }
+
+</script>
+<!--<article class="page-container" style=" overflow:hidden;" id="input_list">-->
+    <!--<form action="" method="post" class="form form-horizontal" id="form-member-add" enctype="multipart/form-data">-->
+        <!--<div class="container" style="margin-top: 30px;">-->
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 "><span class="c-red">*</span>出库单:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                        <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="outbound_order_photo" id="outbound_order_photo" onchange="previewImage(this,1)" type="file" multiple name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview1" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 "><span class="c-red">*</span>铅封图:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                        <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-2" id="uploadfile-2" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="seal_photo" id="seal_photo" onchange="previewImage(this,2)" type="file" multiple name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                        <!--<br/>-->
+                        <!--<span style="margin-top: 10px;color: red;">最多上传两张</span>-->
+                    <!--</div>-->
+                    <!--<div id="preview2" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead2" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 ">温密图:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                        <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-3" id="uploadfile-3" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="temperature_density_photo" id="temperature_density_photo" onchange="previewImage(this,3)" type="file" multiple name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview3" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead3" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 ">油样图:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                       <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-5" id="uploadfile-5" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="oil_sample_photo" id="oil_sample_photo" onchange="previewImage(this,5)" type="file" multiple name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview5" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead5" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12" style="margin-top:10px;">-->
+                <!--<div class="col-xs-5 col-sm-5 col-xs-offset-5 col-sm-offset-5">-->
+                    <!--<input type="hidden" id="id" value="<{$id}>">-->
+                    <!--<input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">-->
+                <!--</div>-->
+            <!--</div>-->
+
+        <!--</div>-->
+    <!--</form>-->
+<!--</article>-->
+
+<!--<script type="text/javascript">-->
+    <!--//图片预览功能-->
+    <!--function previewImage(file,imgNum)-->
+    <!--{-->
+        <!--var MAXWIDTH  = 200;-->
+        <!--var MAXHEIGHT = 200;-->
+        <!--var div = document.getElementById('preview'+imgNum);-->
+        <!--if (file.files && file.files[0])-->
+        <!--{-->
+            <!--div.innerHTML ='';-->
+            <!--var length=0;-->
+            <!--//imgContent为图片展示的区域-->
+            <!--var reader=new FileReader();-->
+            <!--reader.readAsDataURL(file.files[length]);-->
+            <!--//异步读取图片，读取完会触onload-->
+            <!--reader.onload=function() {-->
+                <!--div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";-->
+                <!--var img = document.getElementById('imghead'+imgNum+'_'+length);-->
+                <!--img.onload = function(){-->
+                    <!--var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);-->
+                    <!--img.width  =  rect.width;-->
+                    <!--img.height =  rect.height;-->
+                <!--}-->
+                <!--length++;-->
+                <!--if (length < file.files.length) {-->
+                    <!--reader.readAsDataURL(file.files[length]);-->
+                <!--}-->
+            <!--}-->
+<!--//            var length = 0;-->
+<!--//            div.innerHTML ='<img id=imghead'+imgNum+'_'+length+'>';-->
+<!--//            var img = document.getElementById('imghead'+imgNum+'_'+length);-->
+<!--//            img.onload = function(){-->
+<!--//                var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);-->
+<!--//                img.width  =  rect.width;-->
+<!--//                img.height =  rect.height;-->
+<!--//                img.style.marginLeft = rect.left+'px';-->
+<!--//                img.style.marginTop = rect.top+'px';-->
+<!--//            }-->
+<!--//            var reader = new FileReader();-->
+<!--//            reader.onload = function(evt){img.src = evt.target.result;}-->
+<!--//            reader.readAsDataURL(file.files[length]);-->
+        <!--}-->
+        <!--else //-->
+        <!--{-->
+            <!--var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';-->
+            <!--file.select();-->
+            <!--var src = document.selection.createRange().text;-->
+            <!--div.innerHTML = '<img id=imghead'+imgNum+'>';-->
+            <!--var img = document.getElementById('imghead2');-->
+            <!--img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;-->
+            <!--var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);-->
+            <!--status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);-->
+            <!--div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";-->
+        <!--}-->
+    <!--}-->
+    <!--function clacImgZoomParam( maxWidth, maxHeight, width, height ){-->
+        <!--var param = {top:0, left:0, width:width, height:height};-->
+        <!--if( width>maxWidth || height>maxHeight )-->
+        <!--{-->
+            <!--rateWidth = width / maxWidth;-->
+            <!--rateHeight = height / maxHeight;-->
+
+            <!--if( rateWidth > rateHeight )-->
+            <!--{-->
+                <!--param.width =  maxWidth;-->
+                <!--param.height = Math.round(height / rateWidth);-->
+            <!--}else-->
+            <!--{-->
+                <!--param.width = Math.round(width / rateHeight);-->
+                <!--param.height = maxHeight;-->
+            <!--}-->
+        <!--}-->
+        <!--param.left = Math.round((maxWidth - param.width) / 2);-->
+        <!--param.top = Math.round((maxHeight - param.height) / 2);-->
+        <!--return param;-->
+    <!--}-->
+
+    <!--// @添加-->
+    <!--$(function () {-->
+        <!--$('#add').click(function () {-->
+            <!--submitTrue();-->
+
+            <!--console.log($("#seal_photo")[0].files[0]);-->
+            <!--console.log($("#seal_photo")[0].files);-->
+            <!--console.log($("#seal_photo")[0].files.length);-->
+            <!--var num = $("#seal_photo")[0].files.length < 2 ? $("#seal_photo")[0].files.length : 2;-->
+
+            <!--var formData = new FormData();-->
+            <!--for (var i = 0;i < num;i++) {-->
+                <!--formData.append("seal_photo"+i,$("#seal_photo")[0].files[i]);-->
+            <!--}-->
+            <!--formData.append("id",$("#id").val());-->
+            <!--formData.append("outbound_order_photo",$("#outbound_order_photo")[0].files[0]);-->
+            <!--formData.append("temperature_density_photo",$("#temperature_density_photo")[0].files[0]);-->
+            <!--formData.append("oil_sample_photo",$("#oil_sample_photo")[0].files[0]);-->
+
+            <!--layer.load(1, {shade: 0.3});-->
+
+            <!--$.ajax({-->
+                <!--url : '<{:U("ErpShipping/uploadVoucher")}>',-->
+                <!--type: 'POST',-->
+                <!--data: formData,-->
+                <!--async: false,-->
+                <!--cache: false,-->
+                <!--contentType: false,-->
+                <!--processData: false,-->
+                <!--success : function(_data) {-->
+                    <!--if (_data.status == 1) {-->
+                        <!--layer.msg(_data.message, {icon: 1});-->
+                        <!--parent.searchShippingOrderList();-->
+                        <!--setTimeout(function () {-->
+                            <!--layer.closeAll();-->
+                            <!--var index = parent.layer.getFrameIndex(window.name);-->
+                            <!--parent.layer.close(index);-->
+                            <!--submitFalse();-->
+                        <!--}, 500);-->
+                    <!--} else {-->
+                        <!--layer.closeAll();-->
+                        <!--layer.msg(_data.message, {icon: 2});-->
+                        <!--submitFalse();-->
+                    <!--}-->
+                <!--}-->
+            <!--});-->
+<!--//            ajax(url, data, type, dataType, function (_data) {-->
+<!--//                if (_data.status == 1) {-->
+<!--//                    layer.closeAll();-->
+<!--//                    layer.msg(_data.message, {icon: 1});-->
+<!--//-->
+<!--//                    top.searchShippingOrderList();-->
+<!--//                    setTimeout(function () {-->
+<!--//                        var index = parent.layer.getFrameIndex(window.name);-->
+<!--//                        parent.layer.close(index);-->
+<!--//                        submitFalse();-->
+<!--//                    }, 500);-->
+<!--//                } else {-->
+<!--//                    layer.closeAll();-->
+<!--//                    layer.msg(_data.message, {icon: 2});-->
+<!--//                    submitFalse();-->
+<!--//                }-->
+<!--//            });-->
+        <!--});-->
+    <!--});-->
+<!--</script>-->

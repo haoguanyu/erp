@@ -1,0 +1,403 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 报表汇总 <span class="c-gray en">&gt;</span> 出入库汇总表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <span class="ml-10">起始创建日期：</span>
+                <input type="text" name="create_start_time" placeholder="起始确认日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="create_start_time" style="width:13%;" class="input-text Wdate">
+                <span class="ml-10">截止创建日期：</span>
+                <input type="text" name="create_end_time" placeholder="截止确认日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="create_end_time" style="width:13%;" class="input-text Wdate">
+
+                <span class="ml-10">起始审核日期：</span>
+                <input type="text" name="audit_start_time" placeholder="起始确认日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="audit_start_time" style="width:13%;" class="input-text Wdate">
+                <span class="ml-10">截止审核日期：</span>
+                <input type="text" name="audit_end_time" placeholder="截止确认日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="audit_end_time" style="width:13%;" class="input-text Wdate">
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">　　来源单号：</span>
+                <input type="text" name="order_number" id="order_number" class="input-text" style="width:13%;"
+                       placeholder="">&nbsp;
+                <span class="ml-5">　　　　省份：</span>
+                <select name="province" class="input-text" style="width:13%" id="search_province" onchange="changeCity(this.value)">
+                    <optgroup label="城市列表">
+                        <option value="0">全部省份</option>
+                        <volist name="data.provinceList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>&nbsp;
+                <span class="ml-5">　　　　城市：</span>
+                <select name="region" class="input-text" style="width:13%" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                    </optgroup>
+                </select>
+
+                &nbsp;
+                <span class="ml-5">　　商品代码：</span>
+                <select name="goods_id" class="input-text" style="width:13%" id="search_goods_code">
+                    <optgroup label="商品列表">
+                        <option value="0">全部商品</option>
+                        <volist name="data.erpGoods" id="vo" key="k">
+                            <option value="<{$vo.id}>">
+                                <{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+                &nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+                &nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-secondary radius" value="导出" onclick="export_data()" id="export_excel"/>
+            </div>
+        </form>
+    </div>
+    <!--<div class="cl pd-5 bg-1 bk-gray mt-20">-->
+        <!--<span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>-->
+
+
+    <!--</div>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>id</th>
+                <th>单据日期</th>
+                <th>出/入库单号</th>
+                <th>出入库类型</th>
+                <th>来源单号</th>
+                <th>单据类型</th>
+                <th>商品代码</th>
+                <th>城市</th>
+                <th>仓库</th>
+                <th>仓库类型</th>
+                <th>吨量</th>
+                <th>升数</th>
+                <th>密度</th>
+                <th>审核时间</th>
+                <th>审核人</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <!--<tfoot style="background-color:#f5fafe;">-->
+            <!--<tr>-->
+                <!--<th class="text-c">当页</th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+            <!--</tr>-->
+            <!--<tr id="sum_total">-->
+                <!--<th class="text-c">所有</th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+            <!--</tr>-->
+            <!--</tfoot>-->
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            url: "<{:U('ErpStock/reportFormsList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[0, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+
+            {"data": "id"},
+            {"data": "create_time"},
+            {"data": "order_number"},
+            {"data": "stock_order_type"},
+            {"data": "source_number"},
+            {"data": "type"},
+            {"data": "goods_id"},
+            {"data": "region"},
+            {"data": "storehouse_id"},
+            {"data": "stock_type"},
+            {"data": "goods_num"},
+            {"data": "num_liter"},
+            {"data": "goods_density"},
+
+            {"data": "audit_time"},
+            {"data": "auditor_id"},
+            {"data": "remark"},
+
+        ],
+//        footerCallback: function ( row, data, start, end, display,aoData ) {
+//            if(data == ''){
+//                $('tfoot th').eq(0).siblings().html('');
+//                $('#sum_total th').eq(0).siblings().html('');
+//                //console.log('--');
+//                return false;
+//            }else{
+//                var total_stock_num =0;
+//                var total_transportation_num =0;
+//                var total_sale_reserve_num =0;
+//                var total_allocation_reserve_num =0;
+//                var total_sale_wait_num =0;
+//                $('#sum_total th').eq(7).html(parseFloat(total_stock_num).toFixed(4));
+//                $('#sum_total th').eq(8).html(parseFloat(total_transportation_num).toFixed(4));
+//                $('#sum_total th').eq(9).html(parseFloat(total_sale_reserve_num).toFixed(4));
+//                $('#sum_total th').eq(10).html(parseFloat(total_allocation_reserve_num).toFixed(4));
+//                $('#sum_total th').eq(11).html(parseFloat(total_sale_wait_num).toFixed(4));
+//            }
+//            var api = this.api();
+//            // Remove the formatting to get integer data for summation
+//            var intVal = function ( i ) {
+//                return typeof i === 'string' ?
+//                    i.replace(/[\$,]/g, '')*1 :
+//                    typeof i === 'number' ?
+//                        i : 0;
+//            };
+//            //Total over all pages
+//
+//            for(i=0;i<10;i++){
+//
+//                if(i == 0){
+//                    continue;
+//                }
+//
+//                if(i < 7 || i > 10){
+//                    $( api.column( i ).footer() ).html("");
+//                    continue;
+//                }
+//
+//                var totals;
+//                var total = api.column(i).data();
+//                if(total.length > 0){
+//                    totals = total.reduce(function (a, b) {
+//                        if (isNaN(a)) {
+//                            a = 0;
+//                        }
+//                        if (isNaN(b)) {
+//                            b = 0;
+//                        }
+//                        return intVal(a) + intVal(b);
+//                    });
+//                }else{
+//                    totals = 0;
+//                }
+//                // Total over this page
+//                var pageTotals;
+//                var pageTotal = api.column(i, {page: 'current'}).data();
+//                if(pageTotal.length > 0){
+//                    pageTotals = pageTotal.reduce(function (a, b) {
+//                        if (isNaN(a)) {
+//                            a = 0;
+//                        }
+//                        if (isNaN(b)) {
+//                            b = 0;
+//                        }
+//                        return intVal(a) + intVal(b);
+//                    });
+//                }else{
+//                    pageTotals = 0;
+//                }
+//                //console.log(pageTotals);
+//                pageTotals = intVal(pageTotals) + 0;
+//                totals = intVal(totals) + 0;
+//                // Update footer
+//                $(api.column(i).footer()).html(
+//                    '' + parseFloat(pageTotals).toFixed(4)
+//                );
+//            }
+//        }
+    });
+
+    // @搜索框搜索查询
+    top.searchErpStockFormList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpStock/reportFormsList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searchErpStockFormList(true);
+    }
+
+    /*客户待提详情*/
+    function show_user_detail(title, url, w, h, id) {
+
+        url = url + '/id/' + id;
+
+        layer_show(title, url, w, h);
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    var selectRegion = $("#search_province").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectRegion = $("#search_goods_code").select2({
+        placeholder: '请选择商品',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    /* 导出 */
+    function export_data() {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            $('#export_excel').val('导出中...');
+            $('#export_excel').attr('disabled',true);
+
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpStock/exportReportFormsData")}>?'+param;
+            $.ajax({
+                url : '<{:U("ErpStock/exportReportFormsData")}>',
+                data : param,
+                type : 'post',
+                dataType : 'json',
+                success : function(data){
+                    layer.closeAll('loading');
+                    if(data.status == 1){
+                        layer.msg(data.message, {icon: 1});
+                        window.location.href=url;
+                    }else{
+                        layer.msg(data.message, {icon: 2});
+                    }
+                    $('#export_excel').val('导出');
+                    $('#export_excel').attr('disabled',false);
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    layer.closeAll('loading');
+                    $('#export_excel').val('导出');
+                    $('#export_excel').attr('disabled',false);
+                    console.log(XMLHttpRequest);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    console.log('网络异常，请刷新后重试！');
+                    layer.msg('对不起，网络异常，请刷新后重试！', {icon: 2});
+                }
+            });
+        });
+    }
+
+    var city2             = <{$data.city2}>;
+    function changeCity(id){
+        var citylist = city2[id];
+        var optionst = '<option value="0">全部油库</option>';
+        var optionse = '<option value="0">全部仓库</option>';
+        $('#search_region').html('');
+        $("#search_storehouse").html(optionse);
+        $("#search_depot").html(optionst);
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_region').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_region').html(options);
+    }
+
+</script>

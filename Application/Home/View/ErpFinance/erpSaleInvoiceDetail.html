@@ -1,0 +1,609 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar clearfix">
+                <span>发票信息</span>
+            </div>
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-invoice-add" style="display: none;">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">销售单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="sale_order_number" name="sale_order_number" value="" disabled/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">客户：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" name="company_name" id="company_name" class="input-text disabled" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">付款方式：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select type="text" class="input-text disabled" value="" id="pay_type" name="pay_type" disabled="disabled">
+                                        <option value="1">现结</option>
+                                        <option value="2">账期</option>
+                                        <option value="3">代采现结</option>
+                                        <option value="4">货到付款</option>
+                                        <option value="5">定金锁价</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">国税号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" value="" id="tax_num" name="tax_num" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">开户行：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="user_bank_name" name="user_bank_name" value="" disabled/>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">银行账号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="user_bank_num" name="user_bank_num" value="" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>发票号码：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="invoice_sn" name="invoice_sn" value="" maxlength="8"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>发票类型：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select type="text" class="input-text" value="" id="invoice_type" name="invoice_type" onchange="checkinvoicetype()">
+                                        <option value="">请选择发票类型</option>
+                                        <volist name="data.invoice_type" id="vo" key="k">
+                                            <option value="<{$key}>">
+                                                <{$vo}>
+                                            </option>
+                                        </volist>
+                                        <!--<option value="1" selected="selected">17%增票</option>-->
+                                        <!--<option value="2">17%普票</option>-->
+                                        <!--<option value="3">17%形式发票</option>-->
+                                        <!--<option value="4">16%增票</option>-->
+                                        <!--<option value="5">16%普票</option>-->
+                                        <!--<option value="6">16%形式发票</option>-->
+                                    </select>
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">订单总额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="order_amount" name="order_amount" value="" disabled/>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">待开金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="no_invoice_amount" name="no_invoice_amount" value="" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">已开金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="invoiced_amount" name="invoiced_amount" value="" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>未税金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="notax_invoice_money" name="notax_invoice_money" value="" maxlength="10" onkeyup="checknum(this)" onblur="checknotaxinvoicemoney()"/>
+                                    <span id="sps3"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>税额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="tax_money" name="tax_money" value="" maxlength="11" onkeyup="checknum(this)" onblur="checktaxmoney()"/>
+                                    <span id="sps4"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 col-sm-2">备注：</label>
+                                <textarea name="remark" id="remark" cols="100" rows="4"
+                                          style="margin-left: 5px;" maxlength="255"></textarea>
+                            </div>
+                        </div>
+                        <div class="row cl" style="margin-top:20px;">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                                <input type="hidden" id="id" name="id" value="">
+                                <input type="hidden" id="collected_amount" name="collected_amount" value="">
+                                <input type="hidden" id="sale_order_id" name="sale_order_id" value="<{$sale_order_id}>">
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                                <input class="btn btn-primary radius" id="goback" type="button" value="返回">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <br/>
+
+                    <p>发票录入明细</p>
+                    <hr/>
+                    <div class="row cl" style="margin-top:20px;">
+                        <div style="margin-left: 15px;">
+                            <input class="btn btn-primary radius" id="invoice_show" type="button" value="录入发票">
+                        </div>
+                    </div>
+                    <div class="row cl mt-10">
+                        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                            <thead>
+                            <tr class="text-c">
+                                <th></th>
+                                <th>ID</th>
+                                <th>销售单号</th>
+                                <th>订单日期</th>
+                                <th>发票号码</th>
+                                <th>发票类型</th>
+                                <th>客户名称</th>
+                                <th>国税号码</th>
+                                <th>开户银行</th>
+                                <th>开户账号</th>
+                                <th>注册信息</th>
+                                <th>付款方式</th>
+                                <th>订单总额</th>
+                                <th>发票金额</th>
+                                <th>未开发票金额</th>
+                                <th>操作员（财务）</th>
+                                <th>开票时间</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+                <!--<button onClick="article_save_submit();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存</button>-->
+                <!--<button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>-->
+            </div>
+        </div>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        $('input,select,textarea', $('#information')).attr('disabled', true);
+    });
+
+    //申请付款列表
+    var da = {
+        'sale_order_id': $("#sale_order_id").val()
+    };
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpFinance/erpSaleInvoiceDetail')}>",
+            type: 'post',
+            data: da
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {"data": "order_number"},
+            {"data": "create_time"},
+            {"data": "invoice_sn"},
+            {"data": "invoice_type"},
+            {"data": "company_name"},
+            {"data": "tax_num"},
+            {"data": "bank_name"},
+            {"data": "bank_num"},
+            {"data": "company_info"},
+            {"data": "pay_type"},
+            {"data": "order_amount"},
+            {"data": "invoice_money"},
+            {"data": "order_no_invoice_money"},
+            {"data": "creator"},
+            {"data": "create_time"},
+            {"data": "remark"},
+        ],
+    });
+
+    //申请发票按钮
+    $("#invoice_show").click(function () {
+        if ($("#form-invoice-add").is(":hidden")) {
+            var invoice_id = $(".checkchild:checked").val();
+            var id = $('#sale_order_id').val();
+            var da = {
+                'id': id,
+                'invoice_id': invoice_id
+            };
+            var url = '<{:U("ErpSale/getSaleOrderInfo")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            /*
+             判断销退单收款  是否存在负数
+             */
+            var info_url = '<{:U("ErpFinance/checkReturnOrder")}>';
+            ajax(info_url, {id: id,type:2 }, 'post', 'json', function (_data) {
+                if (_data.status != 1) {
+                    //layer.msg('此笔销售单存在销退单退款未确认，无法开票！', {icon: 2});
+//                    layer.msg(_data.message);
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }else {
+                        /* -------------------------------------
+                         验证改笔订单暂无退货单未退款情况，可以开票
+                         */
+                        //var data = $('#form-order-add').serialize();
+                        ajax(url, data, type, dataType, function (_data) {
+                            $("#form-invoice-add").slideDown();
+                            $("#sale_order_number").val(_data.order_number);
+                            $("#company_name").val(_data.company_name);
+                            $("#pay_type").find("option").prop("selected", false);
+                            $("#pay_type").find("option[value='" + _data.pay_type + "']").prop("selected", true);
+                            //$("#tax_num").val(_data.tax_num);
+                            $("#tax_num").val(_data.tax_number);
+                            $("#user_bank_name").val(_data.user_bank_info.substr(0, _data.user_bank_info.indexOf("--")));
+                            $("#user_bank_num").val(_data.user_bank_info.substr(_data.user_bank_info.indexOf("--") + 2));
+                            //$("#order_amount").val(_data.order_amount - _data.loss_amount);
+                            $("#order_amount").val(_data.total_amount);
+                            $("#no_invoice_amount").val(_data.no_invoice_amount);
+                            $("#invoiced_amount").val(_data.invoiced_amount);
+                            $("#invoice_type").find("option").prop("selected", false);
+                            if (_data.invoice_data) {
+                                $("#id").val(_data.invoice_data.id);
+                                $("#invoice_sn").val(_data.invoice_data.invoice_sn);
+                                $("#notax_invoice_money").val(_data.invoice_data.notax_invoice_money);
+                                $("#notax_invoice_money").prop('disabled', true).addClass('disabled');
+                                $("#tax_money").val(_data.invoice_data.tax_money);
+                                $("#tax_money").prop('disabled', true).addClass('disabled');
+                                $("#remark").html(_data.invoice_data.remark);
+                                $("#no_invoice_amount").val(_data.no_invoice_amount);
+                                $("#invoiced_amount").val(_data.invoiced_amount);
+                                $("#invoice_type").find("option[value='" + _data.invoice_data.invoice_type + "']").prop("selected", true);
+                            } else {
+                                $("#invoice_type").find("option[value='7']").prop("selected", true);
+                            }
+                            $("span[id*='sps']").html('');
+                        });
+                }
+            })
+        }
+    });
+
+    $("#goback").click(function () {
+        doSlideUp();
+    })
+
+    function doSlideUp() {
+        $("#form-invoice-add").slideUp();
+        $("#sale_order_number").val('');
+        $("#dealer_name").val('');
+        $("#order_type").find("option").prop("selected",false);
+        $("#user_id").val('');
+        $("#collected_amount").val('');
+        $("#user_bank_name").val('');
+        $("#user_bank_num").val('');
+        $("#order_amount").val('');
+        $("#no_collect_amount").val('');
+        $("span[id*='sps']").html('');
+        $("#id").val('');
+        $("#invoice_sn").val('');
+        $("#notax_invoice_money").val('');
+        $("#notax_invoice_money").prop('disabled',false).removeClass('disabled');
+        $("#invoiced_amount").val('');
+        $("#tax_money").val('');
+        $("#tax_money").prop('disabled',false).removeClass('disabled');
+        $("#remark").html('');
+        $("#invoice_type").find("option").prop("selected",false);
+    }
+
+    //验证是否是数字（保留两位小数可以为负数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\-\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            if(!isNaN(obj.value)){
+                obj.value= parseFloat(obj.value);
+            }
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+        var regex = new RegExp("-","g");
+        var result = obj.value.match(regex);
+        result = result ? result : [];
+        if(obj.value.indexOf("-") > 0 || result.length > 1){
+            obj.value = '';
+        }
+    }
+
+    //验证发票号码
+    function checkinvoicesn() {
+        if ($.trim($("#invoice_sn").val()) == '') {
+            layer.msg("请输入发票号码！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证发票类型
+    function checkinvoicetype() {
+        if ($.trim($("#invoice_type").val()) == '') {
+            layer.msg("请选择发票类型！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证未税金额
+    function checknotaxinvoicemoney() {
+        var tax_money = parseInt($.trim($("#notax_invoice_money").val())) + parseInt($.trim($("#tax_money").val()));
+        if ($.trim($("#notax_invoice_money").val()) == '') {
+            layer.msg("请输入发票去税金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else if (tax_money >= 0 && $.trim($("#tax_money").val()) != '' && tax_money > parseInt($.trim($("#no_invoice_amount").val()))) {
+            layer.msg("申请发票金额不能超过待收票金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else if (tax_money < 0 && $.trim($("#tax_money").val()) != '' && tax_money * -1 > parseInt($.trim($("#invoiced_amount").val()))) {
+            layer.msg("红冲发票金额不能大于已开发票金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证税额
+    function checktaxmoney() {
+        var tax_money = parseInt($.trim($("#notax_invoice_money").val())) + parseInt($.trim($("#tax_money").val()));
+        if ($.trim($("#tax_money").val()) == '') {
+            layer.msg("请输入税额！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else if (tax_money >= 0 && $.trim($("#notax_invoice_money").val()) != '' && tax_money > parseInt($.trim($("#no_invoice_amount").val()))) {
+            layer.msg("申请发票金额不能超过待收票金额！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else if (tax_money < 0 && $.trim($("#tax_money").val()) != '' && tax_money * -1 > parseInt($.trim($("#invoiced_amount").val()))) {
+            layer.msg("红冲发票金额不能大于已开发票金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    /*提交操作*/
+    $('#DealerSaveBtn').click(function () {
+
+        submitTrue();
+        var da = {
+            'id': $.trim($("#id").val()),
+            'sale_order_id': $.trim($("#sale_order_id").val()),
+            'sale_order_number': $.trim($("#sale_order_number").val()),
+            'invoice_sn': $.trim($("#invoice_sn").val()),
+            'invoice_type': $.trim($("#invoice_type").val()),
+            'notax_invoice_money': $.trim($("#notax_invoice_money").val()),
+            'tax_money': $.trim($("#tax_money").val()),
+            'remark': $.trim($("#remark").val()),
+        };
+
+        if (checkinvoicesn() && checkinvoicetype() && checknotaxinvoicemoney() && checktaxmoney()) {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpFinance/addSaleInvoice")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchErpSaleInvoiceDetail();
+                    parent.searthesErpSaleInvoiceList();
+                    setTimeout(function () {
+                        doSlideUp();
+                        submitFalse();
+                    }, 500);
+                } else {
+                    if(_data.message == '已申请金额不能超出订单总金额'){
+                        checkfalse('sps1');
+                    }
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            });
+        }
+    });
+
+    top.searchErpSaleInvoiceDetail = function (status) {
+        var current_page = status || false;
+        var param = 'show_all=1';
+
+        table.api().ajax.url("<{:U('ErpFinance/erpSaleInvoiceDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+    /* 拜访记录 */
+
+    function saveVisitInfo() {
+        var url = '<{:U("User/saveVisitInfo")}>';
+        var data = $('#form-visit-add').serialize();
+        data.id = '<{$Think.get.id}>';
+        var dataType = 'json';
+        var type = 'post';
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.msg(_data.message, {icon: 1});
+                window.location.reload();
+                return false;
+            } else {
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        })
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        if ($('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked') == false) {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        } else {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+        }
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

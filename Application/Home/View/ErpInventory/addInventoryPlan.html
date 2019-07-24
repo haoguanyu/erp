@@ -1,0 +1,422 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+     center
+     {
+         font-size:14px;
+         color:red;
+         font-weight:bold;
+     }
+    .left_green
+    {
+        font-size:14px;
+        color:#555;
+    }
+    .button{
+        width:43px;
+        height:30px;
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点方案名称:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="inventory_name" name="inventory_name"
+                           placeholder="" />
+                    <span id="sps1"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点仓库类型:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="inventory_type" class="input-text" id="inventory_type">
+                        <option value="0">请选择</option>
+                        <volist name="data.inventory_type" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">省份:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="province" class="input-text" id="province">
+                        <optgroup label="省份列表">
+                            <option value="">请选择省份</option>
+                            <option value="0">全部省份</option>
+                            <volist name="data.regionList" id="vo" key="k">
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "></label>
+                <div class="formControls col-xs-9 col-sm-4">
+                <table border="0" width="400">
+                    <tr>
+                        <td><CENTER>可选择仓库</CENTER></td>
+                        <td> </td>
+                        <td><CENTER>已选择仓库</CENTER></td>
+                    </tr>
+                    <tr>
+                        <td width="40%">
+                            <input type="text" size="10px" style="width:200px;" id="search_text" class="input-text" onkeyup="search_stock()">
+                            <select class="left_green" multiple name="left" id="left" size="10" style="width:200px;" ondblclick="moveOption(document.getElementById('left'), document.getElementById('right') , 1)">
+                            </select>
+                        </td>
+                        <td width="20%" style="padding: 10px;" align="center">
+                            <div style="height:35px;">&nbsp;</div>
+                            <input type="button" value=">>" class="btn btn-default radius button"
+                                   onclick="moveOption(document.getElementById('left'),document.getElementById('right') , 2)"><br /><br />
+                            <input type="button" value=" > " class="btn btn-default radius button"
+                                   onclick="moveOption(document.getElementById('left'),document.getElementById('right') , 1)"><br /><br />
+                            <input type="button" value=" < " class="btn btn-default radius button"
+                                   onclick="removeOption(document.getElementById('right') , 1)"><br /><br />
+                            <input type="button" value="<<" class="btn btn-default radius button"
+                                   onclick="removeOption(document.getElementById('right') , 2)"><br /><br />
+                        </td>
+                        <td width="40%">
+                            <div style="height:35px;width:200px;">&nbsp;</div>
+                            <select  class="left_green" multiple name="right" id="right" size="10" style="width:200px;" ondblclick="removeOption(document.getElementById('right') , 1)">
+                            </select>
+                        </td>
+                        <td>
+                            <span id="sps4"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-4">
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                <span class="layui-layer-btn">
+                    <a class="layui-layer-btn1" id="close_no" style="height:auto;margin-left: 100px;">取消</a>
+                </span>
+            </div>
+        </div>
+    </form>
+</article>
+<script type="text/javascript">
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //方案名称
+    function check_name() {
+        if ($.trim($("#inventory_name").val()) == '') {
+            layer.msg("请填写盘点方案名称！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //类型
+    function check_type() {
+        if ($.trim($("#inventory_type").val()) == 0) {
+            layer.msg("请选择类型！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //城市
+    function check_city() {
+        if ($.trim($("#province").val()) == '') {
+            layer.msg("请选择城市！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //仓库
+    function check_right() {
+        if ($.trim($("#right").val()) == '') {
+            layer.msg("请选择仓库！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+
+    // 关闭窗口
+    $('#close_no').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    var selectRegion = $("#province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+
+    function search_stock() {
+        var search_text = $.trim($('#search_text').val());
+
+        //console.log(storehouse_data);
+
+        var option_key = [];
+        var option_key_name = [];
+        for (var i = 0; i<storehouse_data.length; i++ ){
+            if(storehouse_data[i].indexOf(search_text) >= 0){
+                option_key.push(i);
+                option_key_name.push(storehouse_data[i]);
+            }
+
+        }
+
+        if(option_key.length > 0){
+            $('#left option').each(function () {
+                var i = $(this).index();
+                if($.inArray(i, option_key) < 0){
+                    $(this).hide();
+                }else{
+                    $(this).show();
+                }
+            })
+        }else{
+            $('#left option').show();
+        }
+        // 如果查询不到内容， 就显示空
+        if(search_text != '' && option_key.length <= 0)
+        {
+            $("#left option").hide();
+        }
+
+        console.log(option_key);
+        console.log(option_key_name);
+
+    }
+    // =========================================================js======================================================
+
+    //移动
+    function moveOption(obj1, obj2 , type)
+    {
+        // 获取右边框的值
+
+        var right = new Array();
+        $("#right option").each(function(){
+            var txt = $(this).val();
+            if(txt!=''){
+                right.push(txt);
+            }
+        });
+
+        if(type == 1 ){
+            // 1 为选中移动
+            for(var i = 0 ; i <= obj1.options.length - 1 ; i++)
+            {
+                if(obj1.options[i].selected)
+                {
+                    // 判断左边数据，是否在右边出现
+                    if(right !== '' && right.indexOf(String(obj1.options[i].value)) >= 0)
+                    {
+                        layer.msg(obj1.options[i].text+'已选，请重新选择！', {icon: 2});
+                        return false;
+                    }else{
+                        var opt = new Option(obj1.options[i].text,obj1.options[i].value);
+                        //opt.selected = true;
+
+                        obj2.options.add(opt);
+                    }
+                }
+            }
+        }else{
+            // 为2 直接移动所有
+            for(var i = 0 ; i <= obj1.options.length - 1 ; i++)
+            {
+                //return false;
+                // 判断左边数据，是否在右边出现
+                if(right !== null && right.indexOf(String(obj1.options[i].value)) >= 0)
+                {
+                    // 如果在右边出现，则不移动$("#id").is(':visible')var display =$('#id').css('display');
+                }else if (obj1.options[i].style.display != 'none'){
+                    var opt = new Option(obj1.options[i].text,obj1.options[i].value);
+                    //opt.selected = true;
+                    obj2.options.add(opt);
+                }
+
+            }
+        }
+
+    }
+
+    // 移除
+    function removeOption(obj , type){
+        if(type == 1 ){
+            // 选中移除
+            for(var i = obj.options.length - 1 ; i >= 0 ; i--)
+            {
+                if(obj.options[i].selected)
+                {
+                    //var opt = new Option(obj.options[i].text,obj.options[i].value);
+                    //opt.selected = true;
+                    obj.remove(i);
+                }
+            }
+        }else{
+            // 直接移除
+            for(var i = obj.options.length - 1 ; i >= 0 ; i--)
+            {
+                obj.remove(i);
+            }
+        }
+    }
+
+    // 切换类型，清空右边的框
+    $("#inventory_type").on("change",function(){
+        removeOption(document.getElementById('right') , 2);
+        removeOption(document.getElementById('left')  , 2);
+        $("#search_text").val('');
+        $("#province").select2('val',0);
+    });
+
+    // 最后提交前 ， 右边选框默认全部选中
+    function select_true(){
+        obj = document.getElementById('right');
+        for(var i = 0 ; i <= obj.options.length - 1 ; i++)
+        {
+            obj.options[i].selected = true;
+        }
+    }
+
+    var  storehouse_data = [];
+    // 选择城市，更换左边选框
+    $("#province").on("change",function(){
+        $("#search_text").val('');
+        if(check_type()){
+            var id      = $("#province").val();
+            var type    = $("#inventory_type").val();
+            var options = '';
+            if(id == '') {
+                $('#left').html(options);
+                return false;
+            }
+            var info_url = '<{:U("ErpInventory/getStoreHouseByProvince")}>';
+            ajax(info_url, {id: id,type : type}, 'post', 'json', function (_data) {
+                if (_data.status == 1) {
+                    storehouse_data = [];
+                    $.each(_data.data, function (i, item) {
+                        storehouse_data.push(item.name);
+                        options += '<option value="' + item.id + '" ' + '>' + item.name + '</option>';
+                    });
+                    $('#left').html(options);
+                } else {
+                    $('#left').html(options);
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+
+        }
+    });
+
+    //添加操作
+    $('#add').click(function () {
+        // 右边框默认全部选中
+        select_true();
+        submitTrue();
+
+        // 拼接右边框中的信息 key => value
+        var right  = new Object();
+        var option = $("#right option:selected");
+        $.each(option,function(i,item){
+            right[item.value ]  =  item.text;
+        });
+        //console.log(right);
+        if ($('#form-member-add').valid() == false) {
+            return false;
+        }
+        var da = {
+            'inventory_name'            : $.trim($("#inventory_name").val()),
+            'inventory_type'            : $.trim($("#inventory_type").val()),
+            'inventory_storehouse_ids'  : right
+        };
+        if ( check_name() && check_type() && check_city() && check_right() ) {
+            layer.load(1, {shade: 0.3});
+            var url      = '<{:U("ErpInventory/addInventoryPlan")}>';
+            var type     = 'post';
+            var dataType = 'json';
+            var data     = da;
+            ajax(url, data, type, dataType, function (_data) {
+                layer.load(1, {shade: 0.3});
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    setTimeout(function () {
+                        layer.closeAll();
+                        top.searthes_inventoryPlanList();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            });
+        }
+    });
+
+</script>

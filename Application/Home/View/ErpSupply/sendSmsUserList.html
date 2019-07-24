@@ -1,0 +1,224 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 供货单管理 <span
+        class="c-gray en">&gt;</span> 发送短信 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+            <label>请在以下文本框输入短信内容：</label><br/><br/>
+
+            <div>
+                <textarea rows="20" cols="120" id="sms_text"
+                          style="width: 730px; height: 100px; border: none;resize: none;"><{$data.sms_text}></textarea>
+            </div>
+        </form>
+    </div>
+    <!--<div class="cl pd-5 bg-1 bk-gray mt-20">-->
+    <!--<span class="l">-->
+    <!--<a href="javascript:;" onclick="member_add('新增供货单', '<{:U(\'Supply/addSupply\')}>', '', '900','600')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i>新增</a>-->
+    <!--</span>-->
+
+    <!--</div>-->
+
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+    <div class="mt-20">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th width="25"><input type="checkbox" name="" value="" class="checkAll"></th>
+                <th>序号</th>
+                <th>公司</th>
+                <!--<th>地区</th>-->
+                <th>用户</th>
+                <th>手机号</th>
+                <!--<th>操作</th>-->
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+            <tr>
+                <th style="text-align: center" colspan="5">
+                    <input type="submit" class="btn btn-success radius" value="确认发送" id="subexe"
+                           onclick="send_sms_submit('确认发送')"/>
+
+                </th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript">
+    //addressInit('goodsName', 'goodsLevel','goodsRank', ['请选择','请选择','请选择']);
+    var table = '';
+
+    $(function () {
+        table = $('.table-sort').dataTable({
+            "paging": false,
+            "serverSide": false,
+            "iDisplayLength": 10,
+            ajax: {
+                //url: "<{:U('Galaxy/orderList')}>",
+                url: "<{:U('ErpSupply/sendSmsUserList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[1, "asc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": true,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '" user_phone="' + data.user_phone + '"/>';
+                        return str;
+                    }
+
+                },
+//                {"data": "id"},
+                {"data": "No"},
+                {"data": "company_name"},
+                {"data": "user_name"},
+                {"data": "user_phone"},
+
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+
+    $('.checkAll').on('click', function () {
+        var c = $(this).prop('checked');
+        //console.log(c);
+        if (c) {
+            $('.checkchild').prop('checked', true);
+        } else {
+            $('.checkchild').prop('checked', false);
+        }
+
+    })
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+
+        //$('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true)
+        //$('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        //var c = $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked');
+        var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+        if(c){
+
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false)
+        }else{
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true)
+        }
+    });
+
+    function send_sms_submit() {
+        var user_id = [];
+        var user_phone = [];
+        if ($(".checkchild:checked").length < 1) {
+            layer.msg('请选择至少一笔订单！', {icon: 2});
+            return false;
+        }
+        if ($(".checkchild:checked").length > 0) {
+            //alert($(".checkchild:checked").length);
+            for (var i = 0; i < $(".checkchild:checked").length; i++) {
+                var v = $(".checkchild:checked").eq(i).val();
+                user_id.push(v);
+
+                var p = $(".checkchild:checked").eq(i).attr('user_phone');
+                user_phone.push(p);
+
+            }
+            //alert($(".checkchild:checked").length);
+        }
+        var sms_text = $('#sms_text').val();
+//            console.log(user_id);
+//            console.log(sms_text);
+//            console.log(user_phone);
+        layer.confirm('确认给给这些用户发送短信吗？', function () {
+            //alert('对账');
+            layer.load(1, {shade: [0.3]});
+            var url = '<{:U("ErpSupply/sendSmsSupply")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = {user_phone: user_phone, sms_text: sms_text};
+            ajax(url, data, type, dataType, function (_data) {
+                //console.log(_data);
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    setTimeout(function () {
+                        //top.searchOrders();
+                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }, 1000);
+                    return false;
+                } else {
+                    layer.msg(_data.message, {icon: 2});
+                    setTimeout(function () {
+                        layer.closeAll();
+                    }, 1000);
+                    return false;
+                }
+
+            });
+        });
+    }
+
+
+</script>

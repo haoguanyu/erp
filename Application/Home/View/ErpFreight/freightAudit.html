@@ -1,0 +1,149 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 90%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>数量：</label>
+
+                                 <div class="formControls col-xs-8 col-sm-8">
+                                   <input type="text" class="input-text" value="<{$data.num}>"
+                                           id="num" name="num" maxlength="20" />
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>运费：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                   <input type="text" class="input-text" value="<{$data.price}>"
+                                           id="price" name="price" maxlength="20" />
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="row cl" style="margin-left:380px;">
+                                <input type="hidden" name="" id="freight_order_id" value="<{$data.id}>">
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="审核">
+                                <input class="btn btn-primary radius" id="cancel" type="button" value="取消">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+    	$('#DealerSaveBtn').attr('disabled', false).removeClass('disabled');
+    	$('#cancel').attr('disabled', false).removeClass('disabled');
+    });
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        var formData = new FormData();
+        formData.append("freight_id",$("#freight_order_id").val());
+        submitTrue();
+        layer.load(1, {shade: 0.3});
+        $.ajax({
+            url : '<{:U("ErpFreight/freightAudit")}>',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success : function(_data) {
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    parent.searchfreightOrderList();
+                    setTimeout(function () {
+                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(XMLHttpRequest);
+                console.log('请求异常，请检查！');
+            }
+        });
+        
+    });
+
+    // 取消
+    $('#cancel').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    })
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

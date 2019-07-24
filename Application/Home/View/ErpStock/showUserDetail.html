@@ -1,0 +1,203 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+
+            <div class="mt-10">
+                <input type="text" name="sale_user" id="sale_user" class="input-text" style="width:10%;"
+                       placeholder="客户">
+
+                <select name="sale_company_id" class="input-text" id="sale_company_id" style="width:20.3%">
+                    <option></option>
+
+                </select>
+                <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+
+
+        </form>
+    </div>
+
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th>ID</th>
+                <th>客户</th>
+                <th>公司</th>
+                <th>待提数量</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <input type="hidden" id="id" value="<{$id}>" name="id">
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var da = {
+            'id': $("#id").val()
+        };
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                // url: "<{:U('ErpOrder/orderList')}>",
+                url: "<{:U('ErpStock/showUserDetail')}>",
+                type: 'post',
+                data: da
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {"data": "id"},
+                {"data": "user_name"},
+                {"data": "company_name"},
+                {"data": "total_wait_num"},
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            },
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+
+    searchShowUserDetail = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpStock/showUserDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchShowUserDetail(true);
+    }
+
+    var selectCompany = $("#sale_company_list").select2({
+        placeholder: '请选择供应商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    $("#sale_company_id").select2({
+        ajax: {
+            type: 'GET',
+//            url: "<{:U('Clients/getCompanyByName')}>",
+            url: "<{:U('ErpCustomer/getCustomerData')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    restrict: 2,
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请输入公司名称',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.company_name) != 'undefined') {
+                return repo.company_name;
+            } else if (repo.text == '请输入采购商公司名称') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+</script>

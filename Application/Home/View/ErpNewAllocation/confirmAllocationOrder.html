@@ -1,0 +1,511 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: rgb(235, 235, 228);
+    }
+    .input-text {
+        width: 78%
+    }
+    .hidden{
+        display: none;
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12" style="margin-top: 0">
+                <p>基本信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>调拨数量(吨):</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input class="input-text disabled" disabled value="<{$data.order.num}>" name="num">
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 ">提单号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="pick_up_number" name="pick_up_number" value=""/>
+                </div>
+            </div>
+        </div>
+        <!--<div>-->
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 "><span class="c-red">*</span>调拨类型:</label>-->
+                <!--<input type="radio" name="allocation_type" value="1" style="margin-left: 15px" checked="checked">城市仓->二级仓-->
+                <!--<input type="radio" name="allocation_type" value="2" style="margin-left: 15px">二级仓->二级仓-->
+                <!--<input type="radio" name="allocation_type" value="3" style="margin-left: 15px">二级仓->城市仓-->
+                <!--<input type="radio" name="allocation_type" value="4" style="margin-left: 15px">城市仓->城市仓-->
+            <!--</div>-->
+        <!--</div>-->
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>出库类型:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input class="input-text disabled" disabled value="<{$data.order.out_type}>" name="out_type">
+                    <span id="sps2"></span>
+                </div>
+
+                <div>
+                    <label class="form-label col-xs-2 "><span class="c-red">*</span>入库类型:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text disabled" disabled value="<{$data.order.in_type}>" name="in_type">
+                        <span id="sps3"></span>
+                    </div>
+                </div>
+
+
+            </div>
+            <div  class="row cl col-sm-12">
+                <div>
+                    <label class="form-label col-xs-2"><span class="c-red">*</span>出库方名称:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text disabled" disabled value="<{$data.order.out_object_name}>" name="out_object_name">
+                        <span id="sps4"></span>
+                    </div>
+                </div>
+                <div>
+
+                    <label class="form-label col-xs-2 "><span class="c-red">*</span>入库方名称:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text disabled" disabled value="<{$data.order.in_object_name}>" name="in_object_name">
+                        <span id="sps5"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div  class="row cl col-sm-12">
+                <div id="out_t" style="display: none;">
+                    <label class="form-label col-xs-2" style="padding:0;"><span class="c-red">*</span>实际出库数量(吨):</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text " value="" name="actual_out_num" id="actual_out_num" onkeyup="checknum(this)">
+                        <span id="sps6"></span>
+                    </div>
+                </div>
+
+                <div id="in_t" style="display: none;">
+                    <label class="form-label col-xs-2" style="padding:0;"><span class="c-red">*</span>实际入库数量(吨):</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text" value="" name="actual_in_num" id="actual_in_num" onkeyup="checknum(this)">
+                        <span id="sps7"></span>
+                    </div>
+                </div>
+            </div>
+            <div  class="row cl col-sm-12">
+
+                <div id="out_l" style="display: none;">
+
+                    <label class="form-label col-xs-2" style="padding:0;"><span class="c-red">*</span>实际出库数量(升):</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text" value="" name="actual_out_num_liter" id="actual_out_num_liter" onkeyup="checknum2(this)" onblur="checkoutliter()">
+                        <span id="sps8"></span>
+                    </div>
+
+                </div>
+                <div  id="in_l" style="display: none;">
+
+                    <div class="formControls col-xs-9 col-sm-4" style="float: right;">
+                        <input class="input-text" value="" name="actual_in_num_liter" id="actual_in_num_liter" onkeyup="checknum2(this)" onblur="checkinliter()">
+                        <span id="sps9"></span>
+                    </div>
+                    <label class="form-label col-xs-2" style="padding:0; float: right;"><span class="c-red">*</span>实际入库数量(升):</label>
+                </div>
+
+            </div>
+
+            <div  class="row cl col-sm-12">
+                <div id="out_d" style="display: none;margin-left: 0px; padding-left: 0px;">
+
+                    <label class="form-label col-xs-2" style="padding:0;">实际出库密度:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input class="input-text" value="<{$data['out_density']}>" name="out_density" id="out_density" onkeyup="checknum(this)" onblur="checkoutdensity(this)">
+                    </div>
+
+                </div>
+                <div  id="in_d" style="display: none;margin-right: 0px; padding-right: 0px;">
+
+                    <div class="formControls col-xs-9 col-sm-4" style="float: right;">
+                        <input class="input-text" value="<{$data['in_density']}>" name="in_density" id="in_density" onkeyup="checknum(this)" onblur="checkindensity(this)">
+                    </div>
+
+                    <label class="form-label col-xs-2" style="padding:0; float: right;">实际入库密度:</label>
+                </div>
+            </div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">出库单附件:</label>
+
+                <div class="formControls col-xs-10 col-sm-10 wu-example">
+                    <div class="yanzRight">
+                        <span class="btn-upload form-group" style="width: 100%">
+                            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly style=" width: 70%;"> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>
+                            <input style="margin-top:5px;float: left;" name="out_attachment" id="out_attachment" onchange="previewImage(this,1)" type="file" multiple name="file-1" class="input-file"/>
+                        </span>
+                        <span class="dui" style="display: none;"></span>
+                    </div>
+                    <div id="preview1" style="clear:both; padding-top:15px;">
+                        <img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">入库单附件:</label>
+
+                <div class="formControls col-xs-10 col-sm-10 wu-example">
+                    <div class="yanzRight">
+                        <span class="btn-upload form-group" style="width: 100%">
+                            <input class="input-text upload-url radius" type="text" name="uploadfile-2" id="uploadfile-2" readonly style=" width: 70%;"> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>
+                            <input style="margin-top:5px;float: left;" name="in_attachment" id="in_attachment" onchange="previewImage(this,2)" type="file" multiple name="file-2" class="input-file"/>
+                        </span>
+                        <span class="dui" style="display: none;"></span>
+                    </div>
+                    <div id="preview2" style="clear:both; padding-top:15px;">
+                        <img src="" alt="" id="imghead2" height="200" width="200" style="display:none;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$data.order.id}>"/>
+                <input type="hidden" id="allocation_type" name="allocation_type" value="<{$data.order.allocation_type}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="提交">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    //图片预览功能
+    function previewImage(file,imgNum)
+    {
+        var MAXWIDTH  = 200;
+        var MAXHEIGHT = 200;
+        var div = document.getElementById('preview'+imgNum);
+        if (file.files && file.files[0])
+        {
+            div.innerHTML ='';
+            var length=0;
+            //imgContent为图片展示的区域
+            var reader=new FileReader();
+            reader.readAsDataURL(file.files[length]);
+            //异步读取图片，读取完会触onload
+            reader.onload=function() {
+                div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";
+                var img = document.getElementById('imghead'+imgNum+'_'+length);
+                img.onload = function(){
+                    var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                    img.width  =  rect.width;
+                    img.height =  rect.height;
+                }
+                //多张预览，上传多张时开启
+//                length++;
+//                if (length < file.files.length) {
+//                    reader.readAsDataURL(file.files[length]);
+//                }
+            }
+        }
+        else //
+        {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead'+imgNum+'>';
+            var img = document.getElementById('imghead2');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+        }
+    }
+    function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+        var param = {top:0, left:0, width:width, height:height};
+        if( width>maxWidth || height>maxHeight )
+        {
+            rateWidth = width / maxWidth;
+            rateHeight = height / maxHeight;
+
+            if( rateWidth > rateHeight )
+            {
+                param.width =  maxWidth;
+                param.height = Math.round(height / rateWidth);
+            }else
+            {
+                param.width = Math.round(width / rateHeight);
+                param.height = maxHeight;
+            }
+        }
+        param.left = Math.round((maxWidth - param.width) / 2);
+        param.top = Math.round((maxHeight - param.height) / 2);
+        return param;
+    }
+    // @表单验证 <senpai | 2017.3.10>
+
+    var allocation_type = $('#allocation_type').val();
+    var out_t = $('#out_t');
+    var out_l = $('#out_l');
+    var in_t = $('#in_t');
+    var in_l = $('#in_l');
+    var out_d = $('#out_d');
+    var in_d = $('#in_d');
+    if(allocation_type == 1 ){
+        out_t.show();
+        in_t.show();
+        $("#actual_in_num").prop('disabled',true).addClass('disabled');
+        out_l.hide();
+        in_l.show();
+        out_d.hide();
+        in_d.show();
+    }else if(allocation_type == 2){
+        out_t.show();
+        in_t.show();
+        $("#actual_out_num").prop('disabled',true).addClass('disabled');
+        $("#actual_in_num").prop('disabled',true).addClass('disabled');
+        out_l.show();
+        in_l.show();
+        out_d.show();
+        in_d.show();
+    }else if(allocation_type == 3){
+        out_t.show();
+        in_t.show();
+        $("#actual_out_num").prop('disabled',true).addClass('disabled');
+        out_l.show();
+        in_l.hide();
+        out_d.show();
+        in_d.hide();
+    }else if(allocation_type == 4){
+        out_t.show();
+        in_t.show();
+        out_l.hide();
+        in_l.hide();
+        out_d.hide();
+        in_d.hide();
+    }
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证是否是数字（保留四位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留三位小数）
+    function checknum2(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{2}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //根据升数计算吨数
+    function checkoutliter() {
+        if ($("#actual_out_num_liter").val() && $("#out_density").val()) {
+            $("#actual_out_num").val(($("#out_density").val() * $("#actual_out_num_liter").val() /1000).toFixed(8));
+        }
+    }
+
+    //根据升数计算吨数
+    function checkinliter() {
+        if ($("#actual_in_num_liter").val() && $("#in_density").val()) {
+            $("#actual_in_num").val(($("#in_density").val() * $("#actual_in_num_liter").val() / 1000).toFixed(8));
+        }
+    }
+
+    //验证油品密度
+    function checkoutdensity(density) {
+        console.log($(density).val());
+        if ($.trim($(density).val()) < 0.7 || $.trim($(density).val()) > 1) {
+            layer.msg("油品密度超出规格！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            if ($("#actual_out_num_liter").val()) {
+                $("#actual_out_num").val(($(density).val() * $("#actual_out_num_liter").val() /1000).toFixed(8));
+            }
+            return true;
+        }
+    }
+
+    //验证油品密度
+    function checkindensity(density) {
+        console.log($(density).val());
+        if ($.trim($(density).val()) < 0.7 || $.trim($(density).val()) > 1) {
+            layer.msg("油品密度超出规格！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            if ($("#actual_in_num_liter").val()) {
+                $("#actual_in_num").val(($(density).val() * $("#actual_in_num_liter").val() / 1000).toFixed(8));
+            }
+            return true;
+        }
+    }
+
+    // @确认调拨单
+    $(function () {
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'pick_up_number': $("#pick_up_number").val(),
+                'actual_out_num': $.trim($("#actual_out_num").val()),
+                'actual_in_num': $.trim($("#actual_in_num").val()),
+                'actual_out_num_liter': $.trim($("#actual_out_num_liter").val()),
+                'actual_in_num_liter': $.trim($("#actual_in_num_liter").val()),
+                'allocation_type': $("#allocation_type").val(),
+                'out_density': $("#out_density").val(),
+                'in_density': $("#in_density").val(),
+            };
+
+            var formData = new FormData();
+            formData.append("stock_out_attachment",$("#out_attachment")[0].files[0]);
+            formData.append("stock_in_attachment",$("#in_attachment")[0].files[0]);
+            formData.append("id",da.id);
+            formData.append("pick_up_number",da.pick_up_number);
+            formData.append("actual_out_num",da.actual_out_num);
+            formData.append("actual_in_num",da.actual_in_num);
+            formData.append("actual_out_num_liter",da.actual_out_num_liter);
+            formData.append("actual_in_num_liter",da.actual_in_num_liter);
+            formData.append("allocation_type",da.allocation_type);
+            formData.append("out_density",da.out_density);
+            formData.append("in_density",da.in_density);
+
+            if(da.allocation_type == 1){
+                if(da.actual_out_num == ''){
+                    layer.msg('请输出实际出库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+                if(da.actual_in_num_liter == ''){
+                    layer.msg('请输入实际入库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            }else if(da.allocation_type == 2){
+                if(da.actual_out_num_liter == ''){
+                    layer.msg('请输出实际出库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+                if(da.actual_in_num_liter == ''){
+                    layer.msg('请输入实际入库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            }else if(da.allocation_type == 3){
+                if(da.actual_out_num_liter == ''){
+                    layer.msg('请输出实际出库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+                if(da.actual_in_num == ''){
+                    layer.msg('请输入实际入库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            }else if(da.allocation_type == 4){
+
+                if(da.actual_out_num == ''){
+                    layer.msg('请输出实际出库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+                if(da.actual_in_num == ''){
+                    layer.msg('请输入实际入库数量', {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            }
+            layer.load(1, {shade: 0.3});
+            $.ajax({
+                url : '<{:U("ErpNewAllocation/confirmAllocationOrder")}>',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(_data) {
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        top.searthesErpAllocationOrderList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(XMLHttpRequest);
+                    console.log('请求异常，请检查！');
+                }
+            });
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

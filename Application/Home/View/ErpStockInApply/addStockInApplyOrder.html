@@ -1,0 +1,403 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <!--<div class="tabBar cl">-->
+                <!--<span>基本信息</span>-->
+                <!--&lt;!&ndash;<span>付款信息</span>&ndash;&gt;-->
+            <!--</div>-->
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>来源单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_number}>"
+                                           id="source_number" name="source_number" maxlength="20" readonly />
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$data.order.add_order_time}>"
+                                           id="add_order_time" name="add_order_time" maxlength="20" readonly onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购员：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.buyer_dealer_name}>" placeholder=""
+                                           id="dealer_name" name="dealer_name" disabled>
+                                    <span id="sps5"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>用户：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="user_id" name="user_id" class="input-text" style="width:78%;">
+                                        <option value="<{$data['order']['sale_user_id']}>" selected="selected"><{$data['order']['s_user_name']}></option>
+                                    </select>
+                                    <span id="sps6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>供应商公司：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="company_id" name="company_id" class="input-text"
+                                            style="width:78%;">
+                                        <option value="<{$data['order']['sale_company_id']}>" selected="selected"><{$data['order']['b_company_name']}></option>
+
+                                    </select>
+                                    <span id="sps7"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>城市：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text" style="width:78%;">
+                                        <option value="<{$data['order']['region']}>" selected="selected"><{$data['order']['region_font']}></option>
+                                    </select>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>仓库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="storehouse_id" name="storehouse_id" class="input-text" style="width:78%;">
+                                        <option value="<{$data['order']['storehouse_id']}>" selected="selected"><{$data['order']['storehouse_name']}></option>
+                                    </select>
+                                    <span id="sps9"></span>
+                                    <input type="hidden" id="default_storehouse" name="default_storehouse" value="<{$data.order.storehouse_id}>">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>油库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="depot_id" name="depot_id" class="input-text" style="width:78%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="depots" id="vo" key="k">
+                                            <if condition="$data['order']['depot_id'] eq $vo['id']">
+                                                <option value="<{$vo.id}>" selected = "selected">
+                                                    <{$vo.depot_name}>
+                                                </option>
+                                            <else />
+                                                <option value="<{$vo.id}>">
+                                                    <{$vo.depot_name}>
+                                                </option>
+                                            </if>
+                                        </volist>
+                                    </select>
+                                    <span id="sps10"></span>
+                                    <input type="hidden" id="default_depot" name="default_depot" value="<{$data.order.depot_id}>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                                <select name="search_goods_code" class="input-text" style="width:93%" id="search_goods_code">
+                                    <option><{$data.order.goods_code}>/<{$data.order.goods_name}>/<{$data.order.source_from}>/<{$data.order.grade}>/<{$data.order.level}></option>
+                                </select>
+                                <span id="sps16"></span>
+                            </div>
+                            <input type="hidden" id="goods_code" name="goods_code" value="<{$data.order.goods_code}>">
+                            <input type="hidden" id="goods_id" name="goods_id" value="<{$data.order.goods_id}>">
+                            <input type="hidden" id="goods_name" name="goods_name" value="<{$data.order.goods_name}>">
+                            <input type="hidden" id="goods_from" name="goods_from" value="<{$data.order.source_from}>">
+                            <input type="hidden" id="goods_grade" name="goods_grade" value="<{$data.order.grade}>">
+                            <input type="hidden" id="goods_level" name="goods_level" value="<{$data.order.level}>">
+
+                            <input type="hidden" id="price" name="price" value="<{$data.order.price}>">
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>订单数量(吨)：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.goods_num}>" placeholder="" id="goods_num" name=" goods_num" onkeyup="checknum4(this)" maxlength="10" onblur="checkgoodsnum()">
+
+                                    <span id="sps20"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>待入数量(吨)：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.stock_not_in}>" placeholder="" id="stock_not_in" name="stock_not_in" onkeyup="checknum4(this)" maxlength="10">
+
+                                    <span id="sps22"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>申请入库数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="" placeholder="" id="apply_num" name="apply_num" onkeyup="checknum4(this)" maxlength="10" onblur="checkOutboundNum()">
+
+                                    <span id="sps23"></span>
+                                </div>
+                            </div>
+                             <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>可申请数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.may_apply_num}>" placeholder="" id="useNum" name="useNum" onkeyup="checknum4(this)" maxlength="10">
+
+                                    <span id="sps24"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                            <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px;">
+                                    <textarea id="remark" name="remark" style="height:100px;width:88%;"
+                                              class="input-text"></textarea>
+                                <span id="sps25"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row cl" style="margin-top:20px; margin-left: 80px;">
+                        <div class="row cl col-sm-6">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                                <input type="hidden" name="id" id="id" value="<{$data.order.id}>">
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                            </div>
+                        </div>
+                        <div class="row cl col-sm-6" style="margin-left: 20px;">
+                                <input class="btn btn-primary radius" id="cancelPage" type="button" value="退出">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    
+    
+
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        $('#remark,#apply_num,#depot_id,#attachment,#uploadfile-1,#DealerSaveBtn,#cancelPage').attr('disabled', false).removeClass('disabled');
+
+    });
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+
+        if ( $("#apply_num").val() == '' || $("#apply_num").val() == 0 ) {
+            layer.msg('请填写申请入库数量！', {icon: 2});
+            return false;
+        }
+        var formData = new FormData();
+        formData.append("purchase_order_id",$("#id").val());
+        formData.append("stock_in_apply_remark",$("#remark").val());
+        formData.append("apply_num",$("#apply_num").val());
+        formData.append("depot_id",$("#depot_id").val());
+        if (checkOutboundNum()) {
+            submitTrue();
+            layer.load(1, {shade: 0.3});
+
+            $.ajax({
+                url : '<{:U("ErpStockInApply/addStockInApplyOrder")}>',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(_data) {
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        parent.searchErpPurchaseOrderList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(XMLHttpRequest);
+                    console.log('请求异常，请检查！');
+                }
+            });
+        }
+    });
+
+    // 退出按钮
+    $('#cancelPage').click(function(){
+        layer.closeAll();
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        submitFalse();
+    })
+
+    //验证入库申请数量
+    function checkOutboundNum(){
+        var apply_num = $.trim($('#apply_num').val());
+        if (apply_num <= 0) {
+            checkfalse('sps23');
+            return false;
+        } else if (parseFloat(apply_num) > parseFloat($("#useNum").val())) {
+            layer.msg('申请入库数量不能大于可申请数量', {icon: 2});
+            checkfalse('sps23');
+            return false;
+        } else {
+            checktrue('sps23');
+            return true;
+        }
+    }
+
+    //选择油库（可复用）
+    var selectDepot2 = $("#depot_id").select2({
+        //allowClear: true
+        placeholder: '请选择油库',
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证可申请数量是否正确
+    function checkUseNum() {
+        if ($.trim($("#useNum").val()) == '') {
+            layer.msg("请输入数量！", {icon: 2});
+            checkfalse('sps24');
+
+            return false;
+        } else {
+            checktrue('sps24');
+            return true;
+        }
+    }
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

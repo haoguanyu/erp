@@ -1,0 +1,1019 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 90%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <!--<div class="tabBar cl">-->
+                <!--<span>基本信息</span>-->
+                <!--&lt;!&ndash;<span>付款信息</span>&ndash;&gt;-->
+            <!--</div>-->
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>来源单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.source_number}>"
+                                           id="source_number" name="source_number" maxlength="20" readonly />
+                                    <span id="sps2"></span>
+                                </div>
+                                <input type="hidden" name="stock_in_apply_id" id="stock_in_apply_id" value="<{$data.order.id}>">
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$data.order.add_order_time}>"
+                                           id="add_order_time" name="add_order_time" maxlength="20" readonly onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购员：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.buyer_dealer_name}>" placeholder=""
+                                           id="dealer_name" name="dealer_name" disabled>
+                                    <input type="hidden" id="dealer_id" name="dealer_id"
+                                           value="<{$data.order.buyer_dealer_id}>">
+                                    <span id="sps5"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>用户：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$data.order.user_name}>" placeholder=""
+                                           id="user_name" name="user_name" disabled>
+                                    
+                                    <span id="sps6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>公司：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$data.order.supplier_name}>" placeholder=""
+                                           id="company_name" name="company_name" disabled>
+                                    <span id="sps7"></span>
+                                    
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>城市：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text" style="width:78%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="region" id="vo" key="k">
+                                            <option value="<{$key}>" <if condition="$data['order']['region'] eq $key">selected</if>>
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>仓库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$data.order.storehouse_name}>" placeholder=""
+                                           id="company_name" name="company_name" disabled>
+                                    <span id="sps9"></span>
+                                    <input type="hidden" id="default_storehouse" name="default_storehouse" value="<{$data.order.storehouse_id}>">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>油库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.depot_name}>" placeholder=""
+                                           id="depot_name" name="depot_name" disabled>
+                                    <span id="sps10"></span>
+                                    <input type="hidden" id="depot_id" name="depot_id" value="<{$data.order.depot_id}>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px; width: 82%" >
+                                 <input type="text" class="input-text" value="<{$data.order.goods_name}>" placeholder=""
+                                           id="goods_name" name="goods_name" disabled>
+                                <span id="sps16"></span>
+                            </div>
+                            <input type="hidden" id="price" name="price" value="<{$data.order.price}>">
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>订单数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.goods_num}>" placeholder="" id="buy_num" name=" buy_num" onkeyup="checknum4(this)" maxlength="10" onblur="checkgoodsnum()">
+
+                                    <span id="sps20"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>待入数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.surplus_stock_num}>" placeholder="" id="no_outbound_quantity" name="no_outbound_quantity" onkeyup="checknum4(this)" maxlength="10">
+
+                                    <span id="sps22"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>申请入库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.storage_apply_num}>" placeholder="" id="storage_apply_num" name=" storage_apply_num">
+                                    <input type="hidden" name="applyCode" value = "<{$data.order.storage_apply_num}>" id = "apply_code">
+                                    <span id="sps26"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>是否代采:</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="checkbox" name="is_agent" id = "is_agent" <if condition="$data['order']['is_agent'] neq 1">checked</if>>
+                                    <span id="sps26"></span>
+                                </div>
+                            </div>     
+                        </div>
+                        <!-- 损耗 -->
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>是否损耗:</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                        <select id="is_loss" name="is_loss" class="input-text" style="width:78%;" onchange="isLoss();">
+                                            <option value="0">否</option>
+                                            <option value="1">是</option>
+                                        </select>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>是否配送:</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="checkbox" name="delivery_method" id = "delivery_method" <if condition="$data['order']['delivery_method'] eq 1">checked</if>>
+                                </div>
+                            </div>
+                        </div>     
+                        <!-- end -->
+                                
+                            
+                        
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>入库数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="0" placeholder="" id="storage_num" name="storage_num" disabled="">
+                                    <span id="sps23"></span>
+                                    <br/>
+                                    <span style="margin-top: 10px;color: red;font-weight: bold;">（数量编辑通过申请入库明细修改）</span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">密度：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="hidden" id="business_type" value="<{$data.order.business_type}>">
+                                    <input type="text" class="input-text" value="<{$data.order.good_density}>" placeholder="" id="storage_density" name="storage_density" onkeyup="checknum4(this)" onblur="checkdensity()" maxlength="10">
+                                    <br/>
+                                    <span style="margin-top: 10px;color: red;font-weight: bold;">(请输入0.7 ~ 1 之间的密度值)</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- 损耗 -->
+                        <div class="loss" style="display: none;">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>损耗数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="0" placeholder="" id="loss_all_num" name="loss_all_num" disabled="">
+                                    <span id="sps23"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>合理损耗比例(‰):</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <!-- 保留两位小数 -->
+                                    <select id="rational_loss_beliel" name="rational_loss_beliel" class="input-text" style="width:78%;" onchange="rationalLossBeliel(this)">
+                                        <volist name="data.lossRatio" id="vo" key="k">
+                                            <option value="<{$key}>"><{$vo}></option>
+                                        </volist>
+                                    </select>  
+                                </div>
+                            </div>
+                        </div>
+                         <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>合理损耗：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="0" placeholder="" id="rational_loss" name="rational_loss" disabled="">
+                                    <span id="sps23"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>超损数量:</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="0" placeholder="" id="supper_loss" name="supper_loss" onkeyup="" onblur="" maxlength="10">            
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <h5>申请入库明细</h5>
+                        <hr/>
+                        <br/>
+                        <!-- 暂用 -->
+                        <!-- <input class="btn btn-primary radius" id="reset_num" type="button" onclick = "lossAllCount()" value="计算"> -->
+                        <!-- 申请入库明细 -->
+                        <div class="row cl">
+                            <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+                                <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                                    <thead>
+                                    <tr class="text-c">
+                                        <th>货权类型</th>
+                                        <th>货权号</th>
+                                        <th>入库数量</th>
+                                    <!-- 损耗 -->
+                                        <th>损耗数量</th>
+                                        <th>合理损耗</th>
+                                        <th>超损数量</th>
+                                    <!-- end -->
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="text-c" id="stock_in_arr">
+                                      <!--   <th><input type="checkbox" ></th>
+                                        <th>123</th> -->
+                                        <th>
+                                             <select name="cargo_bn_type" class="input-text" id="cargo_bn_type" style="font-weight: normal;">
+                                                <option value=''>请选择</option>
+                                                <volist name="data.cargo_bn_type" id="vo" key="k">
+                                                    <option value='<{$vo.id}>'><{$vo.name}></option>
+                                                </volist>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <input type="text" class="input-text" value="" placeholder="" id="cargo_bn" style="font-weight: normal;">
+                                        </th>
+
+                                        <th onclick="clickStockInNum(this)">
+                                            <span class="stockInNum" style="font-size: 15px; font-weight: normal;"  >
+                                                0
+                                            </span>
+                                            <input style="display: none; font-weight: normal; width: 50%;" type="text" class="input-text" value="0" id ="stock_in_num" name="stock_in_num" onkeyup="checknum4(this)"/ >
+                                        </th>
+                                        <!-- 损耗 -->
+                                        <th onclick="clickLoosNum(this)">
+                                            <span class="loosNum" style="font-size: 15px; font-weight: normal;" >
+                                                0
+                                            </span>
+                                            <input type="text" class="input-text" id="loss_num" name="loss_num" value="0" placeholder="" style="display: none; font-weight: normal; width: 40%;" onkeyup="handleLossNum(this)">
+                                            <!-- <span>0</span> -->
+                                        </th>
+                                        <!-- 合理损耗 -->
+                                        <th onclick="clickRationalLoss(this)">
+                                            <span class="rational_loss" style="font-size: 15px; font-weight: normal;">0</span>
+                                            <input type="text" class="input-text" id="rational_loss" name="rational_loss" value="0" placeholder="" style="display: none; font-weight: normal; width: 40%;" onkeyup="checknum4(this)">
+                                        </th>
+                                        <!-- 超损 -->
+                                        <th onclick="clickSupperLoss(this)">
+                                            <span class="supper_loss" style="font-size: 15px; font-weight: normal;" >0</span>
+                                            <input type="text" class="input-text" id="supper_loss" name="supper_loss" value="0" placeholder="" style="display: none; font-weight: normal; width: 40%;" onkeyup="checknum4(this)">
+                                        </th>
+                                        <!-- end -->
+                                        <th>
+                                              <span><a href="javascript:;" onclick="addStockInArr(this);" id="add_stock_in_arr" class="btn btn-primary radius check_access" value="ErpGoods-showAddErpGoods"><i class="Hui-iconfont"></i>+</a>&nbsp;</span><!--&#xe600;-->
+                                             <span><a href="javascript:;" onclick="delStockInArr(this);" id="del_stock_in_arr" class="btn btn-primary radius check_access delUser" value="ErpGoods-showAddErpGoods"><i class="Hui-iconfont"></i>-</a>&nbsp;</span>
+                                        </th>
+                                    </tr>    
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
+                        <!-- 结束 -->
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                            <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px;">
+                                    <textarea id="remark" name="remark" style="height:100px;width:88%;"
+                                              class="input-text"></textarea>
+                                <span id="sps24"></span>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+                    <div class="row cl" style="margin-top:20px; margin-left: 100px;">
+                        <div class="row cl col-sm-6">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                                <input type="hidden" name="stock_in_apply_id" id="stock_in_apply_id" value="<{$data.order.id}>">
+                                <!-- 暂用 -->
+                                <!-- <input type="hidden" name="rational_loss_all_num" id="rational_loss_all_num"> -->
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+
+                            </div>
+                        </div>
+                        <div class="row cl col-sm-6">
+                             <input class="btn btn-primary radius" id="cancelPage" type="button" value="退出">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        // $('#remark,#outbound_density,#outbound_num,#depot_id,#attachment,#uploadfile-1,#DealerSaveBtn,#reset_num').attr('disabled', false).removeClass('disabled');
+        if ( $("#delivery_method").attr("checked") != undefined ) {
+            $('#is_loss').attr('disabled', false).removeClass('disabled');
+        }
+        
+        if ( $("#business_type").val() == 4 ) {
+            $('#remark,#depot_id,#attachment,#DealerSaveBtn,#reset_num,#cargo_bn,#cargo_bn_type,#stock_in_num,#cancelPage').attr('disabled', false).removeClass('disabled');
+        } else {
+            $('#remark,#storage_density,#depot_id,#attachment,#DealerSaveBtn,#reset_num,#cargo_bn,#cargo_bn_type,#stock_in_num,#cancelPage').attr('disabled', false).removeClass('disabled');
+        }
+    });
+   
+    // 退出页面
+    $('#cancelPage').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        submitFalse();
+    })
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        // 损耗比列
+        var rational_loss_beliel = $('#rational_loss_beliel').val();
+        var stock_in_arr = [];
+        var tr = $('tr[id="stock_in_arr"]');
+        var i = 0;
+        var if_alert = 0;
+        tr.each(function(i){
+            var cargo_bn = $(this).find("#cargo_bn").val();
+            var cargo_bn_type = $(this).find("#cargo_bn_type").val();
+            var stock_in_num = $(this).find("#stock_in_num").val();
+            // 损耗
+            var loss_num     = $(this).find("#loss_num").val();
+            var rational_loss = $(this).find(".rational_loss").html();
+            var supper_loss = $(this).find(".supper_loss").html();
+            // end
+            // 正常计算得出的合理损耗
+            var rational_loss_now = decimal((Number(stock_in_num)+Number(loss_num))*rational_loss_beliel/1000,4);
+            if ( rational_loss > rational_loss_now ) {
+                if_alert = 1;
+            }
+            stock_in_arr[i] = {
+                "cargo_bn"      : cargo_bn,
+                "cargo_bn_type" : cargo_bn_type,
+                "stock_in_num"  : stock_in_num,
+                "loss_num"      : loss_num,
+                "rational_loss" : rational_loss,
+                "supper_loss"   : supper_loss,
+            };
+            i++;
+        });
+
+        for (var b = 0; b <= stock_in_arr.length - 1; b++) {
+            if (stock_in_arr[b].cargo_bn == '') {
+                layer.msg('货权号不能为空！', {icon: 2});
+                return false;
+            }
+            if (stock_in_arr[b].cargo_bn_type == 0) {
+                layer.msg('货权类型不能为空！', {icon: 2});
+                return false;
+            }
+            if (stock_in_arr[b].stock_in_num == 0) {
+                layer.msg('入库数量不能为空', {icon: 2});
+                return false;
+            }
+        }
+        
+        var stock_in_apply_id = $("#stock_in_apply_id").val();
+        var storage_density   = $("#storage_density").val();
+        var d = $.trim($('#storage_density').val());
+        if(d > 0){
+            if (d < 0.7 || d > 1 || isNaN(d)) {
+                layer.msg("请输入正确的密度！", {icon: 2});
+                $('#storage_density').val('')
+                return false;
+            }
+        }
+        var remark = $("#remark").val();
+        var data = {
+            "stock_in_arr" : stock_in_arr,
+            "stock_in_apply_id" : stock_in_apply_id,
+            "storage_density" : storage_density,
+            "storage_remark":remark,
+            "rational_loss_beliel" : rational_loss_beliel,
+            "is_loss" : $('#is_loss').val(),
+        };
+        if ( $('#is_loss').val() == 1 ) {
+            if ( if_alert == 1 ) {
+                layer.confirm('合理损耗将大于原单理论损耗，是否确认！', {
+                    btn: ['确定', '取消']
+                }, function () {
+                    postAddStockInOrder(data);
+                });
+                return false;
+            }
+            postAddStockInOrder(data);
+        } else {
+            postAddStockInOrder(data);
+        }
+       
+    });
+
+    function postAddStockInOrder(data){
+        submitTrue();
+        layer.load(1, {shade: 0.3});
+        var url = '<{:U("ErpStockInApply/addStockInOrder")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = data;
+
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 1});
+                parent.searchErpStockInApplyList(true);
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    submitFalse();
+                }, 500);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                submitFalse();
+                return false;
+            }
+        });
+    }
+
+    function clickStockInNum(obj){
+        var num = $(obj).parents('#stock_in_arr').find('th').eq(2).find('span').html();
+        $(obj).parents('#stock_in_arr').find('th').eq(2).find('span').hide();
+        $(obj).parents('#stock_in_arr').find('th').eq(2).find('input').show().val($.trim(num)).focus();
+    }
+
+    function clickLoosNum(obj){
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            var num = $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').html();
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').hide();
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('input').show().val($.trim(num)).focus();
+        }  
+    }
+
+    function clickRationalLoss(obj){
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            var num = $(obj).parents('#stock_in_arr').find('th').eq(4).find('span').html();
+            $(obj).parents('#stock_in_arr').find('th').eq(4).find('span').hide();
+            $(obj).parents('#stock_in_arr').find('th').eq(4).find('input').show().val($.trim(num)).focus();
+        }  
+    }
+
+    function clickSupperLoss(obj){
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            var num = $(obj).parents('#stock_in_arr').find('th').eq(5).find('span').html();
+            $(obj).parents('#stock_in_arr').find('th').eq(5).find('span').hide();
+            $(obj).parents('#stock_in_arr').find('th').eq(5).find('input').show().val($.trim(num)).focus();
+        }  
+    }
+
+    /*
+    // 计算 （暂停使用）
+    function lossAllCount(){
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            var is_rational_loss_beliel = $('#rational_loss_beliel').val();
+            if ( is_rational_loss_beliel == 0 || is_rational_loss_beliel == '' ) {
+                layer.msg('请先选择损耗比列！', {icon: 2});
+                return false;
+            }
+            var storage_num = $('#storage_num').val();
+            var loss_num    = $('#loss_all_num').val();
+            var rational_loss_beliel = $('#rational_loss_beliel').val() / 1000;
+            var all_rational_loss = decimal((Number(storage_num) + Number(loss_num))*rational_loss_beliel,4);
+            var all_num = 0;
+            $('tr[id="stock_in_arr"]').each(function(){
+                // 损耗数量
+                var loss_num = $(this).find("#loss_num").val();
+                if ( loss_num >= all_rational_loss ) {
+                    now_rational_loss = all_rational_loss;
+                } else {
+                    now_rational_loss = loss_num;
+                }
+                all_num += + Number(now_rational_loss);
+                var next_rational_loss = all_rational_loss - now_rational_loss;
+                $(this).find(".rational_loss").html(now_rational_loss);
+                $(this).find("#rational_loss").val(now_rational_loss);
+                var supper_loss = decimal(loss_num - now_rational_loss,4);
+                if ( now_rational_loss == 0 ) {
+                    supper_loss = 0;
+                }
+                $(this).find(".supper_loss").html(supper_loss);
+                $(this).find("#supper_loss").val(supper_loss);
+                all_rational_loss = next_rational_loss;
+                countLossNum($(this).find('th').eq(3).find('input'));
+            });
+            lossNumAll();
+            $('#rational_loss_all_num').val(decimal(all_num,4));
+        }
+    } 
+    */
+
+    $('.table-sort tbody').on('blur', 'tr', function () {
+            // 当前损耗数量
+            var loss_num = parseFloat($(this).find('th').eq(3).find('input').val());
+            // 当前合理损耗数量
+            var rational_loss = parseFloat($(this).find('th').eq(4).find('input').val());
+            // 当前超损数量
+            var supper_loss = parseFloat($(this).find('th').eq(5).find('input').val());
+            var supper_rational_loss = decimal(Number(supper_loss) + Number(rational_loss),4);
+            // if ( rational_loss != 0 || supper_loss != 0 ) {
+                if ( (Number(rational_loss) < Number(loss_num) || Number(rational_loss) == Number(loss_num)) && (Number(rational_loss) != Number($(this).find('th').eq(4).find('span').html()) )) {
+                    console.log('超损');
+                    supper_loss = decimal(loss_num - rational_loss,4);
+                    console.log(loss_num+'-'+rational_loss+'='+supper_loss);
+                } else if ( Number(rational_loss) > Number(loss_num) && Number(rational_loss) != Number($(this).find('th').eq(4).find('span').html()) ) {
+                    console.log('合理损耗对比：input = '+rational_loss+'span = '+$(this).find('th').eq(4).find('span').html());
+                    layer.msg('合理损耗不能大于损耗数量！', {icon: 2});
+                    rational_loss = 0;
+                    supper_loss = 0;
+                } else if ( supper_loss > loss_num && (Number(supper_loss) != Number($(this).find('th').eq(5).find('span').html())) ) {
+                    layer.msg('请填写正确的超损数量！', {icon: 2});
+                    rational_loss = 0;
+                    supper_loss = 0;
+                } else if ( (Number(supper_loss) != Number($(this).find('th').eq(5).find('span').html())) ) {
+                    console.log('合理损耗');
+                    rational_loss = decimal(loss_num - supper_loss,4);
+                    console.log(loss_num+'-'+supper_loss+'='+rational_loss);
+                }
+            // }
+            $(this).find('th').eq(4).find('input').hide().val(rational_loss);
+            $(this).find('th').eq(4).find('span').show().html(rational_loss);
+            $(this).find('th').eq(5).find('input').hide().val(supper_loss);
+            $(this).find('th').eq(5).find('span').show().html(supper_loss);
+            lossNumAll();
+            
+            // 获取当前数量
+            var stock_in_num = parseFloat($(this).find('th').eq(2).find('input').val());
+            // 计算损耗数量
+            if ( (stock_in_num != 0 || stock_in_num != '' || loss_num != 0 || loss_num != '') ) {
+                countLossNum($(this).find('th').eq(3).find('input'));
+                // countLossNum($(this));
+            }
+            if ( loss_num == 0 ) {
+                $(this).find('th').eq(4).find('span').html(0);
+                $(this).find('th').eq(5).find('span').html(0);
+                lossNumAll();
+            }
+            //申请入库数量
+            var storage_apply_num = parseFloat($("#storage_apply_num").val());
+
+            // 判断是否为数字
+            var patrn = /^(-)?\d+(\.\d+)?$/;
+            if (patrn.exec(stock_in_num) == null || stock_in_num == "" && stock_in_num != 0) {
+                stock_in_num = 0;
+                $(this).find('th').eq(2).find('input').val(0);
+                layer.msg('入库数量必须为数字！', {icon: 2});
+            }
+
+            // 判断 是否为负数
+            if ( stock_in_num < 0 ) {
+                stock_in_num = 0;
+                $(this).find('th').eq(2).find('input').val(0);
+                layer.msg('入库数量必须为正整数！', {icon: 2});
+            }
+
+            //批次出库数量合计
+            var allstock_in_num = allStockInNum();
+            var all_loss_num = allLossNum();
+            var all_num = (Number(allstock_in_num) + Number(all_loss_num)).toFixed(4);
+            if ( all_num > storage_apply_num ) {
+                stock_in_num = 0
+                $(this).find('th').eq(2).find('input').val(0);
+                if ( Number(all_loss_num) <= 0 ) {
+                    layer.msg('入库数量不能大于申请入库数量！', {icon: 2});  
+                } else {
+                    layer.msg('入库数量+损耗数量不能大于申请入库数量！', {icon: 2}); 
+                }
+                $('#storage_num').val(allStockInNum());
+            } else {
+                $('#storage_num').val(allstock_in_num);
+            }
+            $(this).find('th').eq(2).find('span').show().html(stock_in_num);
+            $(this).find('th').eq(2).find('input').hide();
+    });
+
+    // 计算损耗数量 （合理损耗 及 超损）
+    function countLossNum(obj){
+
+        var stock_in_num = $(obj).parents('#stock_in_arr').find("#stock_in_num").val();
+        if ( stock_in_num == '' || stock_in_num == 0 ) {
+            $(obj).parents('#stock_in_arr').find(".loosNum").html(0);
+            $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            lossNumAll();
+            layer.msg('请先填写入库数量！', {icon: 2});
+            return false;
+        }
+        
+        var objNum = $(obj).parents('#stock_in_arr').find("#loss_num").val();
+        if ( Number(objNum) >= Number(stock_in_num) )  {
+            $(obj).parents('#stock_in_arr').find(".loosNum").html(0);
+            $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            lossNumAll();
+            layer.msg('损耗数量不能大于等于入库数量！', {icon: 2});
+            var loss_num_now = 0;
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').show().html(loss_num_now);
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('input').hide().val(loss_num_now);
+            return false;
+        }
+        if ( objNum == 0 || objNum == '') {
+            $(obj).parents('#stock_in_arr').find(".loosNum").html(0);
+            $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            lossNumAll();
+            var loss_num_now = 0;
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').show().html(loss_num_now);
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('input').hide().val(loss_num_now);
+            return false;
+        }
+        var rational_loss_beliel = $('#rational_loss_beliel').val();
+        if ( rational_loss_beliel == 0 || rational_loss_beliel == '' ) {
+            $(obj).parents('#stock_in_arr').find(".loosNum").html(0);
+            $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            lossNumAll();
+            layer.msg('合理损耗比列为空！', {icon: 2});
+            return false;
+        }
+
+        //申请入库数量
+        var storage_apply_num = parseFloat($("#storage_apply_num").val());
+        
+        var allstock_in_num = allStockInNum();
+        var all_loss_num = allLossNum();
+        var all_num = (Number(allstock_in_num) + Number(all_loss_num)).toFixed(4);
+
+        if (  all_num > storage_apply_num ) {
+            $(obj).parents('#stock_in_arr').find(".loosNum").html(0);
+            $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            lossNumAll();
+            layer.msg('入库数量+损耗数量不能大于申请入库数量！', {icon: 2});
+            return false;
+        }
+
+        if ( Number(stock_in_num) != 0 && Number(stock_in_num) < 0.1 && (Number(objNum) != 0 || objNum != '') ) {
+            loss_num = 0;
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+            layer.msg('入库数量 < 0.1 不允许录入损耗数量！', {icon: 2});
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').show().html(loss_num);
+            $(obj).parents('#stock_in_arr').find('th').eq(3).find('input').hide().val(loss_num);
+            return false;
+        }
+        
+        // 合理损耗
+        var loss_num_now = $(obj).parents('#stock_in_arr').find("#loss_num").val();
+        var all_stock_num = Number(stock_in_num)+Number(loss_num_now)
+        var rational_loss = decimal(all_stock_num*(rational_loss_beliel/1000),4);
+        // 超损
+        var supper_loss = decimal((loss_num_now-rational_loss),4);
+        // 超损数量如果小于 0 默认 为 0
+        if ( supper_loss < 0 ) {
+            supper_loss = 0;
+        }
+        // 如果 合理损耗 大于 损耗数量
+        if ( Number(rational_loss) > Number(loss_num_now) ) {
+            rational_loss = loss_num_now;
+        }
+        var is_rational_loss = $(obj).parents('#stock_in_arr').find("#rational_loss").val();
+        var is_supper_loss = $(obj).parents('#stock_in_arr').find("#supper_loss").val();
+        if ( Number(loss_num_now) != Number($(obj).parents('#stock_in_arr').find(".loosNum").html()) || 
+             Number(stock_in_num) != Number($(obj).parents('#stock_in_arr').find(".stockInNum").html()) ) {
+            // console.log('哇塞'+loss_num_now+'--'+Number($(obj).parents('#stock_in_arr').find(".loosNum").html()));
+            $(obj).parents('#stock_in_arr').find(".rational_loss").html(rational_loss);
+            $(obj).parents('#stock_in_arr').find("#rational_loss").val(rational_loss);
+            $(obj).parents('#stock_in_arr').find(".supper_loss").html(supper_loss);
+            $(obj).parents('#stock_in_arr').find("#supper_loss").val(supper_loss);
+        }
+        $(obj).parents('#stock_in_arr').find('th').eq(3).find('span').show().html(loss_num_now);
+        $(obj).parents('#stock_in_arr').find('th').eq(3).find('input').hide().val(loss_num_now);
+        lossNumAll();
+    }
+
+    // 隐藏第一个减少按钮
+    hiddenFirstDel();
+    function hiddenFirstDel() {
+        $('#del_stock_in_arr').eq(0).hide();
+    }
+
+    // 添加按钮
+    function addStockInArr(obj)
+    {
+        var stock_in_arr = $(obj).parents('#stock_in_arr');
+        var stock_in_arr_clone = stock_in_arr.clone();
+        stock_in_arr_clone.find("#cargo_bn").val('');
+        stock_in_arr_clone.find(".stockInNum").html(0);
+        stock_in_arr_clone.find("#stock_in_num").val(0);
+        // 损耗
+        stock_in_arr_clone.find("#loss_num").val(0);
+        stock_in_arr_clone.find(".rational_loss").html(0);
+        stock_in_arr_clone.find(".supper_loss").html(0);
+        stock_in_arr_clone.find(".loosNum").html(0);
+        stock_in_arr_clone.find("#rational_loss").val(0);
+        stock_in_arr_clone.find("#supper_loss").val(0);
+        // end
+        stock_in_arr_clone.find("#del_stock_in_arr").show();
+        stock_in_arr.after(stock_in_arr_clone);
+    }
+
+    // 减少按钮
+    function delStockInArr(obj) {
+        var num = $("[id=del_stock_in_arr]").length;
+        if ( num == 1 ) {
+            return false;
+        }
+        $(obj).parents('#stock_in_arr').find("#stock_in_num").val(0);
+        $(obj).parents('#stock_in_arr').find("#loss_num").val(0);
+        $(obj).parents('#stock_in_arr').find(".rational_loss").html(0);
+        $(obj).parents('#stock_in_arr').find(".supper_loss").html(0);
+        $(obj).parents('#stock_in_arr').find("#rational_loss").val(0);
+        $(obj).parents('#stock_in_arr').find("#supper_loss").val(0);
+        lossNumAll();
+        var allstock_in_num = allStockInNum();
+        $('#storage_num').val(allstock_in_num);
+        $(obj).parents('#stock_in_arr').remove();
+    }
+
+    // 计算总的 入库数量
+    function allStockInNum(){
+        var inputs = $('input[name="stock_in_num"]');//找到div里面所有的input
+        var use_batch_num = 0;
+        inputs.each(function(){
+            use_batch_num +=  + (this.value*10);//值转换为number，然后相加
+        });
+        var allstock_in_num = use_batch_num/10;
+        return allstock_in_num.toFixed(4);
+    }
+
+    // 获取总的 损耗数量
+    function allLossNum(){
+        var inputs = $('input[name="loss_num"]');//找到div里面所有的input
+        var use_batch_num = 0;
+        inputs.each(function(){
+            use_batch_num +=  + (this.value*10);//值转换为number，然后相加
+        });
+        var all_loss_num = use_batch_num/10;
+        return all_loss_num.toFixed(4);
+    }
+
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+
+    
+    var selectUsers = $("#region").select2({
+        placeholder: '请选择城市',
+
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+
+    // 是否损耗
+    function isLoss() {
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            $('.loss').show();
+            $('#rational_loss_beliel').attr('disabled', false).removeClass('disabled');
+            // $("#loss_num").attr('disabled', false).removeClass('disabled');
+            $('tr[id="stock_in_arr"]').each(function(){
+                $(this).find('#loss_num').attr('disabled', false).removeClass('disabled');
+                $(this).find('#rational_loss').attr('disabled', false).removeClass('disabled');
+                $(this).find('#supper_loss').attr('disabled', false).removeClass('disabled');
+            })
+        }
+
+        if ( is_loss == 0 ) {
+            $('#rational_loss_beliel').val(0);
+            $('#rational_loss_beliel').attr('disabled', true).addClass('disabled');
+            $('tr[id="stock_in_arr"]').each(function(){
+                $(this).find("#loss_num").val(0);
+                $(this).find("#rational_loss").val(0);
+                $(this).find("#supper_loss").val(0);
+                $(this).find("#loss_num").attr('disabled', true).addClass('disabled');
+                $(this).find("#rational_loss").attr('disabled', true).addClass('disabled');
+                $(this).find("#supper_loss").attr('disabled', true).addClass('disabled');
+                $(this).find(".rational_loss").html(0);
+                $(this).find(".supper_loss").html(0);
+
+                $(this).find("#loss_all_num").val(0);
+                $(this).find("#supper_loss").val(0);
+                $(this).find("#rational_loss").val(0);
+            })
+            $('.loss').hide();
+        }
+    }
+
+    // 损耗比列变更
+    function rationalLossBeliel(obj){
+        $('tr[id="stock_in_arr"]').each(function(){
+            $(this).find("#loss_num").val(0);
+            $(this).find(".loosNum").html(0);
+            $(this).find("#rational_loss").val(0);
+            $(this).find("#supper_loss").val(0)
+            $(this).find(".rational_loss").html(0);
+            $(this).find(".supper_loss").html(0)
+        });
+        $('#loss_all_num').val(0);
+        $('#rational_loss').val(0);
+        $('#supper_loss').val(0);
+    }
+
+    // 处理损耗
+    function handleLossNum(obj) {
+        checknum4(obj)
+    }
+
+    function decimal(num,v){
+        var vv = Math.pow(10,v);
+        return Math.round(num*vv)/vv;
+    }
+
+    // 获得总损耗数量
+    // 获得总合理损耗
+    // 获得总超损数量
+    function lossNumAll(){
+        var loss_all_num = 0;
+        var rational_loss_all_num = 0;
+        var supper_loss_all_num = 0;
+        $('tr[id="stock_in_arr"]').each(function(){
+            loss_all_num += + $(this).find("#loss_num").val();
+            rational_loss_all_num += + $(this).find(".rational_loss").html();
+            supper_loss_all_num += + $(this).find(".supper_loss").html();
+        })
+        $("#loss_all_num").val(loss_all_num.toFixed(4))
+        $("#rational_loss").val(rational_loss_all_num.toFixed(4))
+        $("#supper_loss").val(supper_loss_all_num.toFixed(4))
+    }
+
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+
+    //验证密度是否正确
+    function checkdensity() {
+        var d = $.trim($('#storage_density').val());
+        if(d > 0){
+            if (d < 0.7 || d > 1 || isNaN(d)) {
+                layer.msg("请输入正确的密度！", {icon: 2});
+                $('#storage_density').val('')
+                checkfalse('sps25');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps25');
+                return true;
+            }
+        }else{
+            checktrue('sps25');
+            return true;
+        }
+
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

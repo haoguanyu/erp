@@ -1,0 +1,797 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 采购管理 <span class="c-gray en">&gt;</span> 入库单管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <input type="text" class="input-text" style="width:20%;" name="storage_code" id="storage_code" value="" placeholder="入库单号" />
+
+                <input type="text" class="input-text" style="width:20%;" name="source_number" id="source_number" value="" placeholder="来源单号" />
+
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+            </div>
+
+            <div class="mt-10">
+               <!--  <span class="ml-10">商品代码：　　</span> -->
+                <select name="goods_code" id="goods_code" class="input-text" style="width:40.3%">
+                    <option value="0">商品代码</option>
+                    <volist name="data.erpGoods" id="vo" key="k">
+                        <option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>
+                    </volist>
+                </select>
+                <!--<input type="text" class="input-text" style="width:12%;" name="goods_code" id="goods_code" value=""/>-->
+
+                <input type="text" name="examine_start_time" id="examine_start_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始审核时间" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <input type="text" name="examine_end_time" id="examine_end_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始审核时间" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+            </div>
+
+            <div class="mt-10">
+                <select name="province" class="input-text" style="width:20%" id="search_province" onchange="changeCity(this.value)">
+                    <optgroup label="城市列表">
+                        <option value="0">全部省份</option>
+                        <volist name="data.provinceList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+                <select name="region" class="input-text" style="width:20%;" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                    </optgroup>
+                </select>
+                <select id="storage_status" name="storage_status" class="input-text" style="width:20%">
+                    <option value="">订单状态</option>
+                    <option value="1">未审核</option>
+                    <option value="2">已取消</option>
+                    <option value="10">已审核</option>
+                </select>
+
+                <select id="storage_type" name="storage_type" class="input-text" style="width:20%">
+                    <option value="">单据类型</option>
+                    <volist name="data.order_type" id="vo" key="k">
+                        <option value="<{$k}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <input type="hidden" name="def" value="2">
+            </div>
+            <div class="mt-10">
+                <select id="finance_status" name="finance_status" class="input-text" style="width:20%">
+                    <option value="">财务核对状态</option>
+                    <option value="1">未核对</option>
+                    <option value="2">已驳回</option>
+                    <option value="10">已核对</option>
+                </select>
+                <select id="attachment" name="attachment" class="input-text" style="width:20%">
+                    <option value="">是否上传附件</option>
+                    <option value="1">未上传</option>
+                    <option value="10">已上传</option>
+                </select>
+                <input type="text" class="input-text" style="width:20%;" name="source_apply_number" id="source_apply_number" value="" placeholder="来源申请单"/>
+                <input type="text" class="input-text" style="width:20%;" name="batch_sys_bn" id="batch_sys_bn" value="" placeholder="系统批次号"/>
+                <!-- <span class="ml-10">货权号：　　  &nbsp;&nbsp; </span>
+                <input type="text" class="input-text" style="width:12%;" name="cargo_bn" id="cargo_bn" value=""/> -->
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20" id="hide" style="display: none">
+        <span class="l"><a href="javascript:;" onclick="erpstockin_update('编辑', '<{:U(\'ErpStock/showUpdateErpStockIn\')}>', '', '800','550')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe6df;</i>编辑</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpstockin_delete('取消')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>取消</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpstockin_audit('审核')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>审核</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="finance_edit('财务编辑', '<{:U(\'ErpStock/updateErpStockInPrice\')}>')"
+                           class="btn btn-primary radius check_access" value="ErpStock-updateErpStockIn"><i class="Hui-iconfont"></i>财务编辑</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="finance_confirm()" class="btn btn-success radius check_access" value="ErpStockIn-financialConfirm">财务核对</a></span>
+        <span class="l"><a href="javascript:;" onclick="financialRejection()" class="btn btn-danger radius check_access" value = "ErpStockIn-financialRejection"><i class="Hui-iconfont"></i>财务驳回</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="stock_in_reverse()" class="btn btn-danger radius check_access" value="ErpStock-reverseStockIn">入库红冲</a></span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <th>订单日期</th>
+                <th>入库单号</th>
+                <th>来源申请单号</th>
+                <th>来源单号</th>
+                <th>单据类型</th>
+                <th>是否团内</th>
+                <th>城市</th>
+                <th>仓库</th>
+                <th>服务商</th>
+                <th>加油网点</th>
+                <th>交易员</th>
+                <th>客户</th>
+                <th>公司名称</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>商品标注</th>
+                <th>入库数量</th>
+                <th>实际入库数量</th>
+                <th>订单状态</th>
+                <th>财务审核状态</th>
+                <th>单价</th>
+                <th>审核时间</th>
+                <th>审核人</th>
+                <th>备注</th>
+                <th>附件</th>
+                <th>系统批次</th>
+                <th>货权号</th>
+                <th>是否损耗</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                 <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                 <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    $("#hide").css('display','block');
+    getCheckAccess();
+    /** end 控制权限  **/
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpStock/erpStockInList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" /><input type="hidden" value="' + data.status + '">';
+                }
+            },
+            {"data": "id"},
+            {"data": "create_time"},
+            {"data": "storage_code"},
+            {"data": "source_apply_number"},
+            {"data": "source_number"},
+            {"data": "storage_type_font"},
+            {'data': "is_inner"},
+            {"data": "region_font"},
+            {"data": "storehouse_name"},
+            {"data": "facilitator_name"},
+            {"data": "facilitator_skid_name"},
+            {"data": "sale_dealer_name"},
+            {"data": "user_name"},
+            {"data": "company_name"},
+            {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "label"},
+            {"data": "storage_num"},
+            {"data": "actual_storage_num"},
+            {"data": "storage_status"},
+            {"data": "finance_status"},
+            {"data": "price"},
+            {"data": "audit_time"},
+            {"data": "auditor"},
+            {"data": "storage_remark"},
+            {
+                "data": null,
+                render: function (data, type, full, meta) {
+                    var str = '';
+                    var attachment = data.attachment;
+                    if (attachment == '已上传') {
+                        str += '<a href="javascript:;" title="' + attachment + '"  class="c-primary" onclick="attachment_detail(\'附件详情\',\'<{:U(\"/ErpStock/attachmentDetail\")}>\',' + data.id + ',1000,500)">' + attachment + '</a>';
+                    } else {
+                        str += attachment;
+                    }
+                    return str;
+                }
+            },
+            {"data":"batch_sys_bn"},
+            {"data":"cargo_bn"},
+            {"data":"is_loss"},
+        ],
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                $('#sum_total th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }else{
+                var total_storage_num = data[0].sumTotal['total_storage_num'];
+                var total_actual_storage_num = data[0].sumTotal['total_actual_storage_num'];
+                $('#sum_total th').eq(21).html(parseFloat(total_storage_num).toFixed(4));
+                $('#sum_total th').eq(22).html(parseFloat(total_actual_storage_num).toFixed(4));
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            //Total over all pages
+
+            for(i=0;i<23;i++){
+                if(i == 0){
+                    continue;
+                }
+
+                if(i < 21 || i > 22){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                $(api.column(i).footer()).html(
+                    '' + parseFloat(pageTotals).toFixed(4)
+                );
+            }
+        }
+    });
+
+    var selectGoodsCode = $("#goods_code").select2({
+        placeholder: '请选择商品',
+        language: "zh-CN",
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectProvince = $("#search_province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var city2 = <{$data.city2}>;
+
+    /*入库单-编辑*/
+    function erpstockin_update(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            layer.load(1, {shade: 0.3});
+            var id = $('.checkchild:checked').val();
+            var check_url = '<{:U("ErpStock/getStockInInfo")}>';
+            var type = 'post';
+            var dataType = 'json';
+            ajax(check_url, {id:id,confirm_type:1}, type, dataType, function (_data) {
+                layer.closeAll();
+                if (_data.storage_type == 2) {
+                    layer.msg('调拨单对应入库单不允许编辑', {icon: 2});
+                    return false;
+                } else {
+                    url = url + '/id/' + id;
+                    layer_show(title, url, w, h);
+                }
+            })
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*入库单-取消*/
+    function erpstockin_delete(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/actDeleteErpStockIn")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否取消！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchErpStockInList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchErpStockInList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量删除，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*入库单-审核*/
+    function erpstockin_audit(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/actAuditErpStockIn")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否审核！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchErpStockInList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchErpStockInList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpStock/exportStockInData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+    /*附件预览*/
+    function attachment_detail(title, url, id, w, h) {
+        if(id){
+            url = url + '/id/' + id + '/type/2';
+            layer_show(title, url, w, h);
+        }else{
+            layer.alert("请选择");
+        }
+    }
+
+    //入库红冲
+    function stock_in_reverse() {
+        if ($(".checkchild:checked").length > 1) {
+            layer.msg("一次只能选择一条数据", {icon: 2});
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.msg("请选择一条数据", {icon: 2});
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        layer.confirm('确定要对该笔入库单进行红冲吗？', function () {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpReverse/reverseStockIn")}>';
+            var data = {id: id};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    searchErpStockInList();
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+    //财务核对
+    function finance_confirm() {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.msg("一次只能选择一条数据", {icon: 2});
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.msg("请选择一条数据", {icon: 2});
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        layer.confirm('确定要对该笔入库单进行财务核对吗？', function () {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpStock/financeConfirm")}>';
+            var data = {id: id,type: 2};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    searchErpStockInList();
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+    // 财务驳回
+    function financialRejection ()
+    {
+        if ($(".checkchild:checked").length > 1) {
+            layer.msg("一次只能选择一条数据", {icon: 2});
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.msg("请选择一条数据", {icon: 2});
+            return;
+        }
+        var id = $(".checkchild:checked").val();
+        layer.confirm('确定要对该笔入库单进行财务驳回吗？', function () {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpStock/financialRejection")}>';
+            var data = {id: id,type: 2};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    searchErpStockInList();
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+    // @搜索框搜索查询
+    searchErpStockInList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpStock/erpStockInList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpStockInList(true);
+
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function changeCity(id){
+        var citylist = city2[id];
+        $('#search_region').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_region').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_region').html(options);
+    }
+
+    /**
+     * 财务编辑
+     */
+    function finance_edit(title, url, w, h){
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        url = url + '/id/' + id;
+
+        //var data = {id:id};
+        var type = 'post';
+        var dataType = 'json';
+        layer.open({
+            type:1,
+            title:title,
+            area: ['300px', '200px'],
+            content:'<div style="width: 200px; margin: 35px auto;"><input type="text" class="input-text" name="stock_in_price"  id="stock_in_price" onkeyup="checknum(this)"/></div>',
+            btn:['确认', '取消'],
+            yes: function(index, layero){
+                layer.load(1, {shade: 0.3});
+                var stock_in_price = $.trim($('#stock_in_price').val());
+                var data = {id:id, price:stock_in_price};
+
+                ajax(url,data, type, dataType, function(_data){
+                    if(_data.status == 1){
+                        layer.msg(_data.message, {icon: 1});
+                        layer.close(index);
+                        layer.closeAll('loading');
+                        searchErpStockInList(true);
+                        //return false;
+                    }else{
+                        layer.msg(_data.message, {icon: 2});
+                        //return false;
+                        layer.closeAll('loading');
+                    }
+
+                });
+
+                console.log($('#subsidy_money').val());
+
+            },
+            cancel:function(index, layero){
+                layer.close(index)
+            }
+        });
+    }
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+</script>

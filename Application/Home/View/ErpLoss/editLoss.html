@@ -1,0 +1,295 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 90%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <h4>基本信息</h4>
+            <hr/>
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$data.order.create_time}>"
+                                           id="create_time" name="create_time" maxlength="20" readonly onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>供应商公司：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="company_id" name="company_id" class="input-text"
+                                            style="width:78%;">
+                                        <option value="<{$data['order']['company_id']}>" selected="selected"><{$data['order']['company_name']}></option>
+
+                                    </select>
+                                    <span id="sps7"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>单据编号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_number}>"
+                                           id="order_number" name="order_number" maxlength="20" readonly />
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>制单人：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="user_id" name="user_id" class="input-text" style="width:78%;">
+                                        <option value="<{$data['order']['dealer_id']}>" selected="selected"><{$data['order']['dealer_name']}></option>
+                                    </select>
+                                    <span id="sps6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>来源单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.source_number}>"
+                                           id="source_number" name="source_number" maxlength="20" readonly />
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>城市：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text" style="width:78%;">
+                                        <option value="<{$data['order']['region']}>" selected="selected"><{$data['order']['region_name']}></option>
+                                    </select>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                             <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>损耗类型：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    
+                                    <!-- <input type="text" class="input-text" value="" id="type_name" name="type_name" maxlength="20" readonly /> -->
+                                    <span id="sps2"><{$data.order.type_name}></span>
+                                </div>
+                            </div>
+                             <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>状态：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                   <!--  <input type="text" class="input-text" value="<{$data.order.order_status_name}>"
+                                           id="order_status_name" name="order_status_name" maxlength="20" readonly /> -->
+                                   <input type="hidden" class="input-text" value="<{$data.order.order_status}>"
+                                   id="order_status" name="order_status" maxlength="20" readonly />
+                                    <span id="sps2"><{$data.order.order_status_name}></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>商品信息</h4>
+                        <hr>
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                                <select name="search_goods_code" class="input-text" style="width:93%" id="search_goods_code">
+                                    <option><{$data.order.goods_name}></option>
+                                </select>
+                                <span id="sps16"></span>
+                            </div>
+                            <input type="hidden" id="price" name="price" value="<{$data.order.price}>">
+                        </div>
+
+                       	<div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>单价：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                               <input type="text" class="input-text" value="<{$data.order.price}>"
+                                           id="price" name="price" maxlength="20" readonly style="width:20%" />
+                            </div>
+                            
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>合理损耗：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                            	<input type="text" class="input-text" value="<{$data.order.reasonable_loss_num}>"
+                                           id="reasonable_loss_num" name="reasonable_loss_num" maxlength="20" readonly style="width:20%" />
+                                <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp承担方：</span>
+                                <select class="input-text" style="width:30%">
+                                    <option>我方承担</option>
+                                </select>
+                                <span>金额：</span>
+                                <input type="text" class="input-text" value="<{$data.order.reasonable_loss_price}>"
+                                           id="reasonable_loss_price" name="reasonable_loss_price" maxlength="20" readonly style="width:20%" />
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>超损：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                            	<input type="text" class="input-text" value="<{$data.order.exceed_loss_num}>"
+                                           id="exceed_loss_num" name="exceed_loss_num" maxlength="20" readonly style="width:20%" />
+                                <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp承担方：</span>
+                                <select name="responsible_partys" class="input-text" style="width:30%" id="responsible_partys">
+                                	<option value="0">未明确</option>
+                                	<volist name="data.responsible_party" id="vo" key="k">
+	                                    <if condition="$data['order']['responsible_party'] eq $key">
+	                                        <option value="<{$key}>" selected = "selected">
+	                                            <{$vo}>
+	                                        </option>
+	                                    <else />
+	                                        <option value="<{$key}>">
+                                                <{$vo}>
+                                            </option>
+	                                    </if>
+                                	</volist>
+                                </select>
+                                <span>金额：</span>
+                                <input type="text" class="input-text" value="<{$data.order.exceed_loss_price}>"
+                                           id="exceed_loss_price" name="exceed_loss_price" maxlength="20" readonly style="width:20%" />
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>损耗总计：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                            	<input type="text" class="input-text" value="<{$data.order.loss_num}>"
+                                           id="loss_num" name="loss_num" maxlength="20" readonly style="width:20%" />
+                                <span>承担方名称：</span>
+                                <input type="text" class="input-text" value="<{$data.carrier_company_name}>"
+                                           id="responsible_party_name" name="responsible_party_name" maxlength="20" style="width:30%" />
+                                <span>金额：</span>
+                                <input type="text" class="input-text" value="<{$data.order.loss_num_price}>"
+                                           id="loss_num_price" name="loss_num_price" maxlength="20" readonly style="width:20%" />
+                            </div>
+                        </div>
+                       
+                    </div>
+
+                    <div class="row cl" style="margin-top:20px;">
+                        <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                            <input type="hidden" name="" id="loss_id" value="<{$data.order.id}>">
+                            <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        if ( $("#order_status").val() == 1 && $("#exceed_loss_num").val() != 0 ) {
+        	$('#responsible_partys').attr('disabled', false).removeClass('disabled');
+        	// $('#responsible_party_name').attr('disabled', false).removeClass('disabled');
+        	$('#DealerSaveBtn').attr('disabled', false).removeClass('disabled');
+        } 
+    });
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        var formData = new FormData();
+        var responsible_partys = $("#responsible_partys").val();
+        var responsible_party_name = $("#responsible_party_name").val();
+        if ( responsible_partys == 0 ) {
+        	layer.msg("请选择超损承担方！", {icon: 2});
+        	return false;
+        }
+
+        formData.append("loss_id",$("#loss_id").val());
+        formData.append("responsible_partys",responsible_partys);
+        // formData.append("responsible_party_name",responsible_party_name);
+        submitTrue();
+        layer.load(1, {shade: 0.3});
+
+        $.ajax({
+            url : '<{:U("ErpLoss/editLoss")}>',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success : function(_data) {
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    parent.searchLossOrderList();
+                    setTimeout(function () {
+                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(XMLHttpRequest);
+                console.log('请求异常，请检查！');
+            }
+        });
+        
+    });
+
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

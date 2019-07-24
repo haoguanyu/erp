@@ -1,0 +1,228 @@
+<include file="./Application/Home/View/headers.html"/>
+<link href="__TPL__lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+
+    #erpgoods {
+        width: 100%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<script type="text/javascript" src="__TPL__lib/webuploader/0.1.5/webuploader.min.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div class="container" style="margin-top: 60px;">
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-3 col-sm-3"></label>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>退货凭证:</label>
+
+                <div class="formControls col-xs-6 col-sm-6 wu-example" id="uploader">
+                    <!--用来存放文件信息-->
+                    <div id="fileList" class="uploader-list"></div>
+                    <div class="btns">
+                        <div id="picker">选择文件</div>
+                        <a id="btn-star" class="btn btn-success" href="javascript:;">开始上传</a>
+                    </div>
+                    <div id="show_upload_img" style="margin-top: 20px;">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!--<div>-->
+        <!--<div class="row cl col-sm-12">-->
+        <!--<label class="form-label col-xs-2 ">备注:</label>-->
+
+        <!--<div class="formControls col-xs-9 col-sm-9">-->
+        <!--<textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$data.remark}></textarea>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input type="hidden" id="type" name="type" value="<{$type}>"/>
+                <!--<input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">-->
+                <IF condition="$data['status'] eq 10">
+                    <input class="btn disabled radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;"
+                           disabled>
+                    <else/>
+                    <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                </IF>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+
+    // @添加
+    $(function () {
+        var region = $("#region").val();
+        //iniDepot(region);
+        //changeSupplyInfo();
+        //changeremittance();
+        $('#add').click(function () {
+
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'type': $("#type").val()
+            };
+            da.attach = [];
+            if ($('input[name="attach[]"').length > 0) {
+                $('input[name="attach[]"').each(function (k, val) {
+                    var v = $(this).val();
+                    da.attach.push(v);
+                });
+                console.log(da.attach);
+            } else {
+                layer.closeAll();
+                layer.msg('请上传退货凭证', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            layer.load(1, {shade: 0.3});
+
+            var url = '<{:U("ErpNewAllocation/uploadVoucher")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+
+                    //parent.searchErpSaleOrderList();
+                    top.searthesErpAllocationOrderList();
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 500);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            });
+
+        });
+
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>
+
+<script type="application/javascript">
+    $(function () {
+        var $list = $("#fileList"), $btn = $("#btn-star"), state = "pending";
+        var uploader = WebUploader.create({
+
+            // swf文件路径
+            swf: '__ROOT__/Resources/lib/webuploader/0.1.5/Uploader.swf',
+
+            // 文件接收服务端。
+            //server: '__ROOT__/Resources/lib/webuploader/0.1.5/server/fileupload.php',
+            server: '<{:U("Upload/uploadFile/upload_type/allocation")}>',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker',
+            fileNumLimit: 1,
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false
+        });
+        // 当有文件被添加进队列的时候
+        uploader.on('fileQueued', function (file) {
+            $list.append('<div id="' + file.id + '" class="item">' +
+                    '<h4 class="info">' + file.name + '</h4>' +
+                    '<p class="state">等待上传...</p>' +
+                    '</div>');
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#' + file.id),
+                    $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if (!$percent.length) {
+                $percent = $('<div class="progress progress-striped active">' +
+                        '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                        '</div>' +
+                        '</div>').appendTo($li).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css('width', percentage * 100 + '%');
+        });
+        uploader.on('uploadSuccess', function (file, response) {
+            $('#' + file.id).find('p.state').text('已上传');
+            if (response.status == 1) {
+                var html = '<input type="hidden" name="attach[]" value="' + response.file_url + '"><input type="hidden" name="attach_name[]" value="' + response.file_type + '">';
+                $('#' + file.id).append(html);
+                //var img = '<img src="/Uploads/Erp/Purchase/'+response.file_url+'" height="500" width="600"/><br/><br/>';
+                //$('#show_upload_img').append(img);
+            }
+
+        });
+
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+
+        uploader.on('uploadComplete', function (file) {
+            $('#' + file.id).find('.progress').fadeOut();
+        });
+        uploader.on('all', function (type) {
+            if (type === 'startUpload') {
+                state = 'uploading';
+            } else if (type === 'stopUpload') {
+                state = 'paused';
+            } else if (type === 'uploadFinished') {
+                state = 'done';
+            }
+
+            if (state === 'uploading') {
+                $btn.text('暂停上传');
+            } else {
+                $btn.text('开始上传');
+            }
+        });
+
+        $btn.on('click', function () {
+            if (state === 'uploading') {
+                uploader.stop();
+            } else {
+                uploader.upload();
+            }
+        });
+    });
+</script>

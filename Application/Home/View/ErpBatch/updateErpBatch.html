@@ -1,0 +1,151 @@
+<include file="./Application/Home/View/headers.html"/>
+ 
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4" ><span class="c-red"></span>系统批次号：</label>
+                <div class="formControls col-xs-8 col-sm-8" >
+                    <input type="text" class="input-text" id="sys_bn" name="sys_bn" value="<{$data.batch_arr.sys_bn}>" disabled/>
+                    <input type="hidden" class="input-text" id="batch_id" name="batch_id" value="<{$data.batch_arr.id}>" disabled/>
+                   <!--  <select id="sys_bn" name="sys_bn" class="input-text" style="width:100%;" >
+                        <option value="0">请选择</option>
+                    </select> -->
+                    <span id="sps8"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <br/>
+    <p>批次信息</p>
+    <hr/>
+    <br/>
+    <div>
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-2 col-sm-2"><span class="c-red"></span>商品：</label>
+
+            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 15px;">
+                <input type="text" class="input-text" id="goods_name" name="num" value="<{$data.batch_arr.goods_code}>/<{$data.batch_arr.goods_name}>/<{$data.batch_arr.source_from}>/<{$data.batch_arr.grade}>/<{$data.batch_arr.level}>" disabled/>
+                <span id="sps8"></span>
+            </div>
+        </div>
+    </div>
+
+     <div>
+        <div class="row cl col-sm-12" style="margin-top: 0">
+            <br/>
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>货权类型:</label>
+            <div class="formControls col-xs-9 col-sm-4">
+                <select id="cargo_bn_type" name="cargo_bn_type" class="input-text" >
+                    <option value="">请选择</option>
+
+                   <volist name="data.cargo_bn_type" id="vo" key="k">
+                        <if condition="$vo['id'] eq $data['batch_arr']['cargo_bn_type']">
+                            <option value="<{$vo.id}>" selected >
+                                <{$vo.name}>
+                            </option>
+                        <else />
+                            <option value="<{$vo.id}>" >
+                                <{$vo.name}>
+                            </option>
+                        </if>
+                    </volist>
+                </select>
+                <span id="sps1"></span>
+            </div>
+
+            <label class="form-label col-xs-2 ">货权号:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <input type="text" class="input-text" id="cargo_bn" name="cargo_bn" value="<{$data.batch_arr.cargo_bn}>" />
+            </div>
+        </div>
+    </div>
+
+    <br/><br/><br/><br/><br/><br/>
+    <p>批次修改记录</p>
+    <hr/>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>修改日期</th>
+                <th>修改人</th>
+                <th>货权类型（变动前)</th>
+                <th>货权类型（变动后）</th>
+                <th>货权号（变动前）</th>
+                <th>货权号（变动后）</th>
+            </tr>
+            </thead>
+            <tbody>
+                <volist name="data.batch_operate_log" id="vo" key="k">
+                    <tr>
+                        <th><{$vo.id}></th>
+                        <th><{$vo.create_time}></th>
+                        <th><{$vo.operator}></th>
+                        <th><{$vo.old_cargo_bn_type}></th>
+                        <th><{$vo.new_cargo_bn_type}></th>
+                        <th><{$vo.old_cargo_bn}></th>
+                        <th><{$vo.new_cargo_bn}></th>
+
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+
+        <div class="row cl" style="margin-top:20px; margin-left:300px;">
+            <!-- <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6"> -->
+
+                <input class="btn btn-primary radius" id="BatchSaveBtn" type="button" value="提交">
+
+                <input class="btn btn-primary radius" id="BatchOver" type="button" value="退出" style="margin-left:200px;">
+            <!-- </div> -->
+        </div>
+    <br/>
+</div>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    $('#BatchOver').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    })
+
+    $('#BatchSaveBtn').click(function (){
+        var batch_id = $('#batch_id').val();
+        var cargo_bn_type = $('#cargo_bn_type').val();
+        var cargo_bn = $('#cargo_bn').val();
+        if ( cargo_bn == '' ) {
+            layer.msg('货权号不能为空！', {icon: 2});
+        }
+        if ( cargo_bn_type == '' ) {
+            layer.msg('货权类型不能为空！', {icon: 2});
+        }
+
+        var url = '<{:U("ErpBatch/updateBatchAndCargo")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = {'batch_id' : batch_id ,'cargo_bn_type' : cargo_bn_type ,'cargo_bn' : cargo_bn};
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 0) {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 1});
+                parent.searchErpBatchList();
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    submitFalse();
+                }, 500);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                submitFalse();
+                return false;
+            }
+        });
+    })
+</script>

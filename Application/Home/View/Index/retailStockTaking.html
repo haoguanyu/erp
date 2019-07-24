@@ -1,0 +1,151 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 库存管理 <span class="c-gray en">&gt;</span> 加油网点升量列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+
+                <th>序号</th>
+                <th>地区</th>
+                <th>仓库类型</th>
+                <th>服务商名称</th>
+                <th>加油网点名称</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>物理库存（吨）</th>
+                <th>6月12日期初库存</th>
+                <th>服务商调拨入</th>
+                <th>服务商调拨出</th>
+                <th>加油网点调拨入</th>
+                <th>加油网点调拨出</th>
+                <th>小微零售出</th>
+                <th>集团零售出</th>
+                <th>结余</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('Index/retailStockTaking')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {"data": "id"},
+            {"data": "region_name"},
+            {"data": "stock_type"},
+            {"data": "facilitator_name"},
+            {"data": "object_name"},
+            {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "stock_num"},
+            {"data": "stock_first"},
+            {"data": "facilitator_allocation_in_num"},
+            {"data": "facilitator_allocation_out_num"},
+            {"data": "skid_allocation_in_num"},
+            {"data": "skid_allocation_out_num"},
+            {"data": "retail_stock_out_num"},
+            {"data": "galaxy_stock_out_num"},
+            {"data": "inventory_balance"},
+        ],
+        "language": { // 定义语言
+            "sProcessing": "加载中...",
+            "sLengthMenu": "_MENU_",
+            "sZeroRecords": "没有匹配的结果",
+            "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+            "sInfoFiltered": "(_MAX_条)",
+            "sInfoPostFix": "",
+            "sSearch": "搜索:",
+            "sUrl": "",
+            "sEmptyTable": "表中数据为空",
+            "sLoadingRecords": "载入中...",
+            "sInfoThousands": ",",
+            "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上一页",
+                "sNext": "下一页",
+                "sLast": "末页"
+            }
+        },
+    });
+    // @搜索框搜索查询
+    searchretailStockTaking = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('Index/retailStockTaking')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchretailStockTaking(true);
+
+    }
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+
+            var url = '<{:U("Index/exportRetailStockTaking")}>?'+param;
+            console.log(url);
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+</script>

@@ -1,0 +1,279 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<link href="__TPL__lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+
+    #erpgoods {
+        width: 100%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" name="my_form" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <p>
+                    <span>基本信息</span>
+                </p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>交易单号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="order_number" name="order_number"
+                           value="<{$data.order_number}>" placeholder="系统自动生成" readonly disabled>
+
+
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>供应商用户:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+
+                    <{$data.s_user_name}>-<{$data.s_user_phone}>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12">
+
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>供货单号:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <!--<input type="text" class="input-text" id="supply_number" name="supply_number" value="" placeholder="" readonly="readonly"/>-->
+                <{$data.supply_number}>
+                <input type="hidden" class="input-text" id="supply_id" name="supply_id" value="<{$data.supply_id}>">
+            </div>
+
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>供应商:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <{$data.s_company_name}>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>交易员:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="dealer_name" name="dealer_name"
+                           value="<{$data.dealer_name}>"
+                           readonly disabled>
+                    <input type="hidden" class="input-text" id="dealer_id" name="dealer_id" value="<{$data.dealer_id}>">
+                    <span id="sps7"></span>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购用户:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <!--<select id="phone" name="phone" class="input-text" onchange="changebyuser()">-->
+                        <!--<volist name="select_data.user" id="vo" key="k">-->
+                            <!--<IF condition="$vo.id eq $data['buy_user_id']">-->
+                                <!--<option value="<{$vo.id}>_<{$vo.user_phone}>" selected="selected">-->
+                                    <!--<{$vo.user_name}>(<{$vo.user_phone}>)-->
+                                <!--</option>-->
+                                <!--<else/>-->
+                                <!--<option value="<{$vo.id}>_<{$vo.user_phone}>">-->
+                                    <!--<{$vo.user_name}>(<{$vo.user_phone}>)-->
+                                <!--</option>-->
+                            <!--</IF>-->
+
+                        <!--</volist>-->
+                    <!--</select>-->
+                    <select id="phone" name="phone" class="input-text" onchange="changebyuser()">
+
+                        <option value="<{$vo.id}>_<{$vo.user_phone}>">
+                            <{$data.b_user_name}>(<{$data.b_user_phone}>)
+                        </option>
+
+                    </select>
+                    <!--<input type="text" class="input-text" id="phone" name="phone" value="<{$data.b_user_phone}>" onkeyup="changebyuser(this)">-->
+                    <input type="hidden" class="input-text" id="buy_user_id" name="buy_user_id"
+                           value="<{$data.buy_user_id}>">
+                    <input type="hidden" class="input-text" id="supply_user_id" name="supply_user_id"
+                           value="<{$data.sale_user_id}>">
+                    <input type="hidden" class="input-text" id="supply_company_id" name="supply_user_id"
+                           value="<{$data.sale_company_id}>">
+                    <!--<input type="hidden" class="input-text" id="order_number" name="order_number" value="<{$data.order_number}>">-->
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购商:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="buy_company_id" name="buy_company_id" class="input-text" onchange="changeremittance()">
+                        <option value=""><{$data.buy_company_name}></option>
+                        <!--<option value="<{$data.buy_company_id}>"><{$data.b_company_name}></option>-->
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <p>商品信息</p>
+                <hr/>
+                <br/>
+                <table class="table table-border table-bordered table-hover" id="dataTable"
+                       style="width: 87%; margin-left: 5%;">
+                    <thead>
+                    <th>商品代码</th>
+                    <th>商品名称</th>
+                    <th>商品来源</th>
+                    <th>商品标号</th>
+                    <th>商品级别</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+
+                            <{$data.goods_code}>
+                            <!--<input type="hidden" id="goods_id" value="<{$data.goods_id}>">-->
+                        </td>
+                        <td id="goods_name"><{$data.goods_name}></td>
+                        <td id="source_from"><{$data.source_from}></td>
+                        <td id="grade"><{$data.grade}></td>
+                        <td id="level"><{$data.level}></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <IF condition="$data['status'] eq 3">
+                        <select id="region" name="region" class="input-text" width="10%" onchange="changeRegion()">
+                            <else/>
+                            <select id="region" name="region" class="input-text" width="10%" onchange="changeRegion()"
+                                    disabled>
+                    </IF>
+                    <option value="">请选择</option>
+                    <volist name="region.region_list" id="vo" key="k">
+
+                        <option value="<{$key}>"
+                        <if condition="$key eq $data['region']">selected</if>
+                        >
+                        <{$vo}>
+                        </option>
+                    </volist>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>油库:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="depot_id" name="depot_id" class="input-text" width="10%">
+                        <option value="">请选择</option>
+                        <volist name="data.depots" id="vo" key="k">
+                            <option value="<{$key}>"
+                            <if condition="$key eq $data['depot_id']">selected</if>
+                            >
+                            <{$vo.depot_name}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps4"></span>
+                </div>
+                <input type="hidden" id="depot_default" value="<{$data['depot_id']}>">
+            </div>
+        </div>
+
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>价格:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="price" name="price" value="<{$data.price|getNum}>"
+                           onblur="checkprice()"
+                           onkeyup="checknum(this)">
+                    <span id="sps5"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购量:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="buy_num" name="buy_num" value="<{$data.buy_num|getNum}>"
+                           onblur="checkbuynum()" onkeyup="checknum(this)">
+                    <span id="sps6"></span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="row cl col-sm-12">
+                <p>交易信息</p>
+                <hr/>
+                <br/>
+
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 "><span class="c-red">*</span>收款信息:</label>
+
+                    <div class="formControls col-xs-9 col-sm-9" style="margin-left: 2px;">
+                        <select id="supply_company_info" name="show_front" class="input-text"
+                                onchange="checkSupplyInfo('blur')">
+                            <option value=""><{$data.collection_info}></option>
+                        </select>
+                        <span id="sps15"></span>
+                    </div>
+                </div>
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 "><span class="c-red">*</span>汇款信息:</label>
+
+                    <div class="formControls col-xs-9 col-sm-9" style="margin-left: 2px;">
+                        <select id="remittance_info" name="show_front" class="input-text"
+                                onchange="checkremittanceinfo('blur')">
+                            <option value=""><{$data.remittance_info}></option>
+
+                        </select>
+                        <span id="sps16"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">付款截图:</label>
+
+                <div class="form-label col-xs-10" style="padding-left:0; text-align: left">
+                    <volist name="data.pay_img_list" id="vo">
+                        <div class="formControls col-xs-6 col-sm-6" style="width:47%; padding-right: 0;"
+                             id="pay_img_<{$vo.id}>">
+                            <img src="<{$data.img_url}><{$vo.pay_img_url}>" width="290" height="290"
+                                 onclick="window.open('<{$data.img_url}><{$vo.pay_img_url}>')"/>
+                        </div>
+                    </volist>
+                </div>
+
+
+            </div>
+        </div>
+        <!--<IF condition="$data['status'] eq 3">-->
+        <!--</IF>-->
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$data.remark}></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    $(function () {
+        $('input,select,textarea', $('form[name="my_form"]')).attr('disabled', true);
+    })
+</script>
+

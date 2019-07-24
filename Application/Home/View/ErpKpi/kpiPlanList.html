@@ -1,0 +1,234 @@
+<include file="./Application/Home/View/headers.html"/>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en"><!--&gt;--></span> <span
+        class="c-gray en">&gt;</span> 计提系数设定 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErpkpi">
+            <div class="mt-10">
+                <span class="ml-10" style="margin-left:1%">计提方案名称：</span>
+                <input type="text" name="plan_name" id="plan_name" class="input-text" style="width:10%;"
+                   placeholder="">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="ml-10">创建人：</span>
+                <input type="text" name="user_name" id="user_name" class="input-text" style="width:10%;"
+                       placeholder="">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span><a href="javascript:;" onclick="sub_select('查询')" id="subes" class="btn btn-success radius">查询</a>&nbsp;</span>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l" style="margin-left:10px;"><a href="javascript:;" onclick="base_add('新增', '<{:U(\'ErpKpi/addKpiPlan\')}>', '', 800, 450)" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i>新增</a>&nbsp;</span>
+        <span class="l" style="margin-left:10px;"><a href="javascript:;" onclick="base_detail('', '<{:U(\'ErpKpi/updateKpiPlan\')}>', '', 800, 450)" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-edit2">编辑</i></a>&nbsp;</span>
+        <!--<span class="l" style="margin-left:10px;"><a style="background-color:#FF44AA;border-style:none;" href="javascript:;" onclick="base_cancel()" class="btn btn-primary radius">删除</a></span>-->
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort " id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                 <!--<th><input type="checkbox" value="" name="" class="checkAll"></th>-->
+                <th>选择</th>
+                <th>序号</th>
+                <th>创建人</th>
+                <th>方案名称</th>
+                <th>新终端客户计提</th>
+                <th>新贸易客户计提</th>
+                <th>老终端客户计提</th>
+                <th>老贸易客户计提</th>
+                <th>激活客户计提</th>
+            </tr>
+            </thead>
+            <tbody class="text-c">
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            url: "<{:U('ErpKpi/kpiPlanList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {"data": "creater"},
+            {"data": "plan_name"},
+            {"data": "new_terminal_commission"},
+            {"data": "new_trade_commission"},
+            {"data": "old_terminal_commission"},
+            {"data": "old_trade_commission"},
+            {"data": "activate_customer_commission"}
+        ],
+    });
+
+    /*KPI基础资料-添加*/
+    function base_add(title, url, id, w, h) {
+        url = url + '/id/' + id;
+        layer_show(title, url, w, h);
+    }
+
+    /*取消-KPI基础资料*/
+    function base_cancel() {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择一条数据', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            submitTrue();
+            var id   = $('.checkchild:checked').val();
+            var title = '请确认是否取消？';
+            layer.confirm(title, {
+                btn: ['是','否']
+            }, function(){
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: "<{:U('ErpKpi/cancelErpkpi')}>",
+                    data: {id: id},
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (_data) {
+                        layer.load(1, {shade: 0.3});
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                top.searthes_kpiPlanList();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                submitFalse();
+                            }, 1000);
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+                            submitFalse();
+                        }
+                    }
+                });
+            }, function(){
+
+            });
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*KPI基础资料-详情*/
+    function base_detail(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择一条数据', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id    = $('.checkchild:checked').val();
+            type  = $('.checkchild:checked').prev().val();
+            title = ' KPI基础资料 - 编辑';
+            url = url + '/id/' + id ;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+
+    // @搜索框搜索查询
+    top.searthes_kpiPlanList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErpkpi').serialize();
+        table.api().ajax.url("<{:U('ErpKpi/kpiPlanList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    };
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searthes_kpiPlanList(true);
+
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        language: "zh-CN",
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+
+
+</script>

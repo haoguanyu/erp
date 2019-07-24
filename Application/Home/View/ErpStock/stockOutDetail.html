@@ -1,0 +1,194 @@
+<include file="./Application/Home/View/headers.html"/>
+<div class="page-container">
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>业务员</th>
+                <th>客户（公司）</th>
+                <th>油库</th>
+                <th>出库单号</th>
+                <th>销售单号</th>
+                <th>计划数量</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<input type="hidden" id="goods_id" value="<{$data.goods_id}>">
+<input type="hidden" id="storehouse_id" value="<{$data.storehouse_id}>">
+<include file="./Application/Home/View/footers.html"/>
+
+<script type="text/javascript">
+
+    var da = {
+        'goods_id' : $("#goods_id").val(),
+        'storehouse_id' : $("#storehouse_id").val()
+    }
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpStock/stockOutDetail')}>",
+            type: 'post',
+            data: da,
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {"data": "id"},
+            {"data": "dealer_name"},
+            {"data": "company_name"},
+            {"data": "depot_name"},
+            {"data": "outbound_code"},
+            {"data": "source_number"},
+            {"data": "actual_outbound_num"},
+        ],
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            //Total over all pages
+            $( api.column(0).footer() ).html("合计");
+            for(i=1;i<7;i++){
+                if(i < 6 || i > 6){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                $(api.column(i).footer()).html(
+                    '' + parseFloat(pageTotals).toFixed(4)
+                );
+            }
+        }
+    });
+
+    // @搜索框搜索查询
+    searthesErpStockOutDetailList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpStock/stockOutDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searthesErpStockOutDetailList(true);
+
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+</script>

@@ -1,0 +1,174 @@
+﻿<include file="./Application/Home/View/headers.html"/>
+<article class="page-container">
+    <form action="__SELF__" method="post" class="form form-horizontal" id="form-admin-role-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>员工姓名：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="<{$data['dealer_name']}>" placeholder="" id="dealer_name"
+                       name="dealer_name" disabled="disabled" datatype="*4-16" nullmsg="角色名称不能为空">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">用户名：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="<{$data['dealer_username']}>" placeholder=""
+                       id="dealer_username" name="dealer_username" disabled="disabled">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">分配角色：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+
+
+                <dl class="permission-list">
+                    <dt>
+                        <label>
+                            <!--<input type="checkbox" value="" name="user-Character-0" id="user-Character-0">-->
+                            所有角色</label>
+                    </dt>
+                    <dd>
+                        <dl class="cl permission-list2">
+
+                    <dd>
+                        <volist name="roleArr" id="role">
+
+                            <label class="">
+                                <input type="checkbox" value="<{$role.role_id}>" name="role_id"
+                                       id="role<{$role.role_id}>"
+                                <if condition="in_array($role['role_id'], $haveRole)">checked=true</if>
+                                >
+                                <{$role.role_name}>
+                            </label>
+
+                        </volist>
+                        <!--<label class="">-->
+                        <!--<input type="checkbox" value="" name="user-Character-0-0-0" id="user-Character-0-0-1">-->
+                        <!--修改</label>-->
+                        <!--<label class="">-->
+                        <!--<input type="checkbox" value="" name="user-Character-0-0-0" id="user-Character-0-0-2">-->
+                        <!--删除</label>-->
+                        <!--<label class="">-->
+                        <!--<input type="checkbox" value="" name="user-Character-0-0-0" id="user-Character-0-0-3">-->
+                        <!--查看</label>-->
+                        <!--<label class="">-->
+                        <!--<input type="checkbox" value="" name="user-Character-0-0-0" id="user-Character-0-0-4">-->
+                        <!--审核</label>-->
+                        <!--<label class="c-orange"><input type="checkbox" value="" name="user-Character-0-0-0" id="user-Character-0-0-5"> 只能操作自己发布的</label>-->
+
+
+                    </dd>
+                </dl>
+
+                </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input type="hidden" value="<{$data['id']}>" name="admin_id" id="admin_id">
+                <button type="button" class="btn btn-success radius" id="admin-role-save" name="admin-role-save"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </form>
+</article>
+
+</body>
+</html>
+<link rel="stylesheet" href="__TPL__/lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<link rel="stylesheet" href="__TPL__/static/h-ui.admin/css/style.css" type="text/css">
+<script type="text/javascript" src="__TPL__/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $('#admin-role-save').click(function () {
+        layer_close();
+//		var url = '<{:U("Api/Role/addRole")}>';
+//		if($('#role_id').val()){
+//			url = '<{:U("Api/Role/editRole")}>';
+//		}
+//
+//		var type = 'post';
+//		var dataType = 'json';
+//		var data = $('form').serializeArray();
+//		ajax(url,data, type, dataType,function(_data){
+//			console.log(_data);
+//			if(_data.status == 1){
+//				var index = parent.layer.getFrameIndex(window.name);
+//				//parent.layer.close(index);
+//				layer.msg(_data.msg);
+//				layer_close();
+//				parent.window.location.replace(location.href);
+//			}else{
+//				layer.alert(_data.msg);
+//			}
+//		});
+    });
+    $('input:checkbox').click(function () {
+        var obj = $(this);
+        var v = $(this).val();
+        //obj.attr();
+        var url = $(this).is(':checked') ? '<{:U("/Api/Dealer/setRole")}>' : '<{:U("/Api/Dealer/delRole")}>';
+        console.log(v);
+        console.log($(this).is(':checked'));
+        var admin_id = $('#admin_id').val();
+        var data = {role_id: v, admin_id: admin_id};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                var index = parent.layer.getFrameIndex(window.name);
+                layer.msg(_data.msg);
+                console.log(data.msg);
+            } else {
+                console.log(data.msg);
+                layer.alert(_data.msg);
+            }
+        });
+    });
+
+    $(function () {
+
+        $(".permission-list dt input:checkbox").click(function () {
+            $(this).closest("dl").find("dd input:checkbox").prop("checked", $(this).prop("checked"));
+        });
+        $(".permission-list2 dd input:checkbox").click(function () {
+            var l = $(this).parent().parent().find("input:checked").length;
+            var l2 = $(this).parents(".permission-list").find(".permission-list2 dd").find("input:checked").length;
+            if ($(this).prop("checked")) {
+                $(this).closest("dl").find("dt input:checkbox").prop("checked", true);
+                $(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked", true);
+            }
+            else {
+                if (l == 0) {
+                    $(this).closest("dl").find("dt input:checkbox").prop("checked", false);
+                }
+                if (l2 == 0) {
+                    $(this).parents(".permission-list").find("dt").first().find("input:checkbox").prop("checked", false);
+                }
+            }
+        });
+
+        $("#form-admin-role-add").validate({
+            rules: {
+                roleName: {
+                    required: true,
+                },
+            },
+            onkeyup: false,
+            focusCleanup: true,
+            success: "valid",
+            submitHandler: function (form) {
+                $(form).ajaxSubmit();
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            }
+        });
+    });
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

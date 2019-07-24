@@ -1,0 +1,310 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <IF condition="$data['status'] eq 10">
+            <p style="text-align: center" class="c-red">已审核的商品不能编辑</p>
+        </IF>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">商品代码:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="goods_code" name="goods_code"
+                           value="<{$data['goods_code']}>" readonly="readonly"/>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品名称:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="goods_name" class="input-text" id="goods_name" onchange="checkname()"
+                            disabled></select>
+                    <span id="sps1"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品级别:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="level" name="level" class="input-text" width="10%" onchange="checklevel()"></select>
+                    <span id="sps2"></span>
+                </div>
+
+                <label class="form-label col-xs-2 ">商品标号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="grade" name="grade" class="input-text" width="10%" onchange="checkgrade()"></select>
+                    <span id="sps5"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品来源:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="source_from" class="input-text" id="source_from" onchange="checksource()">
+                        <option value="">请选择</option>
+                        <volist name="data.oilSource" id="vo" key="k">
+                            <IF condition="$vo eq $data['source_from']">
+                                <option value="<{$key}>" selected="selected">
+                                    <{$vo}>
+                                </option>
+                                <else/>
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </IF>
+                        </volist>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>标注:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="label" name="label" class="input-text" width="10%" onchange="checklabel()">
+                        <option value="">请选择</option>
+                        <volist name="data.oilLabel" id="vo" key="k">
+                            <IF condition="$vo eq $data['label']">
+                                <option value="<{$key}>" selected="selected">
+                                    <{$vo}>
+                                </option>
+                                <else/>
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </IF>
+                        </volist>
+                    </select>
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>油品密度:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="density_value" name="density_value"
+                           value="<{$data['density_value']}>" maxlength="8" placeholder="规格限制为0.7~1.0"
+                           onkeyup="checknumthree(this)" onblur="checkdensity()"/>
+                    <span id="sps6"></span>
+
+                    <div style="color: red; font-weight: bold;">(请输入0.7 ~ 1 之间的密度值)</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$data['remark']}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$data['id']}>"/>
+                <IF condition="$data['status'] eq 10">
+                    <input class="btn disabled radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;"
+                           disabled>
+                    <else/>
+                    <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                </IF>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.13>
+
+    $(function(){
+        var is_show = '<{$is_show}>';
+        if (is_show == 1) {
+            $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+            $('#DealerSaveBtn').hide();
+        }
+    })
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证商品名称
+    function checkname() {
+        if ($.trim($("#goods_name").val()) == '请选择名称') {
+            layer.msg("请选择商品名称！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证商品标号
+    function checkgrade() {
+        if ($.trim($("#grade").val()) == '请选择标号') {
+            layer.msg("请选择商品标号！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+
+    //验证商品级别
+    function checklevel() {
+        if ($.trim($("#level").val()) == '请选择级别' && $("#level option").length > 1) {
+            layer.msg("请选择商品级别！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证商品来源
+    function checksource() {
+        if ($.trim($("#source_from").val()) == '') {
+            layer.msg("请选择商品来源！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证商品标注
+    function checklabel() {
+        if ($.trim($("#label").val()) == '') {
+            layer.msg("请选择商品标注！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证油品密度
+    function checkdensity() {
+        if ($.trim($("#density_value").val()) == '') {
+            layer.msg("请输入油品密度！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#density_value").val()) < 0.7 || $.trim($("#density_value").val()) > 1) {
+            layer.msg("油品密度超出规格！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps6');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留4位小数）
+    function checknumthree(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // @添加
+    $(function () {
+        //设置商品名称、标号、级别三级联动
+        var showMsg = ['请选择', '请选择', '请选择'];
+        addressInit('goods_name', 'level', 'grade', showMsg, '<{$data['goods_name']}>', '<{$data['level']}>', '<{$data['grade']}>');
+
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'goods_code': $("#goods_code").val(),
+                'goods_name': $("#goods_name").val(),
+                'source_from': $("#source_from").val(),
+                'grade': $("#grade").val(),
+                'level': $("#level").val(),
+                'label': $("#label").val(),
+                'density_value': $("#density_value").val(),
+                'remark': $("#remark").val()
+            };
+            if (checkname() && checklevel() && checksource() && checklabel() && checkdensity()) {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpGoods/actUpdateErpGoods")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    if (_data.status == 1) {
+
+                        layer.msg(_data.message, {icon: 1});
+                        setTimeout(function () {
+                            layer.closeAll();
+                            top.searthes_erpGoodsList();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

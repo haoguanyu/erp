@@ -1,0 +1,770 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: rgb(235, 235, 228);
+    }
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12" style="margin-top: 0">
+                <p>基本信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>我方公司:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="our_company_id" name="our_company_id" class="input-text" onchange="checkourcompanyid()">
+                        <option value="">请选择</option>
+                        <volist name="data.ourCompany" id="vo" key="k">
+                            <option value="<{$key}>" selected="selected"><{$vo}></option>
+                        </volist>
+                    </select>
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 ">业务员:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="dealer_name" name="dealer_name" value="<{$data['dealer_name']}>" disabled/>
+                    <input type="hidden" id="dealer_id" name="dealer_id" value="<{$data['dealer_id']}>">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>调拨类型:</label>
+                <input type="radio" name="allocation_type" value="1" style="margin-left: 15px" checked="checked">城市仓->服务商
+                <input type="radio" name="allocation_type" value="2" style="margin-left: 15px">服务商->服务商
+                <input type="radio" name="allocation_type" value="3" style="margin-left: 15px">服务商->城市仓
+                <input type="radio" name="allocation_type" value="4" style="margin-left: 15px">城市仓->城市仓
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 " style="width:11%;"><span class="c-red">*</span>从城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                    <select name="out_region" class="input-text" id="out_region" style="width: 100%;" onchange="checkoutregion()">
+                        <option value="">请选择</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>"
+                            <if condition="$allocation_data['out_region'] eq $key">selected</if>>
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+
+                <div id="div_out_storehouse">
+                    <label class="form-label col-xs-2 " style="width:12%;"><span class="c-red">*</span>从城市仓:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_storehouse" name="out_storehouse" class="input-text disabled" style="width: 100%;" disabled>
+                            <option value="<{$allocation_data['out_storehouse']}>"><{$allocation_data['o_storehouse_name']}></option>
+                        </select>
+                        <span id="sps3"></span>
+                    </div>
+                </div>
+
+                <div id="div_out_facilitator_id" style="display: none;">
+                    <label class="form-label col-xs-2" style="width:12%;"><span class="c-red">*</span>从服务商:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_facilitator_id" name="out_facilitator_id" class="input-text"  style="width: 100%;" onchange="checkoutfacilitatorid()">
+                            <option value="">请选择</option>
+                        </select>
+                        <span id="sps4"></span>
+                    </div>
+
+                    <label class="form-label col-xs-2" style="width:14%;"><span class="c-red">*</span>从加油网点:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_facilitator_skid_id" name="out_facilitator_skid_id" class="input-text"  style="width: 100%;" onchange="checkoutfacilitatorskidid()">
+                            <option value="">全部加油网点</option>
+                        </select>
+                        <span id="sps10"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row cl col-sm-12">
+
+                <label class="form-label col-xs-2 " style="width:11%;"><span class="c-red">*</span>至城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                    <select name="in_region" class="input-text" id="in_region" style="width: 100%;" onchange="checkinregion()">
+                        <option value="">请选择</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>"
+                            <if condition="$allocation_data['in_region'] eq $key">selected</if>>
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps5"></span>
+                </div>
+
+                <div id="div_in_storehouse" style="display: none;">
+                    <label class="form-label col-xs-2 " style="width:12%;"><span class="c-red">*</span>至城市仓:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_storehouse" name="in_storehouse" class="input-text disabled" style="width: 100%;" disabled>
+                            <option value="<{$allocation_data['in_storehouse']}>"><{$allocation_data['i_storehouse_name']}></option>
+                        </select>
+                        <span id="sps6"></span>
+                    </div>
+                </div>
+
+                <div id="div_in_facilitator_id">
+                    <label class="form-label col-xs-2 " style="width:12%;"><span class="c-red">*</span>至服务商:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_facilitator_id" name="in_facilitator_id" class="input-text" style="width: 100%;" onchange="checkinfacilitatorid()">
+                            <option value="">请选择</option>
+                        </select>
+                        <span id="sps7"></span>
+                    </div>
+
+                    <label class="form-label col-xs-2 " style="width:14%;"><span class="c-red">*</span>至加油网点:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_facilitator_skid_id" name="in_facilitator_skid_id" class="input-text" style="width: 100%;" onchange="checkinfacilitatorskidid()">
+                            <option value="">全部加油网点</option>
+                        </select>
+                        <span id="sps11"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="row cl col-sm-12">
+                <p>商品信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-left: 15px;">
+                    <select name="goods_id" class="input-text" style="width:103%" id="search_goods_code" onchange="checkgoodsid()">
+                    </select>
+                    <input type="hidden" id="goods_id" name="goods_id" value="<{$allocation_data.goods_id}>">
+                </div>
+                <span id="sps8" style="padding-left: 4px"></span>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>数量(吨):</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="num" name="num" value="<{$allocation_data.num}>" onkeyup="checknum(this)" onchange="checkordernum()"/>
+                    <span id="sps9"></span>
+                </div>
+            </div>
+        </div>
+        <IF condition="$allocation_data.status eq 10">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">实际调入升数:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="actual_in_num_liter" name="actual_in_num_liter" value="<{$allocation_data.actual_in_num_liter}>" onkeyup="checknum(this)" onchange="checkordernum()"/>
+                </div>
+                <label class="form-label col-xs-2 ">实际调出升数:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="actual_out_num_liter" name="actual_out_num_liter" value="<{$allocation_data.actual_out_num_liter}>" onkeyup="checknum(this)" onchange="checkordernum()"/>
+                </div>
+            </div>
+        </div>
+
+        </IF>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$allocation_data.remark}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$allocation_data.id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.10>
+    var type = "<{$allocation_data['allocation_type']}>";
+    var out_facilitator_id = "<{$allocation_data['out_facilitator_id']}>";
+    var out_facilitator_skid_id = "<{$allocation_data['out_facilitator_skid_id']}>";
+    var in_facilitator_id = "<{$allocation_data['in_facilitator_id']}>";
+    var in_facilitator_skid_id = "<{$allocation_data['in_facilitator_skid_id']}>";
+
+    $(function(){
+        $('input[name="allocation_type"][value="'+type+'"]').prop('checked',true);
+        $("#out_region").change();
+        $("#in_region").change();
+        $("input[name='allocation_type']:checked").change();
+        var status = "<{$allocation_data['status']}>";
+        if(status != 1){
+            $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+            $('#DealerSaveBtn').hide();
+        }
+    })
+    $('input[name="allocation_type"]').change(function(){
+        var type = $(this).val();
+        switch (type){
+            case '1' :
+                $("#div_out_facilitator_id").hide();
+                $("#div_out_storehouse").show();
+                $("#div_in_facilitator_id").show();
+                $("#div_in_storehouse").hide();
+                break;
+            case '2' :
+                $("#div_out_facilitator_id").show();
+                $("#div_out_storehouse").hide();
+                $("#div_in_facilitator_id").show();
+                $("#div_in_storehouse").hide();
+                break;
+            case '3' :
+                $("#div_out_facilitator_id").show();
+                $("#div_out_storehouse").hide();
+                $("#div_in_facilitator_id").hide();
+                $("#div_in_storehouse").show();
+                break;
+            case '4' :
+                $("#div_out_facilitator_id").hide();
+                $("#div_out_storehouse").show();
+                $("#div_in_facilitator_id").hide();
+                $("#div_in_storehouse").show();
+                break;
+            default :  break;
+        }
+    })
+
+    var selectOutRegion = $("#out_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectInRegion = $("#in_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectOutStorehouse = $("#out_storehouse").select2({
+        placeholder: '请选择仓库',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectInStorehouse = $("#in_storehouse").select2({
+        placeholder: '请选择仓库',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectOutFacilitatorId = $("#out_facilitator_id").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectInFacilitatorId = $("#in_facilitator_id").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectOutFacilitatorSkidId = $("#out_facilitator_skid_id").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectInFacilitatorSkidId = $("#in_facilitator_skid_id").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectGoods = $("#search_goods_code").select2({
+        placeholder: '请选择商品',
+        //allowClear: true
+        language: "zh-CN",
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var defau = false;
+    $("#in_region").change(function(){
+        if (defau) {
+            $("#search_goods_code").html('');
+            $("#sps7").removeClass();
+            $("#sps7").html('');
+            $("#sps11").removeClass();
+            $("#sps11").html('');
+        }
+        defau = true;
+        var out_region = $.trim($(this).val());
+        var url = '<{:U("ErpStorehouse/getStorehouseByRegion")}>';
+        var data = {region: out_region};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="' + _data[1].id + '">' + _data[1].storehouse_name + '</option>';
+            $("#in_storehouse").html(options);
+        });
+
+        var url = '<{:U("Facilitator/getFacilitatorByRegion")}>';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="0">全部服务商</option>';
+            for (var i in _data) {
+                if (in_facilitator_id == _data[i].id) {
+                    options += '<option value="' + _data[i].id + '" selected="selected">' + _data[i].facilitator_name + '</option>';
+                } else {
+                    options += '<option value="' + _data[i].id + '">' + _data[i].facilitator_name + '</option>';
+                }
+            }
+            $("#in_facilitator_id").html(options);
+            $("#in_facilitator_id").change();
+        });
+
+        var options = '<option value="0">全部加油网点</option>';
+        $("#in_facilitator_skid_id").html(options);
+    })
+
+    var def = false;
+    $("#out_region").change(function(){
+        if (def) {
+            $("#search_goods_code").html('');
+            $("#sps4").removeClass();
+            $("#sps4").html('');
+            $("#sps8").removeClass();
+            $("#sps8").html('');
+        }
+        def = true;
+        var out_region = $.trim($(this).val());
+        var url = '<{:U("ErpStorehouse/getStorehouseByRegion")}>';
+        var data = {region: out_region};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="' + _data[1].id + '">' + _data[1].storehouse_name + '</option>';
+            $("#out_storehouse").html(options);
+        });
+
+        var url = '<{:U("Facilitator/getFacilitatorByRegion")}>';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="0">全部服务商</option>';
+            for (var i in _data) {
+                if (out_facilitator_id == _data[i].id) {
+                    options += '<option value="' + _data[i].id + '" selected="selected">' + _data[i].facilitator_name + '</option>';
+                } else {
+                    options += '<option value="' + _data[i].id + '">' + _data[i].facilitator_name + '</option>';
+                }
+            }
+            $("#out_facilitator_id").html(options);
+            $("#out_facilitator_id").change();
+        });
+
+        var url = '<{:U("ErpRegionGoods/getGoodsByCode")}>';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="0">全部商品</option>';
+            for (var i = 0;i < _data.data.length; i++) {
+                if ($("#goods_id").val() == _data.data[i].id) {
+                    options += '<option value="' + _data.data[i].id + '" selected="selected">' + _data.data[i].goods_code + '/' + _data.data[i].goods_name + '/' + _data.data[i].source_from + '/' + _data.data[i].grade + '/' + _data.data[i].level + '/' + '</option>';
+                } else {
+                    options += '<option value="' + _data.data[i].id + '">' + _data.data[i].goods_code + '/' + _data.data[i].goods_name + '/' + _data.data[i].source_from + '/' + _data.data[i].grade + '/' + _data.data[i].level + '/' + '</option>';
+                }
+            }
+            $('#search_goods_code').html(options);
+        })
+
+        var options = '<option value="0">全部加油网点</option>';
+        $("#out_facilitator_skid_id").html(options);
+    })
+
+    $("#in_facilitator_id").change(function(){
+        var in_facilitator_id = $.trim($(this).val());
+        var url = '<{:U("Facilitator/getSkidByFacilitator")}>';
+        var data = {facilitator_id: in_facilitator_id};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="">全部加油网点</option>';
+            for (var i in _data) {
+                if (in_facilitator_skid_id == _data[i].facilitator_skid_id) {
+                    options += '<option value="' + _data[i].facilitator_skid_id + '" selected="selected">' + _data[i].facilitator_skid_name + '</option>';
+                    checktrue('sps11');
+                } else {
+                    options += '<option value="' + _data[i].facilitator_skid_id + '">' + _data[i].facilitator_skid_name + '</option>';
+                }
+            }
+            $("#in_facilitator_skid_id").html(options);
+        });
+    })
+
+    $("#out_facilitator_id").change(function(){
+        var in_facilitator_id = $.trim($(this).val());
+        var url = '<{:U("Facilitator/getSkidByFacilitator")}>';
+        var data = {facilitator_id: in_facilitator_id};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '<option value="">全部加油网点</option>';
+            for (var i in _data) {
+                if (out_facilitator_skid_id == _data[i].facilitator_skid_id) {
+                    options += '<option value="' + _data[i].facilitator_skid_id + '" selected="selected">' + _data[i].facilitator_skid_name + '</option>';
+                    checktrue('sps10');
+                } else {
+                    options += '<option value="' + _data[i].facilitator_skid_id + '">' + _data[i].facilitator_skid_name + '</option>';
+                }
+            }
+            $("#out_facilitator_skid_id").html(options);
+        });
+    })
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证我方公司
+    function checkourcompanyid() {
+        if ($.trim($("#our_company_id").val()) == '') {
+            layer.msg("请选择我方公司！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证来源城市
+    function checkoutregion() {
+        if ($.trim($("#out_region").val()) == '') {
+            layer.msg("请选择来源城市！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#out_region").val()) == $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() == 4) {
+            layer.msg("城市仓之间不允许同地调拨！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else if ($("#out_region").val() != '' && $("#in_region").val() != '' && $.trim($("#out_region").val()) != $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() != 2 && $("input[name='allocation_type']:checked").val() != 4) {
+            layer.msg("非城市仓之间不允许异地调拨！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            if ($("#in_region").val() != '') {
+                checktrue('sps5');
+            }
+            return true;
+        }
+    }
+
+    //验证来源服务商
+    function checkoutfacilitatorid() {
+        if ($("input[name='allocation_type']:checked").val() == 2 || $("input[name='allocation_type']:checked").val() == 3) {
+            if ($.trim($("#out_facilitator_id").val()) == '') {
+                layer.msg("请选择来源服务商！", {icon: 2});
+                checkfalse('sps4');
+                submitFalse();
+                return false;
+            }
+//            else if ($.trim($("#out_facilitator_id").val()) == $.trim($("#in_facilitator_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+//                layer.msg("来源服务商与目的服务商不能相同！", {icon: 2});
+//                checkfalse('sps4');
+//                submitFalse();
+//                return false;
+//            }
+            else {
+                checktrue('sps4');
+                if ($("#sps7").attr('class') == 'c-red') {
+                    checktrue('sps7');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+    }
+
+    //验证来源加油网点
+    function checkoutfacilitatorskidid() {
+        if ($("input[name='allocation_type']:checked").val() == 2 || $("input[name='allocation_type']:checked").val() == 3) {
+            if ($.trim($("#out_facilitator_skid_id").val()) == '') {
+                layer.msg("请选择来源加油网点！", {icon: 2});
+                checkfalse('sps10');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_skid_id").val()) == $.trim($("#in_facilitator_skid_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源加油网点与目的加油网点不能相同！", {icon: 2});
+                checkfalse('sps10');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps10');
+                if ($("#sps11").attr('class') == 'c-red') {
+                    checktrue('sps11');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //验证目的城市
+    function checkinregion() {
+        if ($.trim($("#in_region").val()) == '') {
+            layer.msg("请选择目的城市！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#out_region").val()) == $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() == 4) {
+            layer.msg("城市仓之间不允许同地调拨！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else if ($("#out_region").val() != '' && $("#in_region").val() != '' && $.trim($("#out_region").val()) != $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() != 2 && $("input[name='allocation_type']:checked").val() != 4) {
+            layer.msg("非城市仓之间不允许异地调拨！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            if ($("#out_region").val() != '') {
+                checktrue('sps2');
+            }
+            return true;
+        }
+    }
+
+    //验证目的服务商
+    function checkinfacilitatorid() {
+        if ($("input[name='allocation_type']:checked").val() == 1 || $("input[name='allocation_type']:checked").val() == 2) {
+            if ($.trim($("#in_facilitator_id").val()) == '') {
+                layer.msg("请选择目的服务商！", {icon: 2});
+                checkfalse('sps7');
+                submitFalse();
+                return false;
+            }
+//            else if ($.trim($("#out_facilitator_id").val()) == $.trim($("#in_facilitator_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+//                layer.msg("来源服务商与目的服务商不能相同！", {icon: 2});
+//                checkfalse('sps7');
+//                submitFalse();
+//                return false;
+//            }
+            else {
+                checktrue('sps7');
+                if ($("#sps4").attr('class') == 'c-red') {
+                    checktrue('sps4');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //验证目的加油网点
+    function checkinfacilitatorskidid() {
+        if ($("input[name='allocation_type']:checked").val() == 1 || $("input[name='allocation_type']:checked").val() == 2) {
+            if ($.trim($("#in_facilitator_skid_id").val()) == '') {
+                layer.msg("请选择目的加油网点！", {icon: 2});
+                checkfalse('sps11');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_skid_id").val()) == $.trim($("#in_facilitator_skid_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源加油网点与目的加油网点不能相同！", {icon: 2});
+                checkfalse('sps11');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps11');
+                if ($("#sps10").attr('class') == 'c-red') {
+                    checktrue('sps10');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //验证商品
+    function checkgoodsid() {
+        console.log($("#goods_id").val());
+        if ($.trim($("#goods_id").val()) == '') {
+            layer.msg("请选择商品！", {icon: 2});
+            checkfalse('sps8');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps8');
+            return true;
+        }
+    }
+
+    $("input[name='allocation_type']").click(function(){
+        if ($(this).val() == 1 && $("#out_region").val() != '' && $("#in_facilitator_id").val() != '') {
+            checkoutregion();
+            checkinfacilitatorid();
+        } else if ($(this).val() == 2 && $("#out_facilitator_id").val() != '' && $("#in_facilitator_id").val() != '') {
+            checkinfacilitatorid();
+        } else if ($(this).val() == 3 && $("#out_facilitator_id").val() != '' && $("#in_region").val() != '') {
+            checkoutfacilitatorid();
+            checkinregion();
+        } else  if ($(this).val() == 4 && $("#out_region").val() != '' && $("#in_region").val() != '') {
+            checkinregion();
+        }
+    })
+
+    //验证数量
+    function checkordernum() {
+        if ($.trim($("#num").val()) == '') {
+            layer.msg("请输入数量！", {icon: 2});
+            checkfalse('sps9');
+            submitFalse();
+            return false;
+        } else if (isNaN($.trim($("#num").val()))) {
+            layer.msg("请输入数字！", {icon: 2});
+            checkfalse('sps9');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps9');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留四位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // @添加
+    $(function () {
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'our_company_id': $("#our_company_id").val(),
+                'allocation_type': $("input[name='allocation_type']:checked").val(),
+                'out_region': $("#out_region").val(),
+                'out_storehouse': $("#out_storehouse").val(),
+                'out_facilitator_id': $("#out_facilitator_id").val(),
+                'out_facilitator_skid_id': $("#out_facilitator_skid_id").val(),
+                'in_region': $("#in_region").val(),
+                'in_storehouse': $("#in_storehouse").val(),
+                'in_facilitator_id': $("#in_facilitator_id").val(),
+                'in_facilitator_skid_id': $("#in_facilitator_skid_id").val(),
+                'goods_id': $("#search_goods_code").val(),
+                'num': $("#num").val(),
+                'remark': $("#remark").val()
+            };
+            if (checkourcompanyid() && checkoutregion() && checkoutfacilitatorid() && checkoutfacilitatorskidid() && checkinregion() && checkinfacilitatorid() && checkinfacilitatorskidid() && checkordernum() && checkgoodsid()) {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpAllocation/updateErpAllocationOrder")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    layer.load(1, {shade: 0.3});
+                    if (_data.status == 1) {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 1});
+                        top.searthesErpAllocationOrderList();
+                        setTimeout(function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 500);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                        return false;
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

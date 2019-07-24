@@ -1,0 +1,223 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">单号:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"value="<{$data['order_info']['order_number']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">业务日期:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"   value="<{$data['order_info']['add_order_time']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">我方公司:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['our_company_name']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">创建人:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  value="<{$data['order_info']['creater']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">城市:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  value="<{$data['order_info']['region']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">客户名称:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['user_name']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">客户公司:</label>
+                <div class="formControls col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['company_name']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">联系方式:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['user_phone']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">预存类型:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['recharge_type']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">预存金额:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['recharge_amount']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1" style="padding-left: 0; padding-right: 0;">单据备注:</label>
+                <div class="formControls col-xs-11">
+                    <textarea class="textarea" cols="" rows="" id="remark_" name="remark" readonly="readonly" disabled  style="height:80px;" ><{$data.order_info.remark}></textarea>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1" style="padding-left: 0; padding-right: 0;">备注:</label>
+                <div class="formControls col-xs-11">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark" style="height: 80px;"></textarea>
+                </div>
+            </div>
+        </div>
+        <if condition="$data.status == 1">
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-5 col-xs-offset-5 ">
+                <input type="hidden" id="work_id" name="work_id" value="<{$data['id']}>"/>
+                <input type="hidden" id="workflow_type" name="workflow_type" value="<{$data['workflow_type']}>"/>
+                <input class="btn btn-primary radius" id="passed" type="button" value="&nbsp;&nbsp;通过&nbsp;&nbsp;" style="margin-right:30px;">
+                <input class="btn btn-danger radius" id="reject" type="button" value="&nbsp;&nbsp;驳回&nbsp;&nbsp;">
+            </div>
+
+        </div>
+        </if>
+    </form>
+</article>
+<div style="padding-left: 2%">审批流程：
+    <volist name = "data.work_flow_step_data" id = "vo">
+        <if condition="data.total_step_num LT $key">-></if>
+        <{$vo.assignor}>
+    </volist>
+</div>
+<article class="page-container" style="overflow:hidden;" id="input_list">
+    <div class="layui-layer-title">审批历史</div>
+    <div style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>单号</th>
+                <th>流程名称</th>
+                <th>单据类型</th>
+                <th>申请人</th>
+                <th>申请时间</th>
+                <th>审批人</th>
+                <th>审批时间</th>
+                <th>审批状态</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            <IF condition="empty($data['work_flow_log'])">
+                <tr role="row" class="odd">
+                    <td colspan="9">暂无审批历史</td>
+                </tr>
+                <ELSE />
+                <volist name="data.work_flow_log" id = "vo">
+                    <tr role="row" class="odd">
+                        <td><{$data.workflow_order_number}></td>
+                        <td><{$data.workflow_name}></td>
+                        <td><{$data.workflow_type_info}></td>
+                        <td><{$data.creater}></td>
+                        <td><{$data.create_time}></td>
+                        <td><{$vo.perator}></td>
+                        <td><{$vo.create_time}></td>
+                        <td><{$vo.operating_state}></td>
+                        <td><{$vo.remark}></td>
+                    </tr>
+                </volist>
+            </IF>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    </div>
+</article>
+<script type="text/javascript">
+    // @添加
+    $(function () {
+        var status = '';
+        //erp审批流 审核
+        $('#passed').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            ajaxPostworkflow(status = 1);
+        });
+
+        $('#reject').click(function () {
+            if($.trim($("#remark").val()) == ''){
+                layer.msg("请填写备注！", {icon: 2});
+                checkfalse('sps1');
+                return false;
+            }
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            ajaxPostworkflow(status = 2);
+        });
+    });
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    // @ajax 审核通过
+    function ajaxPostworkflow(status){
+        var da = {
+            'id'    : $.trim($("#work_id").val()),
+            'status': $.trim(status),
+            'remark': $.trim($("#remark").val()),
+            'workflow_type': $.trim($("#workflow_type").val()),
+        };
+        layer.load(1, {shade: 0.3});
+        var url = '<{:U("ErpWorkFlow/workFlowUpdateStatus")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = da;
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.msg(_data.message, {icon: 1});
+                setTimeout(function () {
+                    layer.closeAll();
+                    top.searthes_erpWorkflowList();
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    submitFalse();
+                }, 1000);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                submitFalse();
+            }
+        });
+    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#passed').attr("disabled", true);
+        $('#reject').attr("disabled", true);
+
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#passed').attr("disabled", false);
+        $('#reject').attr("disabled", false);
+    }
+</script>

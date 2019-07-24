@@ -1,0 +1,85 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<IF condition="empty($data)">
+    <article class="page-container" style="overflow:hidden;" id="input_list">
+        <div class = 'c-warning' style="margin-bottom: 10px; font-weight: bold;">审批历史</div>
+        <div class="layui-layer-title">审批流程：暂无</div>
+        <div style="overflow-x:scroll;white-space:nowrap;">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+                <thead>
+                <tr class="text-c">
+                    <th>单号</th>
+                    <th>流程名称</th>
+                    <th>单据类型</th>
+                    <th>申请人</th>
+                    <th>申请时间</th>
+                    <th>审批人</th>
+                    <th>审批时间</th>
+                    <th>审批状态</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr role="row" class="odd">
+                    <td colspan="9">暂无审批记录</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <br />
+        </div>
+    </article>
+</IF>
+<volist name="data" id="vo">
+    <article class="page-container" style="overflow:hidden;" id="input_list"><{$vo.workflow_status}>
+        <div class="layui-layer-title">
+            审批流程：<{$vo.workflow_step}>
+        </div>
+        <div style="overflow-x:scroll;white-space:nowrap;">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+                <thead>
+                <tr class="text-c">
+                    <th>单号</th>
+                    <th>流程名称</th>
+                    <th>单据类型</th>
+                    <th>申请人</th>
+                    <th>申请时间</th>
+                    <th>审批人</th>
+                    <th>审批时间</th>
+                    <th>审批状态</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+                <IF condition="empty($vo['workflow_log'])">
+                    <tr role="row" class="odd">
+                        <td colspan="9">暂无审批记录</td>
+                    </tr>
+                    <ELSE />
+                    <volist name="vo.workflow_log" id = "k">
+                        <tr role="row" class="odd">
+                            <td><{$vo.workflow_order_number}></td>
+                            <td><{$vo.workflow_name}></td>
+                            <td><{$vo.workflow_type}></td>
+                            <td><{$vo.creater}></td>
+                            <td><{$vo.create_time}></td>
+                            <td><{$k.perator}></td>
+                            <td><{$k.create_time}></td>
+                            <td><{$k.operating_state}></td>
+                            <td><{$k.remark}></td>
+                        </tr>
+                    </volist>
+                </IF>
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </article>
+</volist>
+
+

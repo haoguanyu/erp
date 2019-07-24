@@ -1,0 +1,790 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar clearfix">
+                <span>基本信息</span>
+                <span>发票录入</span>
+            </div>
+            <div id="information" class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>交易单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_number}>"
+                                           disabled/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>订单金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_amount}>"
+                                           disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$data.order.add_order_time}>"
+                                           id="add_order_time" name="add_order_time" maxlength="20" readonly
+                                           onFocus="WdatePicker({lang:'zh-cn',minDate:'2016-05-01',dateFmt: 'yyyy-MM-dd'})"/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购类型：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select class="input-text" disabled id="type" name="type" id="type">
+                                        <option value="1">自采</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>我方公司：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="our_buy_company_id" name="our_buy_company_id" class="input-text"
+                                            style="width:100%;">
+                                        <option value="<{$data['order']['our_buy_company_id']}>">
+                                            <{$data['order']['b_company_name']}>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>对方参考：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.sale_number}>"
+                                           placeholder="" id="sale_number" name="sale_number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购员：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.buyer_dealer_name}>"
+                                           placeholder="" id="buyer_dealer_name" name="buyer_dealer_name" disabled>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>用户：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="sale_user_id" name="sale_user_id" class="input-text"
+                                            style="width:100%;">
+                                        <option value="<{$data['order']['sale_user_id']}>">
+                                            <{$data['order']['s_user_name']}>-<{$data['order']['s_user_phone']}>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>供应商：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="sale_company_id" name="sale_company_id" class="input-text"
+                                            style="width:100%;">
+                                        <option value="0"><{$data['order']['s_company_name']}></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>所在城市：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text" style="width:100%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="region.region_list" id="vo" key="k">
+                                            <option value="<{$key}>"
+                                            <if condition="$data['order']['region'] eq $key">selected</if>
+                                            >
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>仓库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="storehouse_id" name="storehouse_id" class="input-text"
+                                            style="width:100%;">
+                                        <option value="<{$data.order.storehouse_id}>"><{$data.order.storehouse_name}>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>油库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="depot_id" name="depot_id" class="input-text" style="width:100%;">
+                                        <option value="<{$data.order.depot_id}>"><{$data.order.depot_name}></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>付款方式：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="pay_type" name="pay_type" class="input-text" style="width:100%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="data.pay_type_list" id="vo" key="k">
+                                            <option value="<{$key}>"
+                                            <if condition="$data['order']['pay_type'] eq $key">selected</if>
+                                            >
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>预付比例：</label>
+
+                                <div class="formControls col-xs-7 col-sm-7">
+                                    <input type="text" class="input-text" name="prepay_ratio" id="prepay_ratio"
+                                           value="<{$data['order']['prepay_ratio']}>">
+                                </div>
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>账期天数：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" name="account_period" id="account_period"
+                                           value="<{$data['order']['account_period']}>">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">特需采购：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8 skin-minimal">
+                                    <div class="check-box">
+                                        <input type="checkbox" value="1" id="is_special" name="is_special"
+                                        <{$data['order']['is_special'] ? 'checked' : ''}>>
+                                        <label for="is_special">&nbsp;</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>银行帐号：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9">
+                                <select id="sale_collection_info" name="sale_collection_info" class="input-text"
+                                        style="width:102%;">
+                                    <option value=""><{$data['order']['sale_collection_info']}></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <br/>
+
+                        <p>商品信息</p>
+                        <hr/>
+                        <br/>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>商品代码：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['goods_code']}>"
+                                           placeholder="" id="goods_code" name="goods_code">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>商品名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['goods_name']}>"
+                                           placeholder="" name="goods_name" id="goods_name" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>商品来源：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['source_from']}>"
+                                           placeholder="" name="goods_from" id="goods_from" disabled>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>商品标号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['grade']}>"
+                                           placeholder="" name="goods_grade" id="goods_grade" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['goods_num']}>"
+                                           placeholder="" id="goods_num" name="goods_num">
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品级别：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['level']}>"
+                                           placeholder="" id="goods_level" name="goods_level" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>采购单价：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data['order']['price']}>"
+                                           placeholder="" id="price" name="price">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                                <div class="formControls col-xs-10 col-sm-10">
+                                    <textarea id="" name="" style="height:100px;width:96%;" class="input-text" maxlength="255"><{$data['order']['remark']}></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-invoice-add" style="display: none;">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>发票号码：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="invoice_sn" name="invoice_sn" value=""
+                                           onblur="checkinvoicesn()"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>发票类型：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select class="input-text" id="invoice_type" name="invoice_type"
+                                            onchange="checkinvoicetype()">
+                                        <option value="">请选择</option>
+                                        <volist name="data.invoice_type" id="vo" key="k">
+                                            <option value="<{$key}>">
+                                                <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>发票去税金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="notax_invoice_money" name="notax_invoice_money" value="" onkeyup="checknum(this)" onblur="checknotaxinvoicemoney()"/>
+                                    <span id="sps3"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>税额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="tax_money" name="tax_money" value="" onkeyup="checknum(this)" onblur="checktaxmoney()"/>
+                                    <span id="sps4"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">发票状态：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="status" value="" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">订单总金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_amount}>" id="order_amount" disabled/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">待收票金额：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.no_invoice_money}>" id="no_invoice_money" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 col-sm-2">申请备注：</label>
+                                <textarea name="remark" id="remark" cols="100" rows="4"
+                                          style="margin-left: 5px;"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row cl" style="margin-top:20px;">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                                <input type="hidden" id="id" name="id" value="">
+                                <input type="hidden" id="purchase_id" name="purchase_id"
+                                       value="<{$data['order']['id']}>">
+                                <input type="hidden" id="purchase_order_number" name="purchase_order_number"
+                                       value="<{$data['order']['order_number']}>">
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                                <input class="btn btn-primary radius" id="goback" type="button" value="返回">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <br/>
+
+                    <p>发票录入明细</p>
+                    <hr/>
+                    <div class="row cl" style="margin-top:20px;">
+                        <div style="margin-left: 15px;">
+                            <input class="btn btn-primary radius" id="invoice_show" type="button" value="发票录入">
+                        </div>
+                    </div>
+                    <div class="row cl">
+                        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                            <thead>
+                            <tr class="text-c">
+                                <!--<th>-->
+                                    <!--&lt;!&ndash;<input type="checkbox" name="" value="">&ndash;&gt;-->
+                                <!--</th>-->
+                                <th>ID</th>
+                                <th>申请人</th>
+                                <th>录入时间</th>
+                                <th>发票号码</th>
+                                <th>发票金额</th>
+                                <th>财务审核人</th>
+                                <th>审核时间</th>
+                                <th>发票状态</th>
+                                <th>财务备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+                <!--<button onClick="article_save_submit();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存</button>-->
+                <!--<button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>-->
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "1");
+        $('input,select,textarea', $('#information')).attr('disabled', true);
+    });
+
+    //申请付款列表
+    var da = {
+        'show_all': 1,
+        'purchase_order_number': $("#purchase_order_number").val()
+    };
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpFinance/erpPurchaseInvoiceList')}>",
+            type: 'post',
+            data: da
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+//            {
+//                "sClass": "text-c",
+//                "data": null,
+//                "render": function (data, type, full, meta) {
+//                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+//                }
+//            },
+            {"data": "id"},
+            {"data": "creator"},
+            {"data": "create_time"},
+            {"data": "invoice_sn"},
+            {"data": "apply_invoice_money"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if (data.auditor == '') {
+                        return '<span>——</span>';
+                    } else {
+                        return '<span>' + data.auditor + '</span>';
+                    }
+                }
+            },
+            {"data": "audit_time"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if (data.status == 1) {
+                        return '<span class="c-primary">已录入</span>';
+                    } else if (data.status == 2) {
+                        return '<span class="c-warning">已驳回</span>';
+                    } else if (data.status == 10) {
+                        return '<span class="c-success">已完成</span>';
+                    }
+                }
+            },
+            {"data": "audit_remark"},
+        ],
+    });
+
+    $("#invoice_show").click(function () {
+        if ($("#form-invoice-add").is(":hidden")) {
+            var id = $('#purchase_id').val();
+            var da = {
+                'id': id
+            };
+            var url = '<{:U("ErpPurchase/getPurchaseOrderInfo")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            //var data = $('#form-order-add').serialize();
+            ajax(url, data, type, dataType, function (_data) {
+                $("#form-invoice-add").slideDown();
+                $("#order_amount").val(_data.order_amount);
+                $("#no_invoice_money").val((_data.order_amount - _data.all_invoice_money).toFixed(2));
+                $("#id").val('');
+                $("#invoice_sn").val('');
+                $("#notax_invoice_money").val('');
+                $("#invoice_type").find("option[value='1']").prop("selected", true);
+                $("#tax_money").val('');
+                $("#status").val('');
+                $("#remark").val('');
+                $("span[id*='sps']").html('');
+            });
+        }
+    })
+
+    $("#goback").click(function () {
+        doSlideUp();
+    })
+
+    function doSlideUp() {
+        $("#form-invoice-add").slideUp();
+        $("#id").val('');
+        $("#invoice_sn").val('');
+        $("#notax_invoice_money").val('');
+        $("#invoice_type").find("option[value='1']").prop("selected", true);
+        $("#tax_money").val('');
+        $("#status").val('');
+        $("#remark").val('');
+//        $("#audit_remark").val('');
+        $("span[id*='sps']").html('');
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证发票号码
+    function checkinvoicesn() {
+        if ($.trim($("#invoice_sn").val()) == '') {
+            layer.msg("请输入发票号码！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证发票类型
+    function checkinvoicetype() {
+        if ($.trim($("#invoice_type").val()) == '') {
+            layer.msg("请选择发票类型！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证发票去税金额
+    function checknotaxinvoicemoney() {
+        if ($.trim($("#notax_invoice_money").val()) == '') {
+            layer.msg("请输入发票去税金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#notax_invoice_money").val()) <= 0) {
+            layer.msg("发票去税金额必须大于0！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#tax_money").val()) != '' && parseInt($.trim($("#notax_invoice_money").val())) + parseInt($.trim($("#tax_money").val())) > parseInt($.trim($("#no_invoice_money").val()))) {
+            layer.msg("申请发票金额不能超过待收票金额！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证税额
+    function checktaxmoney() {
+        if ($.trim($("#tax_money").val()) == '') {
+            layer.msg("请输入税额！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        }  else if ($.trim($("#tax_money").val()) <= 0) {
+            layer.msg("税额必须大于0！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#notax_invoice_money").val()) != '' && parseInt($.trim($("#notax_invoice_money").val())) + parseInt($.trim($("#tax_money").val())) > parseInt($.trim($("#no_invoice_money").val()))) {
+            layer.msg("申请发票金额不能超过待收票金额！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+
+        submitTrue();
+        var da = {
+            'id': $.trim($("#id").val()),
+            'purchase_id': $.trim($("#purchase_id").val()),
+            'purchase_order_number': $.trim($("#purchase_order_number").val()),
+            'invoice_sn': $.trim($("#invoice_sn").val()),
+            'notax_invoice_money': $.trim($("#notax_invoice_money").val()),
+            'tax_money': $.trim($("#tax_money").val()),
+            'invoice_type': $.trim($("#invoice_type").val()),
+            'remark': $.trim($("#remark").val()),
+        };
+
+        if (checkinvoicesn() && checkinvoicetype() && checknotaxinvoicemoney() && checktaxmoney()) {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpPurchase/invoiceEntry")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchErpPurchaseInvoiceList();
+                    setTimeout(function () {
+                        doSlideUp();
+                        submitFalse();
+                    }, 500);
+                } else {
+                    if(_data.message == '已录入发票金额不能超出订单总金额'){
+                        checkfalse('sps3');
+                        checkfalse('sps4');
+                    }
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            });
+        }
+    });
+
+    top.searchErpPurchaseInvoiceList = function (status) {
+        var current_page = status || false;
+        var param = 'show_all=1';
+
+        table.api().ajax.url("<{:U('ErpFinance/erpPurchaseInvoiceList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+    /* 拜访记录 */
+
+    function saveVisitInfo() {
+        var url = '<{:U("User/saveVisitInfo")}>';
+        var data = $('#form-visit-add').serialize();
+        data.id = '<{$Think.get.id}>';
+        var dataType = 'json';
+        var type = 'post';
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.msg(_data.message, {icon: 1});
+                window.location.reload();
+                return false;
+            } else {
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        })
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        if ($('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked') == false) {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        } else {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+        }
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,352 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">姓名:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="dealer_name" name="dealer_name" class="input-text" >
+                        <option value="" class="select" >请选择</option>
+                        <volist name="data.dealer" id="vo" key="k">
+                            <option value="<{$vo.id}>+<{$vo.dealer_name}>" <if condition="$data['data']['dealer_id'] eq $vo['id']">selected</if>>
+                                <{$vo.dealer_name}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps1"></span>
+                </div>
+                <label class="form-label col-xs-2 ">城市:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="region" class="input-text" id="region"  onchange="checkcity()">
+                        <optgroup label="城市列表">
+                            <option value="">全部城市</option>
+                            <volist name="data.regionList" id="vo" key="k">
+                                <option value="<{$key}>+<{$vo}>" <if condition="$data['data']['region'] eq $key">selected</if>>
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">是否转正:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="is_regular" id="is_regular" class="input-text"  onchange="check_regular(),check_regular_base_num();">
+                        <option value="0">请选择</option>
+                        <volist name="data.is_regular" id="vo" key="k">
+                            <option value="<{$key}>" <if condition="$data['data']['is_regular'] eq $key">selected</if>><{$vo}></option>
+                        </volist>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+                <label class="form-label col-xs-2 ">岗位基础量:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="post_base_num" name="post_base_num" <if condition="$data['data']['is_regular'] eq 2">disabled</if> value="<{$data.data.post_base_num}>" placeholder="" onkeyup="checknumthree(this),count_wall_num()" />
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">新客户商城成交基础量:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="new_mall_num" name="new_mall_num" value="<{$data.data.new_mall_num}>"
+                           placeholder="" onkeyup="checknumthree(this)" />
+                    <span id="sps5"></span>
+                </div>
+                <label class="form-label col-xs-2 ">老客户商城成交基础量:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" name="old_mall_num" id="old_mall_num" value="<{$data.data.old_mall_num}>" onkeyup="checknumthree(this)" class="input-text" />
+                    <span id="sps6"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-4">
+                <input class="btn btn-primary radius" id="id" type="hidden" value="<{$data.data.id}>">
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;修改&nbsp;&nbsp;">
+                <input class="btn btn-primary radius" id="close_no" type="button" style="height:auto;background-color:#AAAAAA;border-style:none;margin-left: 100px;" value="&nbsp;&nbsp;取消&nbsp;&nbsp;"/>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //姓名
+    function check_name() {
+        if ($.trim($("#dealer_name").val()) == '') {
+            layer.msg("请填写姓名！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //城市
+    function checkcity() {
+        if ($.trim($("#region").val()) == '') {
+            layer.msg("请选择城市！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+
+    //是否转正
+    function check_regular() {
+        var is_regular = $.trim($("#is_regular").val());
+        if (is_regular == 0) {
+            layer.msg("请选择转正情况！", {icon: 2});
+            checkfalse('sps3');
+            $('#post_base_num').attr("disabled", false);
+//            $('#post_base_num').val('');
+//            $("#new_mall_num").val('');
+//            $("#old_mall_num").val('');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    /*
+        	逻辑控制：是否转正（通过下来菜单，选择是或否）
+            	否，岗位基础量则默认为0，且不允许修改
+            	是，岗位基础量则不允许<=0
+    */
+    function check_regular_base_num(){
+        var is_regular = $.trim($("#is_regular").val());
+        if(is_regular == 2 ){
+            $('#post_base_num').val(0);
+            $('#post_base_num').attr("disabled", true);
+            count_wall_num();
+        }else if(is_regular == 0){
+            $('#post_base_num').val('');
+            $("#new_mall_num").val('');
+            $("#old_mall_num").val('');
+            $('#post_base_num').attr("disabled", false);
+        } else{
+            $('#post_base_num').attr("disabled", false);
+        }
+        return true;
+    }
+
+    //岗位基础量
+    function check_base_num() {
+        if ($.trim($("#post_base_num").val()) == '' || $.trim($("#post_base_num").val()) < 0 ) {
+            layer.msg("请填写岗位基础量！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //新客户商城成交基础量
+    function check_new() {
+        if ($.trim($("#new_mall_num").val()) == '' || $.trim($("#new_mall_num").val()) < 0 ) {
+            layer.msg("请正确填写新客户商城成交基础量！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+
+    //老客户商城成交基础量
+    function check_old() {
+        if ($.trim($("#old_mall_num").val()) == '' || $.trim($("#old_mall_num").val()) < 0 ) {
+            layer.msg("请正确填写老客户商城成交基础量！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps6');
+            return true;
+        }
+    }
+
+    //增加校验，不允许相加之和=岗位基础量
+    function check_mall_num() {
+        if ((Number($.trim($("#new_mall_num").val())) +  Number($.trim($("#old_mall_num").val()))) !=  Number($.trim($("#post_base_num").val()))) {
+            layer.msg("商城客户成交基础量之和必须等于岗位基础量！", {icon: 2});
+            checkfalse('sps5');
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        }
+
+        if($.trim($("#is_regular").val()) == 1 && $.trim($("#post_base_num").val()) <= 0 ){
+            layer.msg("转正员工岗位基础量必须大于0！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        }
+            return true;
+    }
+
+    // 关闭窗口
+    $('#close_no').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    //添加岗位基础量操作
+    $('#add').click(function () {
+        submitTrue();
+        if ($('#form-member-add').valid() == false) {
+            return false;
+        }
+        var da = {
+            'id'            : $.trim($("#id").val()),
+            'dealer_name'   : $.trim($("#dealer_name").val()),
+            'region'        : $.trim($("#region").val()),
+            'is_regular'    : $.trim($("#is_regular").val()),
+            'post_base_num' : $.trim($("#post_base_num").val()),
+            'new_mall_num'  : $.trim($("#new_mall_num").val()),
+            'old_mall_num'  : $.trim($("#old_mall_num").val())
+        };
+        if ( check_name() && checkcity() && check_regular() && check_base_num() && check_new() && check_old() && check_mall_num()) {
+            layer.load(1, {shade: 0.3});
+            var url      = '<{:U("ErpKpi/updateKpiBase")}>';
+            var type     = 'post';
+            var dataType = 'json';
+            var data     = da;
+            ajax(url, data, type, dataType, function (_data) {
+                layer.load(1, {shade: 0.3});
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                        setTimeout(function () {
+                            layer.closeAll();
+                            top.searthes_kpiBaseList();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            });
+        }
+    });
+
+    //验证是否是数字（保留三位小数）
+    function checknumthree(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // 获取差价
+    function count_wall_num() {
+        var post_base_num    = Number($.trim($("#post_base_num").val()));
+        //if(post_base_num == '' || post_base_num < 0){
+        //    return false;
+        //}
+//        var price = Subtr(current_price,last_price);
+        //  	新客户商城成交基础量 = 岗位基础量 * 0.17 （默认自动计算并允许修改）
+        //  	老客户商城成交基础量 = 岗位基础量 - （岗位基础量*0.17）默认自动计算并允许修改）
+
+        var new_num = post_base_num * 0.17 ;
+        var old_num = post_base_num - new_num ;
+        $("#new_mall_num").val(Number(new_num.toFixed(2)));
+        $("#old_mall_num").val(Number(old_num.toFixed(2)));
+        return true;
+    }
+
+    function Subtr(arg1, arg2) {
+        var r1, r2, m, n;
+        try {
+            r1 = arg1.toString().split(".")[1].length;
+        } catch (e) {
+            r1 = 0;
+        }
+        try {
+            r2 = arg2.toString().split(".")[1].length;
+        } catch (e) {
+            r2 = 0;
+        }
+        m = Math.pow(10, Math.max(r1, r2));
+        // last modify by deeka
+        // 动态控制精度长度
+        n = (r1 >= r2) ? r1 : r2;
+        return ((arg1 * m - arg2 * m) / m).toFixed(n);
+    }
+
+    var selectRegion = $("#region").select2({
+        placeholder: '请选择城市',
+        language: "zh-CN",
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //交易员搜索
+    var select_dealer_name = $("#dealer_name").select2({
+        placeholder: '请选择'
+    }).on('select2-open', function(){
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

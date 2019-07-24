@@ -1,0 +1,165 @@
+<include file="./Application/Home/View/headers.html"/>
+<div class="page-container">
+    <div class="row cl col-sm-12" style="text-align:center;margin-top:10px;margin-left:0px;margin-right:10px;padding:20px 0 20px 0;background-color:#DEFFAC;">
+        <b>该账套下存在多个<{$data.bank_type}>银行，请确认？</b>
+    </div>
+    <article class="page-container" style=" overflow:hidden;" id="input_list">
+        <form action="" method="post" class="form form-horizontal" id="form-member-add">
+            <div class="row cl col-sm-9">
+                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>银行简称：</label>
+                <div class="formControls col-xs-8 col-sm-8" >
+                    <select name="bank_simple_name" class="input-text"  id="bank_simple_name" onchange="update_bank_info()">
+                        <optgroup label="银行简称">
+                            <option value="0">请选择简称</option>
+                            <volist name="data.bank" id="vo" key="k">
+                                <option value="<{$key}>" bank_name="<{$vo.bank_simple_name}>" <if condition="$vo['is_first'] eq 1">selected</if>>
+                                <{$vo.bank_simple_name}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <div class="row cl col-sm-9" >
+                <label class="form-label col-xs-4 col-sm-4">银行名称：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <input type="text" class="input-text disabled " disabled name="bank_name" id="bank_name" >
+                </div>
+            </div>
+
+            <div class="row cl col-sm-9" >
+                <label class="form-label col-xs-4 col-sm-4">银行账号：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <input type="text" class="input-text disabled " disabled name="bank_num" id="bank_num" >
+                </div>
+            </div>
+        </form>
+        <div class="row cl col-sm-12" style="text-align:center;padding-top: 80px;">
+            <input type="hidden" id="examineid" name="examineid" value="<{$id}>"/>
+            <input type="hidden" id="type" name="type" value="<{$type}>"/>
+            <input class="btn btn-primary radius" id="examine_is" style="height:auto;margin-left: 20px;" type="button" value="&nbsp;&nbsp;通过&nbsp;&nbsp;"/>
+            <input class="btn btn-primary radius" id="examine_no" type="button" style="height:auto;background-color:#AAAAAA;border-style:none;margin-left: 40px;" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;"/>
+        </div>
+    </article>
+</div>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var bank_info = <{$data.bank_json}>;
+    // 判断是否存在首选 ，如果是首选，则需要补充银行账号和银行名称
+    var bank_id = $.trim($("#bank_simple_name").val());
+    if(bank_id > 0 ){
+        $("#bank_name").val(bank_info[bank_id]['bank_name']);
+        $("#bank_num").val(bank_info[bank_id]['bank_num']);
+    }else{
+        $("#bank_name").val('');
+        $("#bank_num").val('');
+    }
+    // 审核通过
+    $('#examine_is').click(function() {
+        if(check_bank()){
+            submitTrue();
+            var da = {
+                'id'               : $("#examineid").val(),
+                'bank_id'          :$.trim($("#bank_simple_name").val()),
+                'bank_simple_name' : $.trim($("#bank_simple_name option:selected").text()),
+            };
+            // type 1 预存 2 预付
+            var order_type = $.trim($("#type").val());
+            if(order_type == 1){
+                var url = '<{:U("ErpFinance/confirmPrestoreCollection")}>';
+            }else{
+                var url = '<{:U("ErpFinance/confirmPrepayPayment")}>';
+            }
+            var data = da;
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    if(order_type == 1){
+                        parent.searchPrestoreCollectionOrderList();
+                    }else{
+                        parent.searchPrepayPaymentOrderList();
+                    }
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 500);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            });
+        }
+    });
+
+    var selectRegion = $("#bank_simple_name").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    // 选择简称，更换银行账号和信息
+    function update_bank_info(){
+        var bank_id = $.trim($("#bank_simple_name").val());
+        if(bank_id > 0 ){
+            // 获取最新的银行账号、名称
+            var url = '<{:U("ErpBank/getErpBankInfoById")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = { 'id':bank_id};
+            ajax(url, data, type, dataType, function (_data) {
+                layer.load(1, {shade: 0.3});
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    $("#bank_name").val(_data.bank_name);
+                    $("#bank_num").val(_data.bank_num);
+                } else {
+                    layer.closeAll();
+                    checkfalse('sps2');
+                    $("#bank_name").val('');
+                    $("#bank_num").val('');
+                    layer.msg('该笔银行账号信息有误，请刷新后重试！', {icon: 2});
+                }
+            });
+            //$("#bank_name").val(bank_info[bank_id]['bank_name']);
+            //$("#bank_num").val(bank_info[bank_id]['bank_num']);
+        }else{
+            $("#bank_name").val('');
+            $("#bank_num").val('');
+        }
+    }
+
+    // 验证是否未选择银行账套
+    function check_bank(){
+        if($.trim($("#bank_simple_name").val()) <= 0){
+            layer.msg("发生银行往来，请确认银行信息！", {icon: 2});
+            return false;
+        }
+        return true;
+    }
+
+    // 关闭窗口
+    $('#examine_no').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#examine_is').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#examine_is').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+
+</script>

@@ -1,0 +1,290 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+    .input-text{width: 78%;}
+</style>
+<div class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-change-dealer" style="display: none;">
+
+        <div style="overflow: hidden">
+            <div class="row cl">
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>销售单号：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="<{$data.order.order_number}>" disabled/>
+                        <span id="sps30"></span>
+                    </div>
+                </div>
+
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>单价：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="<{$data.order.price}>" disabled id="old_price"/>
+                        <span id="sps31"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row cl">
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>更新价格：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="" placeholder="请录入需要修改的价格" id="price" name="price" onkeyup="checknum2(this);">
+                        <span id="sps5"></span>
+                    </div>
+                </div>
+
+                <!--<div class="row cl col-sm-6">-->
+                    <!--<label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>新交易员：</label>-->
+
+                    <!--<div class="formControls col-xs-8 col-sm-8">-->
+                        <!--<select id="new_dealer_id" name="new_dealer_id" class="input-text" style="width:78%;">-->
+                            <!--<option></option>-->
+                        <!--</select>-->
+                        <!--<span id="sps6"></span>-->
+                        <!--<input type="hidden" value="" name="new_dealer_name" id="new_dealer_name">-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+            <div class="row cl">
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>备注：</label>
+
+                    <div class="formControls col-xs-10 col-sm-10">
+                        <textarea id="remark" name="remark" style="height:100px;width:96%;" class="input-text" placeholder="请输入修改价格备注"></textarea>
+                        <span id="sps23"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl" style="margin-top:20px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$data['order']['id']}>">
+                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                <input class="btn btn-primary radius" id="goback" type="button" value="返回">
+            </div>
+        </div>
+    </form>
+    <div>
+        <!--<br/>-->
+
+        <!--<p>交易员变更记录</p>-->
+        <!--<hr/>-->
+        <div class="row cl" style="margin-top:10px; margin-bottom: 10px;">
+            <div style="margin-left: 15px;">
+                <input class="btn btn-primary radius" id="from_show" type="button" value="修改价格" onclick="doSlideDown();">
+            </div>
+        </div>
+        <div class="row cl">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable"  style="overflow-x:scroll;white-space:nowrap;">
+                <thead>
+                <tr class="text-c">
+                    <th>ID</th>
+                    <th>订单编号</th>
+                    <th>原价格</th>
+                    <th>新价格</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-spstem .tabBar span", "#tab-spstem .tabCon", "current", "click", "0");
+
+
+        /* 基本信息 */
+        $('#DealerSaveBtn').click(function () {
+
+            submitTrue();
+            var da = {
+                'id': $.trim($("#id").val()),
+                'price': $.trim($("#price").val()),
+                'remark': $.trim($("#remark").val()),
+            };
+            if (da.id == '') {
+                layer.msg('订单信息有误', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            else if (da.price <= 0) {
+                layer.msg('请输入需要更新的价格', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            else {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpPurchase/updatePrice")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+
+                ajax(url, data, type, dataType, function (_data) {
+                    if (_data.status == 1) {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 1});
+                        searchErpSaleOrderDelayList();
+                        parent.searchErpPurchaseOrderList();
+                        doSlideUp();
+                        submitFalse();
+                        clearFrom();
+                        $('#old_price').val(data.price);
+                        return;
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                        return false;
+                    }
+                });
+            }
+        });
+    })
+    var order_id = $('#id').val();
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+
+    //验证数字（整数）
+    function checknum(oInput) {
+        if ('' != oInput.value.replace(/^[1-9]\d*/, '')) {
+            oInput.value = oInput.value.match(/^[1-9]\d*/) == null ? '' : oInput.value.match(/^[1-9]\d*/);
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum2(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    //变更明细 xiaowen
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+
+            url: "<{:U('ErpPurchase/updatePriceLogList')}>",
+            data:{order_id:order_id},
+            type: 'post',
+
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+
+            {"data": "id"},
+            {"data": "order_number"},
+            {"data": "old_price"},
+            {"data": "new_price"},
+            {"data": "operator"},
+            {"data": "create_time"},
+            {"data": "remark"},
+
+        ],
+    });
+
+    searchErpSaleOrderDelayList = function (status) {
+        var current_page = status || false;
+        var param = 'show_all=1';
+
+        table.api().ajax.url("<{:U('ErpPurchase/updatePriceLogList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $("#goback").click(function () {
+        doSlideUp();
+    })
+
+    function doSlideUp() {
+        $("#form-change-dealer").slideUp();
+    }
+    function doSlideDown(){
+        $("#form-change-dealer").slideDown();
+    }
+    function clearFrom(){
+        $('#form-change-dealer').find('#remark, #price').val(''); //清除备注
+        //$('#new_dealer_id').html('<option></option>');//清除交易员下拉搜索
+    }
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

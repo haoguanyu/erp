@@ -1,0 +1,300 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>仓库名称:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="storehouse_name" name="storehouse_name" placeholder="仓库名称"
+                           onblur="checkstorehousename()"/>
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>类型:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="type" class="input-text" id="type" onchange="checktype()">
+                        <option value="">请选择</option>
+                        <volist name="data.erpStorehuseType" id="vo" key="k">
+                            <IF condition="$key eq 1">
+                                <option value="<{$key}>" selected="selected">
+                                    <{$vo}>
+                                </option>
+                                <else/>
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </IF>
+                        </volist>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="region" name="region" class="input-text" onchange="checkregion()">
+                        <option value="">请选择</option>
+                        <volist name="data.region" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>地址:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="address" name="address" placeholder="仓库地址"
+                           onblur="checkaddress()"/>
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>电话:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="tel" name="tel" placeholder="仓库电话"
+                           onkeyup="checkphone(this)" maxlength="12" onblur="checktel()"/>
+                    <span id="sps5"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>状态:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <div style="width: 78%; float: left; margin-top: 3px;">
+                        <span>启用</span>
+                        <input type="radio" name="status" style="padding-left: 5px;" value="1" checked="checked">
+                        <span style="padding-left: 10px;">禁用</span>
+                        <input type="radio" name="status" style="padding-left: 5px;" value="2">
+                    </div>
+                    <span id="sps6" style="margin-left: 5px;"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">可做单据:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="checkbox" name="is_purchase" value="1">
+                    <span>采购单</span>　
+                    <input type="checkbox" name="is_sale" value="1">
+                    <span>销售单</span>
+                    <br/><input type="checkbox" name="is_allocation" value="1">
+                    <span>向服务商调拨</span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>全国仓库:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <span>是</span>
+                    <input type="radio" name="whole_country" style="padding-left: 5px;" value="1" checked="checked">
+                    <span style="padding-left: 10px;">否</span>
+                    <input type="radio" name="whole_country" style="padding-left: 5px;" value="2">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark" maxlength="100"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;添加&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.24>
+
+    //地区查询插件（可复用）
+    var selectRegion = $("#region").select2({
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证仓库名称
+    function checkstorehousename() {
+        if ($.trim($("#storehouse_name").val()) == '') {
+            layer.msg("请输入仓库名称！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证仓库类型
+    function checktype() {
+        if ($.trim($("#type").val()) == '') {
+            layer.msg("请选择仓库类型！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证城市
+    function checkregion() {
+        if ($.trim($("#region").val()) == '') {
+            layer.msg("请选择城市！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证仓库地址
+    function checkaddress() {
+        if ($.trim($("#address").val()) == '') {
+            layer.msg("请输入地址！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证仓库电话
+    function checktel() {
+        if ($.trim($("#tel").val()) == '') {
+            layer.msg("请输入仓库电话！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+
+    //验证仓库状态
+    function checkstatus() {
+        var status = $("input[name='status']:checked").val();
+        if (status == undefined) {
+            layer.msg("请选择仓库状态！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps6');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checkphone(oInput) {
+        if ('' != oInput.value.replace(/^\d*-?\d*$/, '')) {
+            oInput.value = oInput.value.match(/^\d*-?\d*/) == null ? '' : oInput.value.match(/^\d*-?\d*/);
+        }
+    }
+
+    // @添加
+    $(function () {
+
+        //添加erp仓库操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'storehouse_name': $("#storehouse_name").val(),
+                'type': $("#type").val(),
+                'region': $("#region").val(),
+                'address': $("#address").val(),
+                'tel': $("#tel").val(),
+                'status': $("input[name='status']:checked").val(),
+                'is_purchase': $("input[name='is_purchase']:checked").val() == 1 ? 1 : 2,
+                'is_sale': $("input[name='is_sale']:checked").val() == 1 ? 1 : 2,
+                'is_allocation': $("input[name='is_allocation']:checked").val() == 1 ? 1 : 2,
+                'whole_country': $("input[name='whole_country']:checked").val(),
+                'remark': $("#remark").val()
+            };
+            if (checkstorehousename() && checktype() && checkregion() && checkaddress() && checktel() && checkstatus()) {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpStorehouse/actAddErpStorehouse")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    layer.load(1, {shade: 0.3});
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        setTimeout(function () {
+                            layer.closeAll();
+                            top.searthes_erpStorehouseList();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

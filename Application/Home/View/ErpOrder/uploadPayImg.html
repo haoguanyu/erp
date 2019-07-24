@@ -1,0 +1,828 @@
+<include file="./Application/Home/View/headers.html"/>
+<link href="__TPL__lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+
+    #erpgoods {
+        width: 100%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<script type="text/javascript" src="__TPL__lib/webuploader/0.1.5/webuploader.min.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <p>基本信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>交易单号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="order_number" name="order_number"
+                           value="<{$data.order_number}>"
+                           placeholder="系统自动生成" readonly disabled>
+
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>供应商用户:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+
+                    <{$data.s_user_name}>-<{$data.s_user_phone}>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12">
+
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>供货单号:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <!--<input type="text" class="input-text" id="supply_number" name="supply_number" value="" placeholder="" readonly="readonly"/>-->
+                <{$data.supply_number}>
+                <input type="hidden" class="input-text" id="supply_id" name="supply_id" value="<{$data.id}>">
+            </div>
+
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>供应商:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <{$data.s_company_name}>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购用户:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="phone" name="phone" value="<{$data.b_user_phone}>"
+                           onkeyup="changebyuser(this)">
+                    <input type="hidden" class="input-text" id="buy_user_id" name="buy_user_id"
+                           value="<{$data.buy_user_id}>">
+                    <input type="hidden" class="input-text" id="supply_user_id" name="supply_user_id"
+                           value="<{$data.sale_user_id}>">
+                    <input type="hidden" class="input-text" id="supply_company_id" name="supply_user_id"
+                           value="<{$data.sale_company_id}>">
+                    <!--<input type="hidden" class="input-text" id="order_number" name="order_number" value="<{$data.order_number}>">-->
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购商:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="buy_company_id" name="buy_company_id" class="input-text"
+                            onchange="changeremittance()">
+                        <option value="<{$data.buy_company_id}>"><{$data.b_company_name}></option>
+                    </select>
+
+                    <!--<{$data.b_company_name}>-->
+                    <!--<input type="hidden" value="<{$data.buy_company_id}>" id="buy_company_id" name="buy_company_id">-->
+                    <span id="sps2"></span>
+
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>采购用户名:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="buy_user_name" name="buy_user_name"
+                           value="<{$data.b_user_name}>"
+                           readonly disabled>
+
+                    <span id="sps30"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>交易员:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="dealer_name" name="dealer_name"
+                           value="<{$data.dealer_name}>"
+                           readonly disabled>
+                    <input type="hidden" class="input-text" id="dealer_id" name="dealer_id" value="<{$data.dealer_id}>">
+                    <span id="sps7"></span>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <p>商品信息</p>
+                <hr/>
+                <br/>
+                <table class="table table-border table-bordered table-hover" id="dataTable"
+                       style="width: 90%; margin-left: 5%;">
+                    <thead>
+                    <th>商品代码</th>
+                    <th>商品名称</th>
+                    <th>商品来源</th>
+                    <th>商品标号</th>
+                    <th>商品级别</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+
+                            <{$data.goods_code}>
+                            <!--<input type="hidden" id="goods_id" value="<{$data.goods_id}>">-->
+                        </td>
+                        <td id="goods_name"><{$data.goods_name}></td>
+                        <td id="source_from"><{$data.source_from}></td>
+                        <td id="grade"><{$data.grade}></td>
+                        <td id="level"><{$data.level}></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="region" name="region" class="input-text" width="10%" onchange="changeRegion()">
+                        <option value="">请选择</option>
+                        <volist name="region.region_list" id="vo" key="k">
+
+                            <option value="<{$key}>"
+                            <if condition="$key eq $data['region']">selected</if>
+                            >
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps3"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>油库:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="depot_id" name="depot_id" class="input-text" width="10%">
+                        <option value="">请选择</option>
+                    </select>
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>价格:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="price" name="price" value="<{$data.price|getNum}>"
+                           onblur="checkprice()"
+                           onkeyup="checknum(this)">
+                    <span id="sps5"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>数量:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="buy_num" name="buy_num" value="<{$data.buy_num|getNum}>"
+                           onblur="checkbuynum()" onkeyup="checknum4(this)">
+                    <span id="sps6"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <p>交易信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>收款信息:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="supply_company_info" name="show_front" class="input-text" width="20%"
+                            onchange="checkSupplyInfo('blur')">
+                        <option value="">请选择</option>
+                    </select>
+                    <span id="sps15"></span>
+
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>汇款信息:</label>
+
+                <div class="formControls col-xs-9 col-sm-4" width="100%">
+                    <select id="remittance_info" name="show_front" class="input-text" width="20%"
+                            onchange="checkremittanceinfo('blur')">
+                        <option value="">请选择</option>
+
+                    </select>
+                    <span id="sps16"></span>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>付款截图:</label>
+
+                <div class="formControls col-xs-9 col-sm-4 wu-example" id="uploader">
+                    <!--用来存放文件信息-->
+                    <div id="fileList" class="uploader-list"></div>
+                    <div class="btns">
+                        <div id="picker">选择文件</div>
+                        <a id="btn-star" class="btn btn-default" href="javascript:;">开始上传</a>
+                    </div>
+                    <div id="show_upload_img" style="margin-top: 20px;">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--<IF condition="$data['status'] eq 3">-->
+
+        <!--</IF>-->
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$data.remark}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <!--<input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">-->
+                <IF condition="$data['status'] eq 10">
+                    <input class="btn disabled radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;"
+                           disabled>
+                    <else/>
+                    <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                </IF>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证用户
+    function checksupplyuserid() {
+        if ($.trim($("#supply_user_id").val()) == '') {
+            layer.msg("请输入你名下的用户！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证公司
+    function checksupplycompanyid() {
+        if ($.trim($("#buy_company_id").val()) == '') {
+            layer.msg("请选择公司！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证交易员
+    function checkdealername() {
+        if ($.trim($("#dealer_name").val()) == '') {
+            layer.msg("请确认交易员！", {icon: 2});
+            checkfalse('sps7');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps7');
+            return true;
+        }
+    }
+
+    //验证商品
+    function checkgoodsid() {
+        console.log($.trim($("#goods_id").val()) == '');
+        if ($.trim($("#goods_id").val()) == '') {
+            layer.msg("请选择商品！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证地区
+    function checkregion() {
+        if ($.trim($("#region").val()) == '') {
+            layer.msg("请选择地区！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证库位
+    function checkdepotid() {
+        if ($.trim($("#depot_id").val()) == '') {
+            layer.msg("请选择库位！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps6');
+            return true;
+        }
+    }
+
+    //验证单位价格
+    function checkprice() {
+        if ($.trim($("#price").val()) == '') {
+            layer.msg("请输入价格！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+
+    //验证收款信息
+    function checkSupplyInfo() {
+        if ($.trim($("#supply_company_info").val()) == '') {
+            layer.msg("请选择收款信息！", {icon: 2});
+            checkfalse('sps15');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps15');
+            console.log('this');
+            return true;
+        }
+    }
+
+    //验证采购数量
+    function checkbuynum() {
+        if ($.trim($("#buy_num").val()) == '') {
+            layer.msg("请输入数量！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps6');
+            return true;
+        }
+    }
+    //验证汇款信息
+    function checkremittanceinfo() {
+        if ($.trim($("#remittance_info").val()) == '') {
+            layer.msg("请选择汇款信息！", {icon: 2});
+            checkfalse('sps16');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps16');
+            console.log('this');
+            return true;
+        }
+    }
+
+    // @添加
+    $(function () {
+        //$('#depot_id').find('option[value=""')
+        var region = $("#region").val();
+        iniDepot(region);
+        changeSupplyInfo();
+        changeremittance();
+        $('#add').click(function () {
+
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'remark': $("#remark").val()
+            };
+            da.attach = [];
+            if ($('input[name="attach[]"').length > 0) {
+                $('input[name="attach[]"').each(function (k, val) {
+                    var v = $(this).val();
+                    da.attach.push(v);
+                });
+
+                console.log(da.attach);
+            } else {
+                layer.closeAll();
+                layer.msg('请上传截图', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            layer.load(1, {shade: 0.3});
+//            if (checksupplyuserid() && checkprice() && checksupplycompanyid() && checkSupplyInfo() && checkremittanceinfo() && checkdepotid()
+//                    && checkregion() && checkdealername() && checkbuynum()
+//            ) {
+            var url = '<{:U("ErpOrder/uploadPayImg")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchErpOrderList();
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            });
+//            } else {
+//                layer.closeAll();
+//                submitFalse();
+//            }
+        });
+
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+    //展示地区及油库
+    //根据地区查询
+    function changebyregion() {
+        var region = $("#region").val();
+        if ($.trim(region) == '') {
+            layer.msg("请选择地区！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            var url = '<{:U("ErpSupply/getDepot")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = {region: region};
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.length != 0) {
+                    for (i = 0; i < _data.length; i++) {
+                        if (_data[i].depot_name.substr(-2, 2) == '油库') {
+                            document.getElementById('depot_id').options[i] = new Option(_data[i].depot_name, _data[i].id);
+                        } else {
+                            document.getElementById('depot_id').options[i] = new Option(_data[i].depot_name + '油库', _data[i].id);
+                        }
+                    }
+                    checktrue('sps4')
+                } else {
+                    checkfalse('sps4')
+                }
+            });
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //根据手机号查询公司和交易员
+    function changebyuser(oInput) {
+        //屏蔽ctrl键
+        if (event.keyCode == 17) {
+            return false;
+        }
+
+        //汇款信息清空
+        $("#remittance_info").find("option").remove();
+        $("#remittance_info").append("<option value=''>" + '请选择' + "</option>");
+        $("#sps16").html("");
+        $("#sps16").removeClass();
+
+        //验证信息清空
+        $("#sps1,#sps2").html("");
+        $("#sps1,#sps2").removeClass();
+
+        if ('' != oInput.value.replace(/^[1-9]\d*/, '')) {
+            oInput.value = oInput.value.match(/^[1-9]\d*/) == null ? '' : oInput.value.match(/^[1-9]\d*/);
+        } else {
+            var phone = $("#phone").val();
+            if ($.trim(phone) == '') {
+                return false;
+            }
+            $("#buy_company_id").find("option").remove();
+            $("#dealer_name").val("");
+            $("#buy_company_id").append("<option value=''>" + '查询中...' + "</option>");
+            $("#dealer_name").val("查询中...");
+            if (phone.toString().length < 11) {
+                return false;
+            }
+            if (!isMobile(phone)) {
+                return false;
+            }
+            var url = '<{:U("User/getInfo")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = {phone: phone};
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.d_id == _data.s_id) {
+                    //设置用户信息
+                    if (_data.u_name != '') {
+                        $("#buy_user_id").val(_data.u_id);
+                        checktrue('sps1');
+                    } else {
+                        $("#buy_user_id").val('');
+                        checkfalse('sps1');
+                        submitFalse();
+                    }
+
+                    //设置交易员信息
+                    if (_data.d_id != '') {
+                        $("#dealer_name").val(_data.d_name);
+                        $("#dealer_id").val(_data.d_id);
+                        checktrue('sps3');
+                    } else {
+                        $("#dealer_name").val('--暂无数据--');
+                        checkfalse('sps3');
+                        submitFalse();
+                    }
+
+                    //设置公司信息
+                    if (_data['c_name'].length != 0) {
+                        for (i = 0; i < _data['c_name'].length; i++) {
+                            document.getElementById('buy_company_id').options[i] = new Option(_data['c_name'][i]['company_name'], _data['c_name'][i]['id']);
+                        }
+                        changeremittance();
+                    } else {
+                        $("#buy_company_id").find("option").remove();
+                        if ($.trim(phone).length == 11) {
+                            $("#buy_company_id").append("<option value=''>" + '--暂无公司--' + "</option>");
+                        } else {
+                            $("#buy_company_id").append("<option value=''>" + '查询中...' + "</option>");
+                        }
+                    }
+                } else {
+                    layer.msg("该用户不在你的管理内！", {icon: 2});
+                    $("#dealer_name").val('');
+                    $("#dealer_id").val('');
+                    $("#buy_company_id").find("option").remove();
+                    $("#buy_company_id").append("<option value=''>" + '请选择' + "</option>");
+                    $("#buy_user_id").val('');
+                }
+            });
+        }
+    }
+
+    //地区查询插件（可复用）
+    var selectRegion2 = $("#region").select2({
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //地区查询插件（可复用）
+    var selectDepot2 = $("#depot_id").select2({
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //根据公司查询汇款信息
+    function changeremittance() {
+        checksupplycompanyid();
+        $company = $("#buy_company_id").val();
+        var url = '<{:U("Clients/getRemittance")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = {company: $company};
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.length != 0) {
+                for (i = 0; i < _data.length; i++) {
+                    document.getElementById('remittance_info').options[i] = new Option(_data[i].content, _data[i].content);
+                }
+                $("#sps16").html("<i class='Hui-iconfont'>&#xe676;</i>");
+                $("#sps16").removeClass();
+                $("#sps16").addClass("c-green");
+            } else {
+                $("#sps16").html("<i class='Hui-iconfont'>&#xe706;</i>");
+                $("#sps16").removeClass();
+                $("#sps16").addClass("c-red");
+                submitFalse();
+            }
+        });
+    }
+
+    var depots = <{$data.depots}>;
+    function iniDepot(region) {
+        console.log(region);
+        console.log(depots[region]);
+        if ($.isEmptyObject(depots[region])) {
+            //console.log(111);
+            var options = '<option value="">请选择油库</option>';
+            $('#depot_id').html(options);
+            checkfalse('sps4');
+        } else {
+
+            var options = '';
+            for (var i in depots[region]) {
+                options += '<option value="' + depots[region][i].id + '">' + depots[region][i].depot_name + '</option>';
+            }
+            $('#depot_id').html(options);
+            checktrue('sps4');
+        }
+    }
+    //切换地区
+    function changeRegion() {
+        var region = $("#region").val();
+        //填充油库下拉
+        iniDepot(region);
+
+        if ($.trim(region) == '') {
+            layer.msg("请选择地区！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //根据公司查询收款信息
+    function changeSupplyInfo() {
+        //checksupplycompanyid();
+        ///$company = $("#supply_company_id").val();
+        $company = $("#supply_company_id").val();
+        var url = '<{:U("Clients/getRemittance")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = {company: $company};
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.length != 0) {
+                for (i = 0; i < _data.length; i++) {
+                    document.getElementById('supply_company_info').options[i] = new Option(_data[i].content, _data[i].content);
+                }
+                $("#sps15").html("<i class='Hui-iconfont'>&#xe676;</i>");
+                $("#sps15").removeClass();
+                $("#sps15").addClass("c-green");
+            } else {
+                $("#sps15").html("<i class='Hui-iconfont'>&#xe706;</i>");
+                $("#sps15").removeClass();
+                $("#sps15").addClass("c-red");
+                submitFalse();
+            }
+        });
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    $('form').find('input:text').attr('disabled', true);
+    $('form').find('select').attr('disabled', true);
+</script>
+
+<script type="application/javascript">
+    $(function () {
+        var $list = $("#fileList"), $btn = $("#btn-star"), state = "pending";
+        var uploader = WebUploader.create({
+
+            // swf文件路径
+            swf: '__ROOT__/Resources/lib/webuploader/0.1.5/Uploader.swf',
+
+            // 文件接收服务端。
+            //server: '__ROOT__/Resources/lib/webuploader/0.1.5/server/fileupload.php',
+            server: '<{:U("Upload/uploadFile/upload_type/orderPayImg")}>',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#picker',
+
+            // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+            resize: false
+        });
+        // 当有文件被添加进队列的时候
+        uploader.on('fileQueued', function (file) {
+            $list.append('<div id="' + file.id + '" class="item">' +
+                    '<h4 class="info">' + file.name + '</h4>' +
+                    '<p class="state">等待上传...</p>' +
+                    '</div>');
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#' + file.id),
+                    $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if (!$percent.length) {
+                $percent = $('<div class="progress progress-striped active">' +
+                        '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                        '</div>' +
+                        '</div>').appendTo($li).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css('width', percentage * 100 + '%');
+        });
+        uploader.on('uploadSuccess', function (file, response) {
+            $('#' + file.id).find('p.state').text('已上传');
+            if (response.status == 1) {
+                var html = '<input type="hidden" name="attach[]" value="' + response.file_url + '"><input type="hidden" name="attach_name[]" value="' + response.file_type + '">';
+                $('#' + file.id).append(html);
+                var img = '<img src="/Uploads/Erp/Order/' + response.file_url + '" height="500" width="600"/><br/><br/>';
+                $('#show_upload_img').append(img);
+            }
+
+        });
+
+        uploader.on('uploadError', function (file) {
+            $('#' + file.id).find('p.state').text('上传出错');
+        });
+
+        uploader.on('uploadComplete', function (file) {
+            $('#' + file.id).find('.progress').fadeOut();
+        });
+        uploader.on('all', function (type) {
+            if (type === 'startUpload') {
+                state = 'uploading';
+            } else if (type === 'stopUpload') {
+                state = 'paused';
+            } else if (type === 'uploadFinished') {
+                state = 'done';
+            }
+
+            if (state === 'uploading') {
+                $btn.text('暂停上传');
+            } else {
+                $btn.text('开始上传');
+            }
+        });
+
+        $btn.on('click', function () {
+            if (state === 'uploading') {
+                uploader.stop();
+            } else {
+                uploader.upload();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,299 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 出库申请单列表 <span
+        class="c-gray en">&gt;</span> 出库申请单列表<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+            
+            <div class="mt-10">
+                <input type="text" name="apply_number" id="apply_number" class="input-text" style="width:20%;"
+                       placeholder="出库申请单号">
+                <input type="text" name="order_number" id="order_number" class="input-text" style="width:20%;"
+                       placeholder="来源单号">
+            </div>
+            <div  class="mt-10">
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                 <select name="storehouse_id" class="input-text" style="width:20%" id="search_storehouse">
+                    <optgroup label="仓库列表">
+                        <option value="0">全部仓库</option>
+                         <volist name="data.storehouse" id="sh" key="skh">
+                            <option value="<{$sh.id}>">
+                                <{$sh.storehouse_name}>
+                            </option>
+                        </volist>    
+                    </optgroup>
+                </select>
+                
+            </div>
+
+            <div class="mt-10">
+                <select name="apply_status" class="input-text" id="apply_status" style="width:20%">
+                    <option value="0">请选择状态</option>
+                    <volist name="data.stockOutApplyList" id="vo" key="k">
+                        <option value="<{$key}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <select name="goods_id" class="input-text" style="width:20%" id="search_goods_code">
+                    <optgroup label="商品代码">
+                        <option value="0">全部商品</option>
+                        <volist name="data.goodsList" id="vo" key="k">
+                            <option value="<{$vo.id}>">
+                                <{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+
+                <select name="sale_company_id" class="input-text" id="sale_company_id" style="width:20%">
+                    <option></option>
+
+                </select>
+
+                <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+
+            
+            <!--<div class="mt-10">-->
+                <!---->
+            <!--</div>-->
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a></span>
+        <span><a href="javascript:;"  class="btn btn-primary radius" onclick="add_out_stock('生成出库单', '<{:U(\'ErpStock/addStockOut\')}>', '900','550')" id="add_out_stock"><i class="Hui-iconfont Hui-iconfont-chuku"></i>生成出库单</a></span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>订单时间</th>
+                <th>出库申请单号</th>
+                <th>来源单号</th>
+                <th>交易员</th>
+                <th>用户</th>
+                <th>公司</th>
+                <th>仓库</th>
+                <th>油库</th>
+                <th>商品代码</th>
+                <th>申请出库数量</th>
+                <!--<th>出库数量</th>-->
+                <th>订单状态</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            
+        </table>
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var table = '';
+    $(function () {
+
+        //数据进行渲染
+         table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            "displayStart": 0,
+            ajax: {
+                url: "<{:U('ErpStockOutApply/getList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.apply_id + '"/>';
+                        return str;
+                    }
+                },
+
+                {"data": "apply_id"},
+                {"data": "create_time"},
+                {"data": "outbound_apply_code"},
+                {"data": "source_number"},
+                {"data": "dealer_name"},
+                {"data": "userName"},
+                {"data": "companyName"},
+                {"data": "storehouseName"},
+                {"data": "depotName"},
+                {"data": "goodsName"},
+                {"data": "outbound_apply_num"},
+//                {"data": "outbound_actual_num"},
+                {"data": "status"},
+                {"data": "remark"},
+            ],
+        });
+         //筛选公司信息
+        $("#sale_company_id").select2({
+            ajax: {
+                type: 'GET',
+                url: "<{:U('ErpCustomer/getCustomerData')}>",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term 请求参数
+                        restrict: 2,
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.data,//itemList
+                    };
+                },
+                cache: true,
+
+            },
+            placeholder: '请输入采购商公司名称',//默认文字提示
+            language: "zh-CN",
+            tags: true,//允许手动添加
+            allowClear: true,//允许清空
+            escapeMarkup: function (markup) {
+                return markup;
+            }, // 自定义格式化防止xss注入
+            minimumInputLength: 1,
+            templateResult: function formatRepo(repo) {
+                if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+            }, // 函数用来渲染结果
+            templateSelection: function formatRepoSelection(repo) {
+                if (typeof(repo.company_name) != 'undefined') {
+                    return repo.company_name;
+                } else if (repo.text == '请输入采购商公司名称') {
+                    return repo.text;
+                }
+            } 
+        });
+
+        var selectStorehouse = $("#search_storehouse").select2({
+        placeholder: '请选择仓库',
+        //allowClear: true
+        }).on('select2-open', function () {
+            $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+        });
+
+          // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+        
+    });
+     searchErpSaleOrderList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpStockOutApply/getList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+    //查询
+     function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpSaleOrderList(true);
+    }
+     
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+     /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchSupply').serialize();
+            var url = '<{:U("ErpStockOutApply/exportSaleOrderData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+    //生成出库单
+    function add_out_stock(title, url, w, h){
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        var info_url = '<{:U("ErpStock/checkOrderCanOutStock")}>';
+        ajax(info_url, {id: id}, 'post', 'json', function (_data) {
+            if (_data.status) {
+                url = url + '/id/' + id;
+                layer_show(title, url, w, h);
+            } else {
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+    }
+
+    var selectGoods = $("#search_goods_code").select2({
+        placeholder: '请选择商品',
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+   
+</script>

@@ -1,0 +1,600 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 预存/预付单管理 <span
+        class="c-gray en">&gt;</span> 预存单列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+            
+            <div class="mt-10">
+                <input type="text" name="order_number" id="order_number" class="input-text" style="width:15%;"
+                       placeholder="预存单号">
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:15%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:15%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+            </div>
+
+            <div class="mt-10">
+                <select name="region" class="input-text" style="width:15%" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+                <select name="recharge_type" class="input-text" style="width:15%">
+                    <option value=''>预存类型</option>
+                    <volist name="data.PrestoreType" id="vo" key="k">
+                        <option value='<{$key}>'><{$vo}></option>
+                    </volist>
+                </select>
+                <select name="finance_status" class="input-text" style="width:15%">
+                    <option value=''>收款状态</option>
+                    <volist name="data.RechargeFinanceStatus" id="vo" key="k">
+                        <option value='<{$key}>'><{$vo}></option>
+                    </volist>
+                </select>
+            </div>
+
+            <div class="mt-10">
+                <input type="text" name="Recharge_user" id="Recharge_user" class="input-text" style="width:15%;" placeholder="客户">
+                <select name="Recharge_company_id" class="input-text" id="Recharge_company_id" style="width:15%">
+                    <option></option>
+                </select>
+                <input type="text" name="dealer_name" id="dealer_name" class="input-text" style="width:15%;" placeholder="交易员">
+                <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" class="btn btn-success radius" onclick="confirm_collection()" id="confirm_collection"><i class="Hui-iconfont Hui-iconfont-xuanze"></i>确认收款</a></span>
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="reject_collection()" id="reject_collection"><i class="Hui-iconfont">&#xe6e1;</i>驳回</a></span>
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a></span>
+    </div>
+
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>业务日期</th>
+                <th>预存申请单号</th>
+                <th>城市</th>
+                <th>银行简称</th>
+                <th>客户</th>
+                <th>手机</th>
+                <th>公司</th>
+                <th>预存金额(元)</th>
+                <th>预存款类型</th>
+                <th>订单状态</th>
+                <th>收款状态</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+        <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    //addressInit('goodsName', 'goodsGrade','goodsLevel', ['请选择','请选择','请选择']);
+    var table = '';
+    var zhaoyou_status = [];
+    zhaoyou_status[0] = '未审核';
+    zhaoyou_status[1] = '审核不通过';
+    zhaoyou_status[10] = '审核通过';
+
+    /** 控制权限  **/
+    var access_node = "<{$access_node}>";
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    /** end 控制权限  **/
+
+    $(function () {
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                // url: "<{:U('ErpOrder/orderList')}>",
+                url: "<{:U('ErpFinance/prestoreCollectionOrderList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '" status="' + data.status + '"/>';
+                        return str;
+                    }
+
+                },
+                {"data": "id"},
+                {"data": "add_order_time"},
+                {"data": "order_number"},
+                {"data": "region_name"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        var url = '<{:U(\'ErpBank/getErpBankInfo\')}>';
+                        //var onclick = "update_order('编辑', '<{:U(\'ErpPurchase/updatePurchaseOrder\')}>', '900','550' ,'" + data.purchase_id + "')";
+
+                        var onclick = "erp_bank_detail('银行账号详情', '"+url+"', '800','550' ,'" + data.id + "')";
+                        return '<a onclick="' + onclick + '" class="c-primary">' + data.bank_simple_name + '</a>';
+                    }
+                },
+                {"data": "user_name"},
+                {"data": "user_phone"},
+                {"data": "company_name"},
+//                {
+//                    "data": null,
+//                    render: function (data, type, full, meta) {
+//                        var str            = '';
+//                        var s_company_name = data.s_company_name;
+//                        str += '<a href="javascript:;" title="' + company_name + '"  class="c-primary" onclick="clients_detail(\'公司详情\',\'<{:U(\"/Clients/clientsInfo\")}>\',' + data.company_id + ',1000,500)">' + company_name + '</a>';
+//                        return str;
+//                    }
+//                },
+
+                {"data": "recharge_amount"},
+                {"data": "recharge_type"},
+                {"data": "order_status"},
+                {"data": "finance_status"},
+                {"data": "creater_name"},
+                {"data": "create_time"},
+                {"data": "remark"},
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            },
+            footerCallback: function ( row, data, start, end, display,aoData ) {
+
+                if(data == ''){
+                    $('tfoot th').eq(0).siblings().html('');
+                    $('#sum_total th').eq(0).siblings().html('');
+                    //console.log('--');
+                    return false;
+                }else{
+                    var total_recharge_amount = data[0].sumTotal['total_recharge_amount'];
+                    $('#sum_total th').eq(9).html(parseFloat(total_recharge_amount).toFixed(4));
+                }
+                var api = this.api();
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                //Total over all pages
+
+                for(i=0;i<16;i++){
+
+                    if(i == 0){
+                        continue;
+                    }
+
+                    if(i < 9 || i > 9){
+                        $( api.column( i ).footer() ).html("");
+                        continue;
+                    }
+
+                    var totals;
+                    var total = api.column(i).data();
+                    if(total.length > 0){
+                        totals = total.reduce(function (a, b) {
+                            if (isNaN(a)) {
+                                a = 0;
+                            }
+                            if (isNaN(b)) {
+                                b = 0;
+                            }
+                            return intVal(a) + intVal(b);
+                        });
+                    }else{
+                        totals = 0;
+                    }
+                    // Total over this page
+                    var pageTotals;
+                    var pageTotal = api.column(i, {page: 'current'}).data();
+                    if(pageTotal.length > 0){
+                        pageTotals = pageTotal.reduce(function (a, b) {
+                            if (isNaN(a)) {
+                                a = 0;
+                            }
+                            if (isNaN(b)) {
+                                b = 0;
+                            }
+                            return intVal(a) + intVal(b);
+                        });
+                    }else{
+                        pageTotals = 0;
+                    }
+                    //console.log(pageTotals);
+                    pageTotals = intVal(pageTotals) + 0;
+                    totals = intVal(totals) + 0;
+                    // Update footer
+                    if(i ==15 || i == 16){
+                        $(api.column(i).footer()).html(
+                                '' + parseFloat(pageTotals).toFixed(4)
+                        );
+                    }else{
+                        $(api.column(i).footer()).html(
+                                '' + parseFloat(pageTotals).toFixed(2)
+                        );
+                    }
+
+                }
+            }
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+
+    //确认收款
+    function confirm_collection() {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var url = '<{:U("ErpRecharge/getOneRechargeOrderInfo")}>';
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, {id:id}, type, dataType, function (_data) {
+            if(_data.finance_status != 1){
+                layer.closeAll();
+                layer.msg('该预存单不是未收款状态，无法确认收款', {icon: 2});
+                return false;
+            }else if(_data.bank_num <= 0){
+                layer.closeAll();
+                layer.msg('该账套下银行账号信息未配置，请完善后操作！', {icon: 2});
+                return false;
+            }else if(_data.account_balance < 0 ){
+                layer.closeAll();
+                layer.msg('该用户余额不足，请刷新后查看！', {icon: 2});
+                return false;
+            } else if(_data.bank_num == 1){
+                layer.confirm('确定要付款吗？', function () {
+                    layer.load(1, {shade: 0.3});
+                    var url = '<{:U("ErpFinance/confirmPrestoreCollection")}>';
+                    var bank_id          = '';
+                    var bank_simple_name = '';
+                    $.each($.parseJSON(_data.bank_json), function(idx, obj) {
+                        bank_id          = obj.id;
+                        bank_simple_name = obj.bank_simple_name ;
+                    });
+                    var data = {id: id,bank_id:bank_id,bank_simple_name:bank_simple_name};
+                    var dataType = 'json';
+                    var type = 'post';
+                    ajax(url, data, type, dataType, function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            searchPrestoreCollectionOrderList();
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+                            return false;
+                        }
+                    });
+                })
+            }else{
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpFinance/prepayBank")}>';
+                var title = '确认银行账号信息';
+                var w = 800;
+                var h = 500;
+                // type 1 是预存
+                url = url + '/id/' + id + '/type/' + 1 ;
+                layer.closeAll();
+                layer_show(title, url, w, h);
+            }
+//            layer.confirm('确定要收款吗？', function () {
+//                layer.load(1, {shade: 0.3});
+//                var url = '<{:U("ErpFinance/confirmPrestoreCollection")}>';
+//                var data = {id: id};
+//                var dataType = 'json';
+//                var type = 'post';
+//                ajax(url, data, type, dataType, function (_data) {
+//                    if (_data.status == 1) {
+//                        layer.closeAll();
+//                        layer.msg(_data.message, {icon: 1});
+//                        searchPrestoreCollectionOrderList();
+//                    } else {
+//                        layer.closeAll();
+//                        layer.msg(_data.message, {icon: 2});
+//                        return false;
+//                    }
+//                });
+//            })
+        });
+    }
+
+    //驳回收款
+    function reject_collection() {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var url = '<{:U("ErpRecharge/getOneRechargeOrderInfo")}>';
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, {id:id}, type, dataType, function (_data) {
+            if(_data.finance_status != 1){
+                layer.closeAll();
+                layer.msg('该预存单不是未收款状态，无法驳回', {icon: 2});
+                return false;
+            }
+            layer.confirm('确定要驳回吗？', function () {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpFinance/rejectPrestoreCollection")}>';
+                var data = {id: id};
+                var dataType = 'json';
+                var type = 'post';
+                ajax(url, data, type, dataType, function (_data) {
+                    if (_data.status == 1) {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 1});
+                        searchPrestoreCollectionOrderList();
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        return false;
+                    }
+                });
+            })
+        });
+    }
+
+    searchPrestoreCollectionOrderList = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpFinance/prestoreCollectionOrderList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchPrestoreCollectionOrderList(true);
+    }
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCompany = $("#Recharge_company_list").select2({
+        placeholder: '请选择供应商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    $("#Recharge_company_id").select2({
+        ajax: {
+            type: 'GET',
+            //url: "<{:U('Clients/getCompanyByName')}>",
+            url: "<{:U('ErpCustomer/getCustomerData')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    restrict: 2,
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请输入公司名称',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.company_name) != 'undefined') {
+                return repo.company_name;
+            } else if (repo.text == '请输入公司名称') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchSupply').serialize();
+            var url = '<{:U("ErpFinance/exportPrestoreCollectionData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+    /*银行账号-详情*/
+    function erp_bank_detail(title, url, w, h, id) {
+        url = url + '/id/' + id + '/type/' + 3;
+        layer_show(title, url, w, h);
+    }
+
+</script>

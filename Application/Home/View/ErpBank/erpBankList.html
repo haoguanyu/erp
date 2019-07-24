@@ -1,0 +1,252 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 财务管理 <span
+        class="c-gray en">&gt;</span> 银行账号管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <span class="ml-10">账套名称：&nbsp;</span>
+                <select name="our_company_id" class="input-text" style="width:15%" id="our_company_id">
+                    <optgroup label="账套公司">
+                        <option value="0">全部公司</option>
+                        <volist name="data.our_company" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+                <span class="ml-10">收付类型：&nbsp;</span>
+                <select name="pay_type" class="input-text" id="pay_type" style="width:15%">
+                    <option value="0">请选择</option>
+                    <volist name="data.pay_type" id="vo" key="k">
+                        <option value='<{$key}>'><{$vo}></option>
+                    </volist>
+                </select>
+            </div>
+            <div class="mt-10">
+                <span class="ml-10">业务对象：&nbsp;</span>
+                    <select name="business_type" class="input-text" id="business_type" style="width:15%">
+                        <option value="0">请选择</option>
+                        <volist name="data.business_type" id="vo" key="k">
+                            <option value='<{$key}>'><{$vo}></option>
+                        </volist>
+                    </select>
+                    <span class="ml-10">　　状态：&nbsp;</span>
+                    <select name="bank_status" class="input-text" id="bank_status" style="width:15%">
+                        <option value="0">请选择</option>
+                        <volist name="data.bank_status" id="vo" key="k">
+                            <option value='<{$key}>'><{$vo}></option>
+                        </volist>
+                    </select>
+                        &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                           value="查询"/>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l">　<a href="javascript:;" onclick="erp_config_add('新增银行账号', '<{:U(\'ErpBank/addErpBank\')}>', '', '850','450')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i>新增</a>&nbsp;</span>
+        <span class="l">　<a href="javascript:;" onclick="erp_config_update('编辑银行账号', '<{:U(\'ErpBank/updateErpBank\')}>', '', '800','550')" class="btn btn-secondary radius" ><i class="Hui-iconfont">&#xe6df;</i>编辑</a>&nbsp;</span>
+        <span class="l">　<a href="javascript:;" onclick="erp_config_audit('请确认是否启用！',1)" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>启用</a></span>
+
+        <span class="l">　<a href="javascript:;" onclick="erp_config_audit('请确认是否禁用！',2)" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>禁用</a>&nbsp;</span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>账套名称</th>
+                <th>收付类型</th>
+                <th>业务对象</th>
+                <th>银行简称</th>
+                <th>银行名称</th>
+                <th>银行账号</th>
+                <th>状态</th>
+                <th>首选</th>
+                <th>内部首选</th>
+                <th>操作员</th>
+                <th>更新时间</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            url: "<{:U('ErpBank/erpBankList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" /><input type="hidden" value="' + data.status + '">';
+                }
+            },
+            {"data": "id"},
+            {"data": "our_company_name"},
+            {"data": "pay_type"},
+            {"data": "business_type"},
+            {"data": "bank_simple_name"},
+            {"data": "bank_name"},
+            {"data": "bank_num"},
+            {"data": "bank_status"},
+            {"data": "is_first"},
+            {"data": "default_bank"},
+            {"data": "create_name"},
+            {"data": "create_time"},
+        ],
+    });
+
+    /*系统配置-添加*/
+    function erp_config_add(title, url, id, w, h) {
+        url = url + '/id/' + id;
+        layer_show(title, url, w, h);
+    }
+
+    /*系统配置-编辑*/
+    function erp_config_update(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+    /*系统配置-审核*/
+    function erp_config_audit(title,status) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpBank/updateErpBankStatus")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm(title, {
+                btn: ['是', '取消']
+            }, function () {
+                $.ajax({
+                    url: url,
+                    data: {id: id,status:status},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                top.searthes_erp_bankList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                top.searthes_erp_bankList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+    var selectRegion = $("#our_company_id").select2({
+        placeholder: '请选择公司',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    // @搜索框搜索查询
+    top.searthes_erp_bankList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpBank/erpBankList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searthes_erp_bankList(true);
+
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+</script>

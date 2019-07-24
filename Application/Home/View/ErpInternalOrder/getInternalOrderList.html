@@ -1,0 +1,255 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<script type="text/javascript" src="__TPL__static/select.js"></script>-->
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 内部交易单管理 <span
+        class="c-gray en">&gt;</span> 内部交易单 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <span class="ml-10">内部交易单号：</span>
+                <input type="text" name="order_number" id="order_number" class="input-text" style="width:15%;"
+                       placeholder="内部交易单号">
+                <span class="ml-10">审核状态：</span>
+                <select id="order_status" name="order_status" class="input-text" style="width:15%">
+                    <option value="">请选择</option>
+                    <option value="1">未审核</option>
+                    <option value="2">已取消</option>
+                    <option value="10">已审核</option>
+                </select>
+            </div>
+
+            <div class="mt-10">
+                 <span class="ml-10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;库存主体：</span>
+                    <select name="demand_our_company_id" class="input-text" style="width:15%" id="demand_our_company_id">
+                        <optgroup label="库存主体">
+                            <option value="0">请选择</option>
+                            <volist name="data.company" id="vo" key="k">
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+                <span class="ml-10">销售主体：</span>
+                    <select name="supply_our_company_id" class="input-text" style="width:15%" id="supply_our_company_id">
+                        <optgroup label="销售主体">
+                            <option value="0">请选择</option>
+                            <volist name="data.company" id="vo" key="k">
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+            </div>
+            <div class="mt-10">
+                <span class="ml-10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;仓库：</span>
+                    <select name="storehouse_id" class="input-text" id="storehouse_id" style="width:15%">
+                        <option></option>
+                    </select>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l"><a href="javascript:;" onclick="getOrderByInternalOrder('查看订单明细', '<{:U(\'ErpInternalOrder/getOrderByInternalOrder\')}>', '', '850','550')" class="btn btn-primary radius"><i class="Hui-iconfont"></i>查看订单明细</a>&nbsp;</span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>id</th>
+                <th>内部交易单号</th>
+                <th>仓库</th>
+                <th>库存主体</th>
+                <th>销售主体</th>
+                <th>城市</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>商品标注</th>
+                <th>交易数量</th>
+                <th>交易金额</th>
+                <th>订单状态</th>
+                <th>审核时间</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<script type="text/javascript">
+
+    // /** 控制权限  **/
+    // var access_node = <{$access_node}>;
+    // //console.log(access_node);
+    // var check_access = [];
+    // function getCheckAccess(){
+
+    //     $('.check_access').each(function(){
+    //         //console.log($.trim($(this).attr('value')));
+    //         //console.log($.inArray($.trim($(this).attr('value')),access_node));
+    //         if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+    //             $(this).show();
+    //         }else{
+    //             $(this).hide();
+    //         }
+    //     });
+
+    // };
+    // getCheckAccess();
+    /** end 控制权限  **/
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            url: "<{:U('ErpInternalOrder/getInternalOrderList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {"data": "order_number"},
+            {"data": "storehouse_id"},
+            {"data": "demand_our_company_id"},
+            {"data": "supply_our_company_id"},
+           {"data": "region"},
+           {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "label"},
+            {"data": "goods_num"},
+            {"data": "amount"},
+            {"data": "status"},
+            {"data": "audit_time"},
+
+
+        ],
+    });
+
+    $("#storehouse_id").select2({
+        ajax: {
+            type: 'GET',
+            //url: "<{:U('Clients/getCompanyByName')}>",
+            url: "<{:U('ErpInternalOrder/getStorehouseId')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    storehouse_name: params.term, // search term 请求参数
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data,//itemList
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请输入仓库名称',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.storehouse_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.storehouse_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.storehouse_name) != 'undefined') {
+                return repo.storehouse_name;
+            } else if (repo.text == '请输入仓库名称') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpPurchaseOrderList(true);
+
+    }
+
+
+    /*商品-添加*/
+    function getOrderByInternalOrder(title, url, id, w, h) {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+        var id = $(".checkchild:checked").val();
+        url = url + '/id/' + id;
+        layer_show(title, url, w, h);
+    }
+
+    searchErpPurchaseOrderList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+
+        //table.api().ajax.url("<{:U('Galaxy/orderList')}>?"+param);
+        table.api().ajax.url("<{:U('ErpInternalOrder/getInternalOrderList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+</script>

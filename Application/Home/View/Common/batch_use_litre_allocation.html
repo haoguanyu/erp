@@ -1,0 +1,559 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+<input class="btn btn-primary radius" id="reset_num" type="button" value="重置数量">
+<input class="btn btn-primary radius" id="reset_num" type="button" onclick="lossAllCount()" value="计算">
+<input id="now_rational_loss" type="hidden" value="0">
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>商品代码</th>
+                <th>仓库</th>
+                <th>系统批次号</th>
+                <th>货权形式</th>
+                <th>货权号</th>
+                <th>出库吨数</th>
+                <th>使用升数</th>
+                <th>使用密度</th>
+                <th>使用吨数</th>
+                <th>损耗数量</th>
+                <th>合理损耗</th>
+                <th>超损数量</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+    </div>
+</div>
+
+<!--<include file="./Application/Home/View/footers.html"/>-->
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+<!--<script type="text/javascript" src="__TPL__lib/datatables/1.10.0/dataTables.editor.min.js"></script>-->
+
+<script type="text/javascript">
+    //addressInit('goodsName', 'goodsGrade','goodsLevel', ['请选择','请选择','请选择']);
+    var table = '';
+    /** 控制权限  **/
+    //var access_node = <{$access_node}>;
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+
+    //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    var loss_percent_arr = {
+        1.5 : 0.0015,
+        2 : 0.002,
+        3 : 0.003,
+        4 : 0.004,
+    }
+    //getCheckAccess();
+    //var editor;
+    /** end 控制权限  **/
+    $(function () {
+
+        var storehouse_id = $('#storehouse_id').val();
+        var goods_id = $('#goods_id').val();
+        var stock_type = $('#stock_type').val();
+        var our_company_id = $('#our_company_id').val();
+        var source_number = $('#source_number').val();
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                url: "<{:U('ErpBatch/erpBatchUseList')}>",
+                data:{
+                    "storehouse_id":storehouse_id,
+                    "goods_id":goods_id,
+                    "stock_type":stock_type,
+                    "our_company_id":our_company_id,
+                    "source_number":source_number,
+                },
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {"data": "id"},
+                {"data": "goods_code"},
+                {"data": "storehouse_name"},
+                {"data": "sys_bn"},
+                {"data": "cargo_bn_type"},
+                {"data": "cargo_bn"},
+                {"data": "outbound_num"},
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="litre_' + data.id + '" name="litre_num"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="density_' + data.id + '" name="density"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="batch_' + data.id + '" name="use_batch_num"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="loss_' + data.id + '" name="loss_num"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild" onkeyup="checknum4(this)"  value="0" id="reasonable_loss' + data.id + '" name="reasonable_loss_num"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild" onkeyup="checknum4(this)"  value="0" id="exceed_loss' + data.id + '" name="exceed_loss_num"/>';
+                        return str;
+                    }
+                },
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+
+
+        // 重置数量
+        $('#reset_num').on('click',function(){
+            $("#actual_in_num").val(0);
+            $("#actual_in_num_liter").val(0);
+            table.api().ajax.reload();
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+        $('.table-sort tbody').on('dblclick', 'td', function () {
+            var num = $(this).find('span').html();
+            $(this).find('span').hide();
+            $(this).find('input').show().val(num).focus();
+            $(this).parent().siblings().find('td').find('input').hide();
+            $(this).siblings().find('input').hide();
+            $(this).parent().siblings().find('td').find('span').show();
+            $(this).siblings().find('span').show();
+        });
+        
+        $('.table-sort tbody').on('blur', 'tr', function () {
+            //批次可用数量
+            var balance_num = parseFloat($(this).find('td').eq(6).html());
+            //该批次使用升数
+            var batch_num_litre = parseFloat($(this).find('td').eq(7).find('input').val());
+            //该批次使用密度
+            var density = parseFloat($(this).find('td').eq(8).find('input').val());
+            //计算该批次的使用吨数
+            if (batch_num_litre != 0 && density != 0) {
+                var batch_num = parseFloat((batch_num_litre * density / 1000).toFixed(4));
+            } else {
+                var batch_num = 0
+            }
+            //损耗数量
+            // var loss_num = parseFloat($(this).find('td').eq(10).find('input').val());
+            var loss_num = batch_num < balance_num && batch_num != 0 ? parseFloat((balance_num - batch_num).toFixed(4)) : 0;
+            //合理损耗比例
+            var loss_percent = loss_percent_arr[$("#loss_ratio").val()];
+            if (loss_num > balance_num) {
+                loss_num = 0;
+                $(this).find('td').eq(10).find('input').val(0);
+                $(this).find('td').eq(11).find('input').val(0);
+                $(this).find('td').eq(12).find('input').val(0);
+                layer.msg('损耗数量不能大于出库数量', {icon: 2});
+            }
+            //验证是否损耗
+            if (loss_num != 0 && ($("#is_loss").val() == 2 || $("#loss_ratio").val() == 0)) {
+                batch_num_litre = 0;
+                batch_num = 0;
+                loss_num = 0;
+                $(this).find('td').eq(10).find('input').val(0);
+                $(this).find('td').eq(11).find('input').val(0);
+                $(this).find('td').eq(12).find('input').val(0);
+                layer.msg('请选择有损耗并选择损耗比例', {icon: 2});
+            }
+            // else if (loss_num == 0 && ($("#is_loss").val() == 1 || $("#loss_ratio").val() != 0) && batch_num != 0) {
+            //     batch_num_litre = 0;
+            //     batch_num = 0;
+            //     loss_num = 0;
+            //     $(this).find('td').eq(10).find('input').val(0);
+            //     $(this).find('td').eq(11).find('input').val(0);
+            //     $(this).find('td').eq(12).find('input').val(0);
+            //     layer.msg('有损耗时，损耗数量不能为空！', {icon: 2});
+            // }
+            //验证升数和密度
+            if (batch_num_litre < 0) {
+                layer.msg('升数不能小于0', {icon: 2});
+                return false;
+            }
+            if (density != 0 && (density < 0.7 || density > 1)) {
+                layer.msg('密度不合规', {icon: 2});
+                return false;
+            }
+            var theoretically_reasonable_loss_num = (loss_num + batch_num) * loss_percent;
+            theoretically_reasonable_loss_num = theoretically_reasonable_loss_num ? theoretically_reasonable_loss_num : 0;
+            var reasonable_loss_num = loss_num < theoretically_reasonable_loss_num ? loss_num : theoretically_reasonable_loss_num;
+            var exceed_loss_num = loss_num - reasonable_loss_num;
+            reasonable_loss_num = parseFloat(reasonable_loss_num.toFixed(4));
+            exceed_loss_num = parseFloat(exceed_loss_num.toFixed(4));
+            
+
+            // YF 更改
+            // 当前合理损耗数量
+            var rational_loss = parseFloat($(this).find('td').eq(11).find('input').val());
+            // 当前超损数量
+            var supper_loss = parseFloat($(this).find('td').eq(12).find('input').val());
+            if ( loss_num != 0 ) {
+                if ( Number(rational_loss) > Number(loss_num) && Number(rational_loss) != Number($(this).find('td').eq(11).find('span').html()) ) {
+                    layer.msg('合理损耗不能大于损耗数量！', {icon: 2});
+                    reasonable_loss_num = 0;
+                    exceed_loss_num     = 0;
+                } else if( Number(rational_loss) != Number($(this).find('td').eq(11).find('span').html()) ){
+                    console.log('(1)超损数量');
+                    exceed_loss_num = decimal(loss_num - rational_loss,4);
+                    reasonable_loss_num = rational_loss;
+                    console.log(loss_num+'-'+rational_loss+'='+exceed_loss_num);
+                } else if ( Number(supper_loss) > Number(loss_num) && Number(supper_loss) != Number($(this).find('td').eq(12).find('span').html()) ) {
+                    layer.msg('超损不能大于损耗数量！', {icon: 2});
+                    reasonable_loss_num = 0;
+                    exceed_loss_num     = 0;
+                } else if ( Number(supper_loss) != Number($(this).find('td').eq(12).find('span').html()) ) {
+                    console.log('(1)合理损耗数量');
+                    reasonable_loss_num = decimal(loss_num - supper_loss,4);
+                    exceed_loss_num = supper_loss;
+                    console.log(loss_num+'-'+supper_loss+'='+reasonable_loss_num);
+                }
+            }
+
+            if ( $('.table-sort tbody tr').length == 1 
+                || Number(rational_loss) != Number($(this).find('td').eq(11).find('span').html()) 
+                || Number(supper_loss) != Number($(this).find('td').eq(12).find('span').html())
+               ) {
+                if ( $('.table-sort tbody tr').length == 1  ) {
+                    lossAllCount();
+                }
+                $(this).find('td').eq(11).find('input').hide().val(reasonable_loss_num);
+                $(this).find('td').eq(11).find('span').show().html(reasonable_loss_num);
+                $(this).find('td').eq(12).find('input').hide().val(exceed_loss_num);
+                $(this).find('td').eq(12).find('span').show().html(exceed_loss_num);
+            } else {
+                // 如果使用数量变更，所有合理损耗及超损全部变为0,需重新计算
+                if ( batch_num_litre != parseFloat($(this).find('td').eq(7).find('span').html()) 
+                    || density != parseFloat($(this).find('td').eq(8).find('span').html()) ) {
+                    rational_loss = 0;
+                    supper_loss = 0;
+                    $('.table-sort tbody tr').each(function() {
+                        $(this).find('td').eq(11).find('span').html(rational_loss);
+                        $(this).find('td').eq(11).find('input').val(rational_loss);
+                        $(this).find('td').eq(12).find('span').html(supper_loss);
+                        $(this).find('td').eq(12).find('input').val(supper_loss);
+                    });
+                }
+                $(this).find('td').eq(11).find('input').hide().val(rational_loss);
+                $(this).find('td').eq(11).find('span').show().html(rational_loss);
+                $(this).find('td').eq(12).find('input').hide().val(supper_loss);
+                $(this).find('td').eq(12).find('span').show().html(supper_loss);
+            }
+            $(this).find('td').eq(7).find('input').hide().val(batch_num_litre);
+            $(this).find('td').eq(7).find('span').show().html(batch_num_litre);
+            $(this).find('td').eq(8).find('input').hide().val(density);
+            $(this).find('td').eq(8).find('span').show().html(density);
+            $(this).find('td').eq(9).find('input').hide().val(batch_num);
+            $(this).find('td').eq(9).find('span').show().html(batch_num);
+            $(this).find('td').eq(10).find('input').hide().val(loss_num);
+            $(this).find('td').eq(10).find('span').show().html(loss_num);
+            //批次出库吨数合计
+            var inputs = $('input[name="use_batch_num"]');//找到div里面所有的input
+            var use_batch_num = 0;
+            inputs.each(function(){
+                use_batch_num += this.value * 1;//值转换为number，然后相加
+            });
+            //批次出库升数合计
+            var inputs_litre = $('input[name="litre_num"]');//找到div里面所有的input
+            var use_batch_num_litre = 0;
+            inputs_litre.each(function(){
+                use_batch_num_litre +=  + this.value * 1;//值转换为number，然后相加
+            });
+            storage_num = parseFloat(use_batch_num.toFixed(4));
+            storage_num_litre = parseFloat(use_batch_num_litre.toFixed(2));
+            $("#actual_in_num").val(storage_num);
+            $("#actual_in_num_liter").val(storage_num_litre);
+        });
+    });
+    
+    // 验证合理损耗+超损是否等于 损耗数量
+    function verifLossNum(){
+        var verif = 0;
+        $('.table-sort tbody tr').each(function() {
+            var loss_num = $(this).find('td').eq(10).find('input').val();
+            var rational_loss = $(this).find('td').eq(11).find('input').val();
+            var supper_loss = $(this).find('td').eq(12).find('input').val();
+            console.log('二级仓 合理损耗+超损：'+decimal(Number(rational_loss)+Number(supper_loss),4)+'损耗数量:'+ loss_num);
+            if(decimal(Number(rational_loss)+Number(supper_loss),4) != Number(loss_num) ){
+                verif = 1;
+            }
+        });
+        if ( verif == 1 ) {
+            layer.msg('请填写正确的合理损耗及超损！！', {icon: 2});
+            return false;
+        }
+        return true;
+    }
+    
+    // 变动是否损耗 数值全部清空
+    function changeloss(){
+        $('.table-sort tbody tr').each(function() {
+            $(this).find('td').eq(11).find('span').html(0);
+            $(this).find('td').eq(11).find('input').val(0);
+            $(this).find('td').eq(12).find('span').html(0);
+            $(this).find('td').eq(12).find('input').val(0);
+            $(this).find('td').eq(7).find('span').html(0);
+            $(this).find('td').eq(7).find('input').val(0);
+            $(this).find('td').eq(8).find('span').html(0);
+            $(this).find('td').eq(8).find('input').val(0);
+            $(this).find('td').eq(9).find('span').html(0);
+            $(this).find('td').eq(9).find('input').val(0);
+            $(this).find('td').eq(10).find('span').html(0);
+            $(this).find('td').eq(10).find('input').val(0);
+        });
+    }
+
+    function decimal(num,v){
+            var vv = Math.pow(10,v);
+            return Math.round(num*vv)/vv;
+        }
+        // 计算按钮
+    function lossAllCount(){
+        var is_loss = $("#is_loss").val();
+        if ( is_loss == 1 ) {
+            if ( $("#loss_ratio").val() == 0 ) {
+                layer.msg('请选择损耗比列！', {icon: 2});
+            }
+            //合理损耗比例
+            var loss_percent = loss_percent_arr[$("#loss_ratio").val()];
+            var use_batch_num = 0;
+            var loss_all_num = 0;
+            $('.table-sort tbody tr').each(function() {
+                // 全部吨数
+                use_batch_num += + Number($(this).find('td').eq(9).find('input').val())
+                // 全部损耗数量
+                loss_all_num += + Number($(this).find('td').eq(10).find('input').val());
+            });
+            console.log('全部损耗数量：'+loss_all_num);
+            console.log('全部吨数：'+use_batch_num);
+            var all_num = 0;
+            var all_rational_loss = decimal((Number(use_batch_num) + Number(loss_all_num))*loss_percent,4);
+            $('.table-sort tbody tr').each(function() {
+                // 损耗数量
+                var loss_num = $(this).find('td').eq(10).find('input').val();
+                if ( loss_num >= all_rational_loss ) {
+                    now_rational_loss = all_rational_loss;
+                } else {
+                    now_rational_loss = loss_num;
+                }
+                all_num += + Number(now_rational_loss);
+                var next_rational_loss = all_rational_loss - now_rational_loss;
+                $(this).find('td').eq(11).find('span').html(decimal(now_rational_loss,4));
+                $(this).find('td').eq(11).find('input').val(decimal(now_rational_loss,4));
+                $(this).find('td').eq(12).find('span').html(decimal(loss_num - now_rational_loss,4));
+                $(this).find('td').eq(12).find('input').val(decimal(loss_num - now_rational_loss,4));
+                all_rational_loss = next_rational_loss;
+            });
+            $('#now_rational_loss').val(all_num);
+
+        }
+    }
+
+    function handleLoss(obj){
+            //批次可用数量
+            var balance_num = parseFloat(obj.find('td').eq(6).html());
+            //该批次使用升数
+            var batch_num_litre = parseFloat(obj.find('td').eq(7).find('input').val());
+            //该批次使用密度
+            var density = parseFloat(obj.find('td').eq(8).find('input').val());
+            //计算该批次的使用吨数
+            if (batch_num_litre != 0 && density != 0) {
+                var batch_num = parseFloat((batch_num_litre * density / 1000).toFixed(4));
+            } else {
+                var batch_num = 0
+            }
+            //损耗数量
+            // var loss_num = parseFloat($(this).find('td').eq(10).find('input').val());
+            var loss_num = batch_num < balance_num && batch_num != 0 ? parseFloat((balance_num - batch_num).toFixed(4)) : 0;
+            //合理损耗比例
+            var loss_percent = loss_percent_arr[$("#loss_ratio").val()];
+            if (loss_num > balance_num) {
+                loss_num = 0;
+                obj.find('td').eq(10).find('input').val(0);
+                obj.find('td').eq(11).find('input').val(0);
+                obj.find('td').eq(12).find('input').val(0);
+                layer.msg('损耗数量不能大于出库数量', {icon: 2});
+            }
+            //验证是否损耗
+            if (loss_num != 0 && ($("#is_loss").val() == 2 || $("#loss_ratio").val() == 0)) {
+                batch_num_litre = 0;
+                batch_num = 0;
+                loss_num = 0;
+                obj.find('td').eq(10).find('input').val(0);
+                obj.find('td').eq(11).find('input').val(0);
+                obj.find('td').eq(12).find('input').val(0);
+                layer.msg('请选择有损耗并选择损耗比例', {icon: 2});
+            }else if (loss_num == 0 && ($("#is_loss").val() == 1 || $("#loss_ratio").val() != 0) && batch_num != 0) {
+                batch_num_litre = 0;
+                batch_num = 0;
+                loss_num = 0;
+                obj.find('td').eq(10).find('input').val(0);
+                obj.find('td').eq(11).find('input').val(0);
+                obj.find('td').eq(12).find('input').val(0);
+                layer.msg('有损耗时，损耗数量不能为空！', {icon: 2});
+            }
+            //验证升数和密度
+            if (batch_num_litre < 0) {
+                layer.msg('升数不能小于0', {icon: 2});
+                return false;
+            }
+            if (density != 0 && (density < 0.7 || density > 1)) {
+                layer.msg('密度不合规', {icon: 2});
+                return false;
+            }
+        }
+
+//    editor = new $.fn.dataTable.Editor( {
+//        //ajax: "http://erptest.51zhaoyou.me/Editor-PHP/examples/php/staff.php",
+//        ajax: "http://erptest.51zhaoyou.me/Editor-PHP/examples/php/staff.php",
+//        table: ".table-sort",
+//        "idSrc": "id",
+//        fields: [{
+//            //label: "dealer_name:",
+//            name: "inventory_stock_num"
+//        }
+//        ]
+//    });
+
+
+    searchErpInventoryOrderDetail = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpInventory/inventoryOrderDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+
+</script>

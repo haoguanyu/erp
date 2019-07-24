@@ -1,0 +1,133 @@
+<include file="./Application/Home/View/headers.html"/>
+<article class="page-container" style=" overflow:hidden;">
+    <style>
+        #form-member-add .col-sm-6{ padding: 0;}
+        .disabled{
+            cursor:no-drop;
+            background-color: #9D9D9D;
+        }
+        .col-sm-5{
+            margin-bottom: 20px;
+        }
+    </style>
+    <form action="" method="post" class="form form-horizontal" id="form-clients-add">
+        <div style="overflow: hidden">
+            <!--<div class="row cl col-sm-12" style="font-weight: bold">基本信息</div>-->
+
+            <div class="row cl col-sm-6" >
+                <label class="form-label col-xs-4 col-sm-4">公司名称：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.company_name}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">简称：</label>
+                <div class="formControls col-xs-8 col-sm-8" >
+
+                    <{$data.detail.crm.short_name}>
+
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">手机号：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.user_phone}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6" >
+                <label class="form-label col-xs-4 col-sm-4">联系人姓名：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.user_name}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">公司级别：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data['detail']['clients']['company_level']}>
+
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">国税号码：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.tax_num}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">注册银行名称：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.bank_name}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">注册银行账号：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.bank_num}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">注册电话：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.company_tel}>
+                </div>
+            </div>
+
+            <div class="row cl col-sm-6">
+                <label class="form-label col-xs-4 col-sm-4">注册地址：</label>
+                <div class="formControls col-xs-8 col-sm-8">
+                    <{$data.detail.clients.company_address}>
+                </div>
+            </div>
+        </div>
+
+            <div style="margin-top:20px; border-top:1px #cccccc solid; padding-top: 10px;">
+
+                <input type="hidden" name="id" value="<{$Think.get.id}>" id="id">
+                <div class="row cl col-sm-12">
+
+                        <label class="form-label col-xs-2 col-sm-2">收付款帐号：</label>
+                        <div class="formControls col-xs-10 col-sm-10">
+                            <div class="formControls col-xs-5 col-sm-5">
+                                <p style="font-weight: bold;">银行名称</p>
+                            </div>
+                            <div class="formControls col-xs-5 col-sm-5">
+                                <p style="font-weight: bold;">帐号</p>
+                            </div>
+                            <volist name="data.bank" id="vo" key="key">
+
+                                <div class="formControls col-xs-5 col-sm-5">
+                                    <{$vo.bank_name}>
+                                </div>
+                                <div class="formControls col-xs-5 col-sm-5">
+                                    <{$vo.bank_num}>
+                                </div>
+                            </volist>
+                        </div>
+                </div>
+                <div class="row cl col-sm-12" style="margin-top:10px;">
+                    <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                        <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" onclick="closeWindow()" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;">
+                    </div>
+                </div>
+            </div>
+    </form>
+</article>
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    function closeWindow() {
+        //获取窗口索引
+        var index = parent.layer.getFrameIndex(window.name);
+        //关闭弹出层
+        parent.layer.close(index);
+    }
+</script>
+</body>
+</html>

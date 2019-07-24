@@ -1,0 +1,776 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 供货单管理 <span
+        class="c-gray en">&gt;</span> 供货单列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                               href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+            <select name="goodsSource" class="input-text" style="width:10%">
+                <option value=''>商品来源</option>
+                <volist name="data.source" id="vo" key="k">
+                    <option value='<{$vo}>'><{$vo}></option>
+                </volist>
+            </select>
+            <select name="goodsName" class="input-text" style="width:10%" id="goodsName">
+
+            </select>
+            <select name="goodsLevel" class="input-text" style="width:10%" id="goodsLevel">
+
+            </select>
+            <select name="goodsRank" class="input-text" style="width:10%" id="goodsRank">
+
+            </select>
+
+            <select name="status" class="input-text" style="width:10%">
+                <option value=''>单据状态</option>
+                <volist name="data.supplyStatus" id="vo" key="k">
+                    <option value='<{$key}>'><{$vo}></option>
+                </volist>
+            </select>
+
+            <div class="mt-10">
+                <select name="region" class="input-text" style="width:10%" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+
+                <select name="depot" class="input-text" style="width:10%" id="search_depot">
+                    <optgroup label="油库列表">
+                        <option value="0">全部油库</option>
+                        <option value="99999">不限油库</option>
+
+                    </optgroup>
+                </select>
+
+                <!--<select name="sale_company_id" class="input-text" style="width:20.3%" id="sale_company_list">-->
+                    <!--<option value='0'>请选择供应商</option>-->
+                    <!--<volist name="data.companyList" id="vo" key="k">-->
+                        <!--<option value='<{$vo.id}>'><{$vo.company_name}></option>-->
+                    <!--</volist>-->
+                <!--</select>-->
+                <select name="sale_company_id" class="input-text" id="sale_company_id" style="width:20.3%">
+                    <option></option>
+                </select>
+                <input type="text" name="supply_number" id="order_number" class="input-text" style="width:10%;"
+                       placeholder="供货单号">
+            </div>
+
+            <div class="mt-10">
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:10%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:10%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="button" style="margin-left: 5px;" class="btn btn-success radius"
+                                                 value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+        </form>
+    </div>
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span>
+            <a href="javascript:;" onclick="member_add('新增供货单', '<{:U(\'ErpSupply/addSupply\')}>', '900','550')"
+               class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i>新增</a>
+        </span>
+
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="update_supply('编辑供货单', '<{:U(\'ErpSupply/updateSupply\')}>', '900','550')" id="update_supply"><i class="Hui-iconfont"> &#xe60c; </i>编辑</a></span>
+        <span><a href="javascript:;" class="btn btn-primary radius check_access" value="ErpSupply-auditSupply" onclick="audit_supply()" id="audit_supply"><i class="Hui-iconfont"> &#xe6e1; </i>审核</a></span>
+
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="copy_supply()" id="copy_supply"><i class="Hui-iconfont"> &#xe6ea; </i>单据复制</a></span>
+
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="create_order_supply('生成交易单', '<{:U(\'ErpOrder/addOrder\')}>', '900','550')" id="create_order_supply"><i class="Hui-iconfont"> &#xe6b9; </i>生成交易单</a></span>
+
+       <span><a href="javascript:;" class="btn btn-primary radius"  onclick="up_down_supply()" id="up_down_supply"><i class="Hui-iconfont"> &#xe66a; </i>上/下架</a></span>
+       <span><a href="javascript:;" class="btn btn-danger radius"   onclick="del_supply()" id="del_supply"><i class="Hui-iconfont"> &#xe609; </i>删除</a></span>
+       <span><a href="javascript:;" class="btn btn-primary radius"  onclick="send_sms_supply('发送短信', '<{:U(\'ErpSupply/sendSmsUserList\')}>', 800, 500)" id="send_sms_supply"><i class="Hui-iconfont"> &#xe708; </i>发送短信</a></span>
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="price_num_supply('更新库存价格', '<{:U(\'ErpSupply/updatePriceNumSupply\')}>', 800, 400)" id="price_num_supply"><i class="Hui-iconfont">&#xe620; </i>更新库存价格</a></span>
+        <span><a href="javascript:;" class="btn btn-primary radius" onclick="follow_order('跟单', '<{:U(\'ErpSupply/followOrder\')}>', '90%', 550)" id="follow_order"><i class="Hui-iconfont"> &#xe61a; </i>跟单</a></span>
+        <!-- end -->
+    </div>
+
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>供货单号</th>
+                <th>商城商品</th>
+                <th>是否前台显示</th>
+                <th>商品名称</th>
+                <th>商品代码</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>地区</th>
+                <th>油库</th>
+                <th>单价(元)</th>
+                <th>可售数量(吨)</th>
+                <th>已锁数量(吨)</th>
+                <th>供应商</th>
+                <th>创建时间</th>
+                <th>交易员</th>
+                <th>单据状态</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    addressInit('goodsName', 'goodsLevel', 'goodsRank', ['请选择', '请选择', '请选择']);
+    var table = '';
+    var zhaoyou_status = [];
+    zhaoyou_status[0] = '未审核';
+    zhaoyou_status[1] = '审核不通过';
+    zhaoyou_status[10] = '审核通过';
+
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    /** end 控制权限  **/
+
+    $(function () {
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                //url: "<{:U('Galaxy/orderList')}>",
+                url: "<{:U('ErpSupply/supplyList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '" status="' + data.status + '"/>';
+                        return str;
+                    }
+
+                },
+//                {"data": "id"},
+                {"data": "id"},
+                {"data": "supply_number"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        if (data.mall_goods == '否') {
+                            return '<span class="c-warning"><b>' + data.mall_goods + '</b></span>';
+                        } else if (data.mall_goods == '是') {
+                            return '<span class="c-success"><b>' + data.mall_goods + '</b></span>';
+                        }
+                    }
+                },
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        if (data.show_front == '否') {
+                            return '<span class="c-warning"><b>' + data.show_front + '</b></span>';
+                        } else if (data.show_front == '是') {
+                            return '<span class="c-success"><b>' + data.show_front + '</b></span>';
+                        }
+                    }
+                },
+                {"data": "goods_name"},
+                {"data": "goods_code"},
+                {"data": "source_from"},
+                {"data": "grade"},
+                {"data": "level"},
+
+                {"data": "region_name"},
+                {"data": "depot_name"},
+                {"data": "price"},
+                {"data": "sale_num"},
+                {"data": "lock_num"},
+                {"data": "company_name"},
+                {"data": "create_time"},
+                //{"data": "mall_goods"},
+
+                {"data": "dealer_name"},
+                //{"data": "status"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        if (data.status == '未审核') {
+                            return '<span class="c-warning"><b>' + data.status + '</b></span>';
+                        } else if (data.status == '已删除') {
+                            return '<span class="c-error"><b>' + data.status + '</b></span>';
+                        } else if (data.status == '已审核') {
+                            return '<span class="c-success"><b>' + data.status + '</b></span>';
+                        }
+                    }
+                },
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            },
+            footerCallback: function ( row, data, start, end, display,aoData ) {
+
+                if(data == ''){
+                    $('tfoot th').eq(0).siblings().html('');
+                    $('#sum_total th').eq(0).siblings().html('');
+                    //console.log('--');
+                    return false;
+                }else{
+                    var total_sale_num = data[0].sumTotal['total_sale_num'];
+                    var total_lock_num = data[0].sumTotal['total_lock_num'];
+                    $('#sum_total th').eq(13).html(parseFloat(total_sale_num).toFixed(4));
+                    $('#sum_total th').eq(14).html(parseFloat(total_lock_num).toFixed(4));
+                }
+                var api = this.api();
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                //Total over all pages
+
+                for(i=0;i<19;i++){
+
+                    if(i == 0){
+                        continue;
+                    }
+
+                    if(i < 13 || i > 14){
+                        $( api.column( i ).footer() ).html("");
+                        continue;
+                    }
+
+                    var totals;
+                    var total = api.column(i).data();
+                    if(total.length > 0){
+                        totals = total.reduce(function (a, b) {
+                            if (isNaN(a)) {
+                                a = 0;
+                            }
+                            if (isNaN(b)) {
+                                b = 0;
+                            }
+                            return intVal(a) + intVal(b);
+                        });
+                    }else{
+                        totals = 0;
+                    }
+                    // Total over this page
+                    var pageTotals;
+                    var pageTotal = api.column(i, {page: 'current'}).data();
+                    if(pageTotal.length > 0){
+                        pageTotals = pageTotal.reduce(function (a, b) {
+                            if (isNaN(a)) {
+                                a = 0;
+                            }
+                            if (isNaN(b)) {
+                                b = 0;
+                            }
+                            return intVal(a) + intVal(b);
+                        });
+                    }else{
+                        pageTotals = 0;
+                    }
+                    //console.log(pageTotals);
+                    pageTotals = intVal(pageTotals) + 0;
+                    totals = intVal(totals) + 0;
+                    // Update footer
+                    $(api.column(i).footer()).html(
+                        '' + parseFloat(pageTotals).toFixed(4)
+                    );
+                }
+            }
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    /*供货单-添加*/
+    function member_add(title, url, w, h) {
+        layer_show(title, url, w, h);
+    }
+    /*供货单-编辑*/
+    function update_supply(title, url, w, h) {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        url = url + '/id/' + id;
+
+        layer_show(title, url, w, h);
+    }
+    //审核供货单
+    function audit_supply(title, url, w, h) {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        layer.confirm('确定要审核此供货单吗？', function () {
+            //submitTrue();
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpSupply/auditSupply")}>';
+            var data = {id: id};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchSupplyList();
+                } else {
+                    layer.closeAll();
+
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+    //删除供货单
+    function del_supply() {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        layer.confirm('确定要审核此供货单吗？', function () {
+            //submitTrue();
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpSupply/delSupply")}>';
+            var data = {id: id};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchSupplyList();
+                } else {
+                    layer.closeAll();
+
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+
+    //上下架供货单
+    function up_down_supply() {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        layer.confirm('确定要对此供货单上下架吗？', function () {
+            //submitTrue();
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpSupply/upDownSupply")}>';
+            var data = {id: id};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchSupplyList();
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+
+    //单据复制
+    function copy_supply() {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        layer.confirm('确定要复制此供货单吗？', function () {
+            //submitTrue();
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpSupply/copySupply")}>';
+            var data = {id: id};
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    top.searchSupplyList();
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        })
+    }
+    //更新价格和库存
+    function price_num_supply(title, url, w, h) {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var get_info_url = '<{:U("ErpSupply/ajaxValidateCheckedSupply")}>';
+        ajax(get_info_url, {id: id}, 'post', 'json', function (_data) {
+            if (_data.status == 1) {
+                url = url + '/id/' + id;
+                layer_show(title, url, w, h);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+    }
+
+    //发送短信
+    function send_sms_supply(title, url, w, h) {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var get_info_url = '<{:U("ErpSupply/ajaxValidateCheckedSupply")}>';
+        ajax(get_info_url, {id: id}, 'post', 'json', function (_data) {
+            if (_data.status == 1) {
+                url = url + '/id/' + id;
+                layer_show(title, url, w, h);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+    }
+
+    /*供货单-跟单*/
+    function follow_order(title, url, w, h) {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        url = url + '/id/' + id;
+
+        layer_show(title, url, w, h);
+    }
+    top.searchSupplyList = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsRank').val() == '请选择') {
+            $('#goodsRank').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        //table.api().ajax.url("<{:U('Galaxy/orderList')}>?"+param);
+        table.api().ajax.url("<{:U('ErpSupply/supplyList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searchSupplyList(true);
+
+    }
+
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+//    var selectCompany = $("#sale_company_list").select2({
+//        placeholder: '请选择供应商',
+//        //allowClear: true
+//    }).on('select2-open', function () {
+//        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+//    });
+    var region_depots = <{$data.depots}>;
+    $("#search_region").change(function () {
+        //alert($(this).val());
+        var region = $.trim($(this).val());
+        var depots = region_depots[region];
+        var depots_list = [];
+        var options = '<option value="0">全部油库</option>';
+        options += '<option value="99999">不限油库</option>';
+        for (var i in depots) {
+            //depots_list.push(v.);//push();
+            options += '<option value="' + depots[i].id + '">' + depots[i].depot_name + '</option>';
+        }
+        //console.log(depots);
+        $("#search_depot").html(options);
+        //selectDepot.val(depots).trigger('change');
+    });
+    var selectDepot = $("#search_depot").select2({
+        placeholder: '请选择油库',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCompany = $("#search_company").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //生成交易单
+    function create_order_supply(title, url, w, h) {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var get_info_url = '<{:U("ErpSupply/ajaxValidateCanCreateOrder")}>';
+        ajax(get_info_url, {id: id}, 'post', 'json', function (_data) {
+            if (_data.status == 1) {
+                url = url + '/id/' + id;
+                layer_show(title, url, w, h);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+
+    }
+    $("#sale_company_id").select2({
+        ajax: {
+            type: 'GET',
+            url: "<{:U('Clients/getCompanyByName')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    restrict: 1,
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请输入供应商公司名称',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.company_name) != 'undefined') {
+                return repo.company_name;
+            } else if (repo.text == '请输入供应商公司名称') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+</script> 

@@ -1,0 +1,329 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点方案名称:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="inventory_plan" id="inventory_plan" class="input-text" onchange="select_plan()">
+                        <option value="0">请选择</option>
+                        <volist name="data.plan_list" id="vo" key="k">
+                            <option value="<{$key}>" v="<{$vo.inventory_type_name}>">
+                                <{$vo.inventory_name}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps1"></span>
+                </div>
+                <!--<input type="hidden" id="inventory_plan_id" name= 'inventory_plan_id' value="">-->
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点仓库类型:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" value=""
+                           id="inventory_plan_name" name="inventory_plan_name" maxlength="20" disabled/>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点计划日期:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text Wdate" value="<{$data.today}>"
+                           id="add_order_date" name="add_order_date" maxlength="20" readonly onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+
+                    <span id="sps3"></span>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>盘点类型:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="inventory_type"  id='inventory_type' class="input-text">
+                        <option value="0">请选择</option>
+                        <volist name="data.type_list" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right:0; ">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-4">
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                <span class="layui-layer-btn">
+                    <a class="layui-layer-btn1" id="close_no" style="height:auto;margin-left: 100px;">取消</a>
+                </span>
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //姓名
+    function check_name() {
+        if ($.trim($("#dealer_name").val()) == '') {
+            layer.msg("请填写姓名！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //城市
+    function checkcity() {
+        if ($.trim($("#region").val()) == '') {
+            layer.msg("请选择城市！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+
+    //是否转正
+    function check_regular() {
+        var is_regular = $.trim($("#is_regular").val());
+        if (is_regular == 0) {
+            layer.msg("请选择转正情况！", {icon: 2});
+            checkfalse('sps3');
+            $('#post_base_num').val('');
+            $('#post_base_num').attr("disabled", false);
+            $("#new_mall_num").val('');
+            $("#old_mall_num").val('');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    /*
+        	逻辑控制：是否转正（通过下来菜单，选择是或否）
+            	否，岗位基础量则默认为0，且不允许修改
+            	是，岗位基础量则不允许<=0
+    */
+    function check_regular_base_num(){
+        var is_regular = $.trim($("#is_regular").val());
+        if(is_regular == 2 ){
+            $('#post_base_num').val(0);
+            $("#new_mall_num").val(0);
+            $("#old_mall_num").val(0);
+            $('#post_base_num').attr("disabled", true);
+            //count_wall_num();
+        }else if(is_regular == 0){
+            $('#post_base_num').val('');
+            $("#new_mall_num").val('');
+            $("#old_mall_num").val('');
+            $('#post_base_num').attr("disabled", false);
+        } else{
+            $('#post_base_num').attr("disabled", false);
+        }
+        return true;
+    }
+
+    //岗位基础量
+    function check_base_num() {
+        if ($.trim($("#post_base_num").val()) == '' || $.trim($("#post_base_num").val()) < 0 ) {
+            layer.msg("请填写岗位基础量！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //选择方案
+    function select_plan() {
+        console.log($.trim($("#inventory_plan").val()));
+        var plan_id = $.trim($("#inventory_plan").val());
+        if (plan_id == '' || plan_id == 0 ) {
+            layer.msg("请选择盘点方案！", {icon: 2});
+            checkfalse('sps1');
+            $('#inventory_plan_name').val('');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            var inventory_plan_name = $('#inventory_plan').find("option:selected").attr('v')
+            $('#inventory_plan_name').val($.trim(inventory_plan_name));
+            return true;
+        }
+    }
+
+
+    // 关闭窗口
+    $('#close_no').click(function(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    });
+
+    //添加盘点单操作
+    $('#add').click(function () {
+        submitTrue();
+        if ($('#form-member-add').valid() == false) {
+            return false;
+        }
+        var da = {
+            'inventory_plan_id'   : $.trim($("#inventory_plan").val()),
+            'add_order_date'        : $.trim($("#add_order_date").val()),
+            'inventory_order_type'    : $.trim($("#inventory_type").val()),
+            'remark'    : $.trim($("#remark").val()),
+
+        };
+        if ( select_plan() ) {
+            layer.load(1, {shade: 0.3});
+            var url      = '<{:U("ErpInventory/addInventoryOrder")}>';
+            var type     = 'post';
+            var dataType = 'json';
+            var data     = da;
+            ajax(url, data, type, dataType, function (_data) {
+                layer.load(1, {shade: 0.3});
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                        setTimeout(function () {
+                            layer.closeAll();
+                            parent.searchErpInventoryOrderList();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            });
+        }
+    });
+
+    //验证是否是数字（保留三位小数）
+    function checknumthree(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // 获取差价
+    function count_wall_num() {
+        var post_base_num    = Number($.trim($("#post_base_num").val()));
+        //if(post_base_num == '' || post_base_num < 0){
+        //    return false;
+        //}
+//        var price = Subtr(current_price,last_price);
+        //  	新客户商城成交基础量 = 岗位基础量 * 0.17 （默认自动计算并允许修改）
+        //  	老客户商城成交基础量 = 岗位基础量 - （岗位基础量*0.17）默认自动计算并允许修改）
+
+        var new_num = post_base_num * 0.17 ;
+        var old_num = post_base_num - new_num ;
+        $("#new_mall_num").val(Number(new_num.toFixed(2)));
+        $("#old_mall_num").val(Number(old_num.toFixed(2)));
+        return true;
+    }
+
+    function Subtr(arg1, arg2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           {
+        var r1, r2, m, n;
+        try {
+            r1 = arg1.toString().split(".")[1].length;
+        } catch (e) {
+            r1 = 0;
+        }
+        try {
+            r2 = arg2.toString().split(".")[1].length;
+        } catch (e) {
+            r2 = 0;
+        }
+        m = Math.pow(10, Math.max(r1, r2));
+        // last modify by deeka
+        // 动态控制精度长度
+        n = (r1 >= r2) ? r1 : r2;
+        return ((arg1 * m - arg2 * m) / m).toFixed(n);
+    }
+
+    var selectRegion = $("#region").select2({
+        placeholder: '请选择城市',
+        language: "zh-CN",
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    //交易员搜索
+    var select_dealer_name = $("#dealer_name").select2({
+        placeholder: '请选择'
+    }).on('select2-open', function(){
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+    //盘点方案可下拉搜索
+    $('#inventory_plan').change(function(){
+        //console.log($(this).val());
+        var v = $(this).val();
+        var plan_type = $("#inventory_plan option[value='"+v+"']").attr('v');
+        $('#inventory_plan_name').val(plan_type);
+        //console.log($("#inventory_plan_list option[value='"+v+"']").attr('v'));
+    });
+    var selectRegion = $("#inventory_plan").select2({
+        placeholder: '请选择盘点方案',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+</script>

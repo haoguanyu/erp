@@ -1,0 +1,524 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>来源单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.order_number}>"
+                                           id="source_number" name="source_number" maxlength="20" readonly />
+                                    <span id="sps2"></span>
+                                    <input type="hidden" id = "stockOutBatch" value = "<{$stock_out.batch_id}>" batchNum = "<{$stock_out.actual_outbound_num}>">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$data.order.add_order_time}>"
+                                           id="add_order_time" name="add_order_time" maxlength="20" readonly onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>交易员：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.dealer_name}>" placeholder=""
+                                           id="dealer_name" name="dealer_name" disabled>
+                                    <input type="hidden" id="dealer_id" name="dealer_id"
+                                           value="<{$data.order.dealer_id}>">
+                                    <span id="sps5"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>用户：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.s_user_name}>" placeholder=""
+                                           id="user_name" name="user_name" disabled>
+                                    <span id="sps6"></span>
+                                    <input type="hidden" value="<{$data.order.user_id}>" id="user_id" name="user_id">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>公司：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$data.order.s_company_name}>" placeholder=""
+                                           id="company_name" name="company_name" disabled>
+                                    <span id="sps7"></span>
+                                    
+                                </div>
+
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>城市：</label>
+                                    <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text" style="width:78%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="region.region_list" id="vo" key="k">
+                                            <option value="<{$key}>" <if condition="$data['order']['region'] eq $key">selected</if>>
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>仓库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$data.order.storehouse_name}>" placeholder=""
+                                           id="company_name" name="company_name" disabled>
+                                    <span id="sps9"></span>
+                                    <input type="hidden" id="default_storehouse" name="default_storehouse" value="<{$data.order.storehouse_id}>">
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>油库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                    
+                                     <input type="text" class="input-text" value="<{$data.order.depot_name}>" placeholder=""
+                                           id="depot_name" name="depot_name" disabled>
+                                    <span id="sps10"></span>
+                                    <input type="hidden" id="depot_id" name="depot_id" value="<{$data.order.depot_id}>">
+                                </div>
+                            </div>
+                        </div>
+
+                    
+                         <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                            <div class="formControls col-xs-9 col-sm-9" style="padding-left: 5px;">
+                                 <input type="text" class="input-text" value="<{$data.order.goods_code}>/<{$data.order.goods_name}>/<{$data.order.source_from}>/<{$data.order.grade}>/<{$data.order.level}>" placeholder=""
+                                           id="goods_name" name="goods_name" disabled>
+                                <span id="sps16"></span>
+                            </div>
+                            <input type="hidden" id="goods_code" name="goods_code" value="<{$data.order.goods_code}>">
+                             <input type="hidden" id="goods_id" name="goods_id" value="<{$data.order.goods_id}>">
+                            <input type="hidden" id="goods_name" name="goods_name" value="<{$data.order.goods_name}>">
+                            <input type="hidden" id="goods_from" name="goods_from" value="<{$data.order.source_from}>">
+                            <input type="hidden" id="goods_grade" name="goods_grade" value="<{$data.order.grade}>">
+                            <input type="hidden" id="goods_level" name="goods_level" value="<{$data.order.level}>">
+
+                            <input type="hidden" id="price" name="price" value="<{$data.order.price}>">
+                        </div>
+                        
+
+                        
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>需求数量(吨)：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.buy_num}>" placeholder="" id="buy_num" name=" buy_num" onkeyup="checknum4(this)" maxlength="10" onblur="checkgoodsnum()">
+
+                                    <span id="sps20"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>待出库(吨)：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$data.order.no_outbound_quantity}>" placeholder="" id="no_outbound_quantity" name="no_outbound_quantity" onkeyup="checknum4(this)" maxlength="10">
+
+                                    <span id="sps22"></span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>申请出库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$applyInfo.outbound_apply_num}>" placeholder="" id="outbound_apply_num" name="outbound_apply_num" onkeyup="checknum4(this)" maxlength="10">
+                                    <input type="hidden" name="applyCode" value = "<{$applyInfo.outbound_apply_code}>" id = "apply_code">
+                                    <span id="sps26"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                               
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>是否采购单</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="checkbox" name="is_agent" id = "is_agent" <if condition="$data['order']['is_agent'] eq 1">checked</if>>
+                                    <span id="sps26"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>出库数量(吨)：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$stock_out.actual_outbound_num}>" placeholder="" id="outbound_num" name="outbound_num" onkeyup="checknum4(this)" maxlength="10"  readonly="" disabled>
+
+                                    <span id="sps23"></span>
+                                    <span style="margin-top: 10px;color: red;">（数量编辑通过批次列表修改）</span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">密度：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$stock_out.outbound_density}>" placeholder="" id="outbound_density" name="outbound_density" onkeyup="checknum4(this)" onblur="checkdensity()" maxlength="10">
+
+                                    <span id="sps25"></span>
+
+                                    <div style="color: red; font-weight: bold;">(请输入0.7 ~ 1 之间的密度值)</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row cl">
+                         <label class="form-label col-xs-2 "></label>
+                             <div class="row cl col-sm-10">
+                                <input type="hidden" id="storehouse_id" value="<{$data.order.storehouse_id}>">
+                                <input type="hidden" id="region" value="<{$data.order.region}>">
+                                <input type="hidden" id="stock_type" value="<{$data.order.stock_type}>">
+                                <include file="./Application/Home/View/Common/batch.html"/>
+                            </div>
+                        </div>
+
+
+                        <!--
+                        <div class="row cl">
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 ">附件:</label>
+
+                                <div class="formControls col-xs-10 col-sm-10 wu-example">
+                                    <div class="yanzRight">
+                                        <span class="btn-upload form-group" style="width: 100%">
+                                            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly style=" width: 70%;"> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>
+                                            <input style="margin-top:5px;float: left;" name="attachment" id="attachment" onchange="previewImage(this,1)" type="file" multiple name="file-1" class="input-file"/>
+                                        </span>
+                                        <span class="dui" style="display: none;"></span>
+                                    </div>
+                                    <div id="preview1" style="clear:both; padding-top:15px;">
+                                        <img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        -->
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                            <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px;">
+                                    <textarea id="remark" name="remark" style="height:100px;width:88%;"
+                                              class="input-text"><{$stock_out.outbound_remark}></textarea>
+                                <span id="sps24"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <if condition="$isErpThree eq 1">
+                        <div class="row cl" style="margin-top:20px;">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                                <!--<input type="hidden" name="id" id="id" value="<{$data.order.id}>">-->
+                                <input type="hidden" name="id" id="id" value="<{$stock_out.id}>">
+                                <input type="hidden" name="outbound_type" id="outbound_type" value="<{$stock_out.outbound_type}>">
+                                <input type="hidden" name="source_object_id" id="source_object_id" value="<{$stock_out.source_object_id}>">
+                                <input type="hidden" name="our_company_id" id="our_company_id" value="<{$data.order.our_company_id}>">
+                                <input type="hidden" name="order_status" id="order_status" value="<{$data.order.order_status}>">
+                                <input type="hidden" name="collection_status" id="collection_status" value="<{$data.order.collection_status}>">
+                                <input type="hidden" name="pay_type" id="pay_type" value="<{$data.order.pay_type}>">
+                                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                            </div>
+                        </div>
+                    </if>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    //图片预览功能
+    /*
+    function previewImage(file,imgNum)
+    {
+        var MAXWIDTH  = 200;
+        var MAXHEIGHT = 200;
+        var div = document.getElementById('preview'+imgNum);
+        if (file.files && file.files[0])
+        {
+            div.innerHTML ='';
+            var length=0;
+            //imgContent为图片展示的区域
+            var reader=new FileReader();
+            reader.readAsDataURL(file.files[length]);
+            //异步读取图片，读取完会触onload
+            reader.onload=function() {
+                div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";
+                var img = document.getElementById('imghead'+imgNum+'_'+length);
+                img.onload = function(){
+                    var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                    img.width  =  rect.width;
+                    img.height =  rect.height;
+                }
+                //多张预览，上传多张时开启
+//                length++;
+//                if (length < file.files.length) {
+//                    reader.readAsDataURL(file.files[length]);
+//                }
+            }
+        }
+        else //
+        {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead'+imgNum+'>';
+            var img = document.getElementById('imghead2');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+        }
+    }
+    function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+        var param = {top:0, left:0, width:width, height:height};
+        if( width>maxWidth || height>maxHeight )
+        {
+            rateWidth = width / maxWidth;
+            rateHeight = height / maxHeight;
+
+            if( rateWidth > rateHeight )
+            {
+                param.width =  maxWidth;
+                param.height = Math.round(height / rateWidth);
+            }else
+            {
+                param.width = Math.round(width / rateHeight);
+                param.height = maxHeight;
+            }
+        }
+        param.left = Math.round((maxWidth - param.width) / 2);
+        param.top = Math.round((maxHeight - param.height) / 2);
+        return param;
+    }
+    */
+    var is_update = "<{$is_update}>";
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+
+
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        if ( is_update != 1 ) {
+            $('#remark,#outbound_density,#depot_id,#DealerSaveBtn,#reset_num').attr('disabled', false).removeClass('disabled');
+
+            var outbound_status = "<{$stock_out['outbound_status']}>";
+            var finance_status = "<{$stock_out['finance_status']}>";
+            if(outbound_status != 1){
+                $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+                $('#DealerSaveBtn').hide();
+            }
+            if (finance_status == 1 || finance_status == 2 && outbound_status != 2) {
+                // $('form').find('#attachment,#uploadfile-1,#DealerSaveBtn').attr('disabled', false).removeClass('disabled');
+                $('form').find('#attachment,#DealerSaveBtn').attr('disabled', false).removeClass('disabled');
+                $('#DealerSaveBtn').show();
+            }
+        }
+    });
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        var formData = new FormData();
+        // formData.append("attachment",$("#attachment")[0].files[0]);
+        formData.append("id",$("#id").val());
+        formData.append("source_object_id",$("#source_object_id").val());
+        formData.append("source_number",$("#source_number").val());
+        formData.append("outbound_type",$("#outbound_type").val());
+        formData.append("region",$("#region").val());
+        formData.append("goods_id",$("#goods_id").val());
+        formData.append("buy_num",$("#buy_num").val());
+        formData.append("no_outbound_quantity",$("#no_outbound_quantity").val());
+        formData.append("outbound_remark",$("#remark").val());
+        formData.append("outbound_density",$("#outbound_density").val());
+        formData.append("outbound_num",$("#outbound_num").val());
+        formData.append("our_company_id",$("#our_company_id").val());
+        formData.append("pay_type",$("#pay_type").val());
+        formData.append("our_company_id",$("#our_company_id").val());
+        formData.append("order_status",$("#order_status").val());
+        formData.append("collection_status",$("#collection_status").val());
+        formData.append("depot_id",$("#depot_id").val());
+         var batchNum = 0 ;
+         var batchCount = 0 ;
+        $(".checkchild").each(function(i,v){
+            if($(this).val() > 0){
+                batchCount++;
+                formData.append('batch['+$(this).attr("batchId")+']' , $(this).val());
+                batchNum += +$(this).val();
+            }
+        });
+        if(batchNum <= 0){
+             layer.msg('出库数量不能为空', {icon: 2});
+            checkfalse('sps23');
+            return false;
+        }
+        if(batchCount != 1){
+             layer.msg("只可填写一个批次数量大于0", {icon: 2});
+            checkfalse('sps23');
+            return false;
+        }
+        // formData.append("apply_code",$("#apply_code").val());
+        submitTrue();
+        layer.load(1, {shade: 0.3});
+        $.ajax({
+            url : '<{:U("ErpStock/updateErpStockOut")}>',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success : function(_data) {
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    parent.searchErpStockOutList();
+                    setTimeout(function () {
+                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                }
+            },
+            error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(XMLHttpRequest);
+                console.log('请求异常，请检查！');
+            }
+        });
+        
+    });
+
+    //验证出库数量
+    function checkOutboundNum(){
+        var outbound_num = $.trim($('#outbound_num').val());
+        if(outbound_num <= 0){
+            checkfalse('sps23');
+            return false;
+        } else if (parseFloat(outbound_num) > parseFloat($("#no_outbound_quantity").val())) {
+            layer.msg('出库数量不能大于待出库数量', {icon: 2});
+            checkfalse('sps23');
+            return false;
+        } else{
+            checktrue('sps23');
+            return true;
+        }
+    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+        //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+     //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证密度是否正确
+    function checkdensity() {
+        var d = $.trim($('#outbound_density').val());
+        if (d < 0.7 || d > 1) {
+            layer.msg("请输入正确的密度！", {icon: 2});
+            checkfalse('sps25');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps25');
+            return true;
+        }
+    }
+     //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

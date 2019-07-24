@@ -1,0 +1,354 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 采销中心KPI <span
+        class="c-gray en">&gt;</span> 采销中心KPI <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErpKpi" action="" method="post" autocomplete="off">
+            
+            <div class="mt-10">
+                <span class="ml-10">　计提方案名称：</span>
+                <select id="plan_name" name="plan_id" class="input-text" style="width:15%;">
+                    <option value="" class="select" >请选择方案</option>
+                    <volist name="data.plan_list" id="vo" key="k">
+                        <option value="<{$vo.id}>">
+                            <{$vo.plan_name}>
+                        </option>
+                    </volist>
+                </select>
+                <span class="ml-10">　搜索月份：</span>
+                <input type="text" name="month" id="month" class="input-text Wdate" style="width:15%;" placeholder="搜索月份" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',maxDate:new Date(),minDate:'2015-03-01',dateFmt:'yyyy-MM'})">
+
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">新终端客户计提：</span>
+                <input type="text" name="new_terminal_commission" id="new_terminal_commission" class="input-text" style="width:15%;" disabled placeholder="">
+                <span class="ml-10">新贸易客户计提：</span>
+                <input type="text" name="new_trade_commission" id="new_trade_commission" class="input-text" style="width:15%;" disabled placeholder="">
+                <span class="ml-10">激活客户计提：</span>
+                <input type="text" name="activate_customer_commission" id="activate_customer_commission" class="input-text" style="width:15%;" disabled placeholder="">
+            </div>
+
+            <div class="mt-10">
+
+                <span class="ml-10">老终端客户计提：</span>
+                <input type="text" name="old_terminal_commission" id="old_terminal_commission" class="input-text" style="width:15%;" disabled placeholder="">
+                <span class="ml-10">老贸易客户计提：</span>
+                <input type="text" name="old_trade_commission" id="old_trade_commission" class="input-text" style="width:15%;" disabled placeholder="">
+                <!--<input type="hidden" name="query_all" id="query_all" value="0">-->
+                <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a></span>
+    </div>
+
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>姓名</th>
+                <th>省份</th>
+                <th>城市</th>
+                <th>是否转正</th>
+                <th>绩效奖金</th>
+                <th>岗位基础量</th>
+                <th>新客户数</th>
+                <th>新终端客户数</th>
+                <th>新贸易客户数</th>
+                <th>新客户商城成交基础量</th>
+                <th>老客户商城成交基础量</th>
+                <th>新客户商城成交总量</th>
+                <th>新终端客户商城成交量</th>
+                <th>新贸易客户商城成交量</th>
+                <th>老客户商城成交总量</th>
+                <th>3个月内老终端客户本月商城成交量</th>
+                <th>3个月内老贸易客户本月商城成交量</th>
+                <th>3个月以上老终端客户本月商城成交量</th>
+                <th>3个月以上老贸易客户本月商城成交量</th>
+                <th>激活客户</th>
+                <th>激活客户数奖励</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+        <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var table = '';
+    $(function () {
+
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 20,
+        ajax: {
+            url: "<{:U('ErpKpi/kpiDataList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "data": null,
+                "bSortable": false,
+                render: function (data, type, full, meta) {
+                    var str = '';
+
+                    str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '" status="' + data.status + '"/>';
+                    return str;
+                }
+
+            },
+            {"data": "id"},
+            {"data": "dealer_name"},
+            {"data": "province_name"},
+            {"data": "region_name"},
+            {"data": "is_regular"},
+            {"data": "total_bonus"},
+            {"data": "post_base_num"},
+            {"data": "newMallCustomer_total"},
+            {"data": "newMallCustomer_Terminal"},
+            {"data": "newMallCustomer_Trade"},
+            {"data": "new_mall_num"},
+            {"data": "old_mall_num"},
+            {"data": "newOrder"},
+            {"data": "newOrder_Terminal"},
+            {"data": "newOrder_Trade"},
+            {"data": "oldOrderNum"},
+            {"data": "inThreeOrder_Terminal"},
+            {"data": "inThreeOrder_Trade"},
+            {"data": "beforeThreeOrder_Terminal"},
+            {"data": "beforeThreeOrder_Trade"},
+            {"data": "active_users"},
+            {"data": "active_bonus"}
+
+        ],
+        "language": { // 定义语言
+            "sProcessing": "加载中...",
+            "sLengthMenu": "_MENU_",
+            "sZeroRecords": "没有匹配的结果",
+            "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+            "sInfoFiltered": "(_MAX_条)",
+            "sInfoPostFix": "",
+            "sSearch": "搜索:",
+            "sUrl": "",
+            "sEmptyTable": "表中数据为空",
+            "sLoadingRecords": "载入中...",
+            "sInfoThousands": ",",
+            "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上一页",
+                "sNext": "下一页",
+                "sLast": "末页"
+            }
+        }
+    });
+    searchErpKpiDataList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErpKpi').serialize();
+
+        var url = '<{:U("ErpKpi/getNoBaseInfoUser")}>';
+        var data = param;
+        var dataType = 'json';
+        var type = 'post';
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                table.api().ajax.url("<{:U('ErpKpi/kpiDataList')}>?" + param);
+                table.api().ajax.reload(function(){
+                    $('#subes').val('查询').attr('disabled', false);
+                    layer.closeAll('loading');
+                }, current_page);
+            } else {
+                $('#subes').val('查询').attr('disabled', false);
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+
+
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function sub_select() {
+        if($.trim($("#plan_name").val()) == '') {
+            layer.msg('请选择计提方案！', {icon: 2}); return false;
+        };
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        //点查询改变，查询全部订单的标识
+        //$('#query_all').val(1);
+        searchErpKpiDataList(true);
+    }
+
+    var selectPlan = $("#plan_name").select2({
+        placeholder: '请选择方案',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var plan_list    = <{$data.plan_list_json}>;
+
+    console.log(plan_list);
+    $("#plan_name").change(function () {
+
+        var plan_id = $.trim($("#plan_name").val());
+        if (plan_id == '') return false;
+        // 新终端客户计提
+        $("#new_terminal_commission").val(plan_list[plan_id].new_terminal_commission);
+        // 新贸易客户计提
+        $("#new_trade_commission").val(plan_list[plan_id].new_trade_commission);
+        // 激活客户计提
+        $("#activate_customer_commission").val(plan_list[plan_id].activate_customer_commission);
+        // 老终端客户计提
+        $("#old_terminal_commission").val(plan_list[plan_id].old_terminal_commission);
+        // 老贸易客户计提
+        $("#old_trade_commission").val(plan_list[plan_id].old_trade_commission);
+    });
+
+    /* 导出 */
+    function export_excel(title) {
+        if($.trim($("#plan_name").val()) == '') {
+            layer.msg('请选择计提方案！', {icon: 2}); return false;
+        };
+        if($.trim($("#month").val()) == '') {
+            layer.msg('请选择月份！', {icon: 2}); return false;
+        };
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErpKpi').serialize();
+            var url = '<{:U("ErpKpi/getNoBaseInfoUser")}>';
+            var data = param;
+            var dataType = 'json';
+            var type = 'post';
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    var url = '<{:U("ErpKpi/exportKpiData")}>?'+param;
+                    layer.load(1, {shade: 0.3});
+                    window.location.href = url;
+                    setTimeout(function(){
+                        layer.closeAll();
+                    }, 1000);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    return false;
+                }
+            });
+        });
+    }
+
+</script>

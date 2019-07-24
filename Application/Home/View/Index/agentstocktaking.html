@@ -1,0 +1,185 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 库存管理 <span class="c-gray en">&gt;</span> 库存查询 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+
+            <div class="mt-10">
+                <!--<span class="ml-10">城市：</span>-->
+                <!--<select name="region" class="input-text" style="width:10%" id="search_region">-->
+                    <!--<optgroup label="城市列表">-->
+                        <!--<option value="0">全部城市</option>-->
+                        <!--<volist name="data.regionList" id="vo" key="k">-->
+                            <!--<option value="<{$key}>">-->
+                                <!--<{$vo}>-->
+                            <!--</option>-->
+                        <!--</volist>-->
+                    <!--</optgroup>-->
+                <!--</select>-->
+
+                <!--<span class="ml-10">仓库类型：</span>-->
+                <!--<select id="stock_type" name="stock_type" class="input-text" style="width:10%">-->
+                    <!--<option value="0">请选择</option>-->
+                    <!--<volist name="data.stockType" id="vo" key="k">-->
+                        <!--<option value="<{$key}>">-->
+                            <!--<{$vo}>-->
+                        <!--</option>-->
+                    <!--</volist>-->
+                <!--</select>-->
+
+                <!--<span class="ml-10">仓库：</span>-->
+                <!--<select id="search_storehouse" name="storehouse_id" class="input-text" style="width:20%">-->
+                    <!--<option value="0">请选择</option>-->
+                <!--</select>-->
+
+                <!--<span class="ml-10">商品：</span>-->
+                <!--<select name="goods_id" class="input-text" style="width:20%" id="search_goods_code">-->
+                    <!--<optgroup label="商品列表">-->
+                        <!--<option value="0">全部商品</option>-->
+                        <!--<volist name="data.erpGoods" id="vo" key="k">-->
+                            <!--<option value="<{$vo.id}>">-->
+                                <!--<{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}>-->
+                            <!--</option>-->
+                        <!--</volist>-->
+                    <!--</optgroup>-->
+                <!--</select>-->
+                <span class="ml-10">起始日期：</span>
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:10%;"
+                       placeholder="起始日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <span class="ml-10">截止日期：</span>
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:10%;"
+                       placeholder="截止日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <span class="ml-10">账套公司：</span>
+                <select name="search_company" class="input-text" style="width:20%" id="search_company">
+                    <option value="0">全部公司</option>
+                    <volist name="erp_company" id="vo" key="k">
+                        <option value="<{$key}>">
+                            <{$vo}>
+                        </option>
+                    </volist>
+                </select>
+                <input type="hidden" name="is_agent" id="is_agent" value="1">
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <!--<div class="cl pd-5 bg-1 bk-gray mt-20">-->
+        <!--<span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>-->
+    <!--</div>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+
+                <th>序号</th>
+                <th>账套公司</th>
+                <th>地区</th>
+                <th>仓库类型</th>
+                <th>仓库</th>
+                <th>产品代码</th>
+                <th>产品信息</th>
+                <th>物理库存</th>
+                <th>盘点物理库存</th>
+                <th>在途库存</th>
+                <th>盘点在途库存</th>
+                <th>销售预留</th>
+                <th>盘点销售预留</th>
+                <th>销售待提</th>
+                <th>盘点销售待提</th>
+                <th>配货待提</th>
+                <th>可用库存</th>
+                <th>可售库存</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('Index/stocktaking')}>?is_agent=1",
+            type: 'post'
+        },
+        "aaSorting": [[0, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        "columns": [
+            {"data": "id"},
+            {"data": "our_company_name"},
+            {"data": "region_name"},
+            {"data": "stock_type"},
+            {"data": "object_name"},
+            {"data": "goods_code"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return data.goods_name + ' / ' + data.source_from + ' / ' + data.grade + ' / ' + data.level;
+                }
+            },
+            {"data": "stock_num"},
+            {"data": "inventory_stock_num"},
+            {"data": "transportation_num"},
+            {"data": "inventory_transportation_num"},
+            {"data": "sale_reserve_num"},
+            {"data": "inventory_sale_reserve_num"},
+            {"data": "sale_wait_num"},
+            {"data": "inventory_sale_wait_num"},
+            {"data": "allocation_wait_num"},
+            {"data": "available_num"},
+            {"data": "current_available_sale_num"},
+        ],
+    });
+    // @搜索框搜索查询
+    searchStockTaking = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('Index/stocktaking')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchStockTaking(true);
+
+    }
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("Index/exportStockTaking")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+</script>

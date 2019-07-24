@@ -1,0 +1,231 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">单据类型:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['workflow_type_info']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.workflow_order_type}>单号:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['workflow_order_number']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">下单时间:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['create_time']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+          <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">城市:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['city']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">仓库:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['storehouse']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">油库:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['depot_name']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">商品代码:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['goods_info']['goods_code']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">商品名称:</label>
+                <div class="formControls col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['goods_info']['goods_name']}> <{$data['goods_info']['grade']}> <{$data['goods_info']['level']}> " readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">商品来源:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['goods_info']['source_from']}>" readonly="readonly" disabled/>
+                </div>
+            </div>
+        </div>
+        <IF condition="$data['workflow_type'] eq 2">
+            <div>
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.workflow_order_type}>单价:</label>
+                    <div class="formControls col-sm-3">
+                        <IF condition="$data['order_info']['is_market'] eq 2">
+                            <input type="text" class="input-text" style="width:100%;color: red"  name="goods_code" value="<{$data['order_info']['price']}>" readonly="readonly" disabled/>
+                            <ELSE />
+                            <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['price']}>" readonly="readonly" disabled/>
+                        </IF>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">上一次采购价:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['last_price']}>" readonly="readonly" disabled/>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">商品售价:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['region_price']}>" readonly="readonly" disabled/>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.workflow_order_type}>数量:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['buy_num']}>" readonly="readonly" disabled/>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">订单总额:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['order_amount']}>" readonly="readonly" disabled/>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">可用库存:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['available_num']}>" readonly="readonly" disabled/>
+                    </div>
+
+                </div>
+            </div>
+        <ELSE />
+            <div>
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.workflow_order_type}>数量:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['buy_num']}>" readonly="readonly" disabled/>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.workflow_order_type}>单价:</label>
+                    <div class="formControls col-sm-3">
+                        <IF condition="$data['order_info']['is_market'] eq 2">
+                            <input type="text" class="input-text" style="width:100%;color: red"  name="goods_code" value="<{$data['order_info']['price']}>" readonly="readonly" disabled/>
+                            <ELSE />
+                            <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['price']}>" readonly="readonly" disabled/>
+                        </IF>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">订单总额:</label>
+                    <div class="formControls col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['order_amount']}>" readonly="readonly" disabled/>
+                    </div>
+                </div>
+            </div>
+        </IF>
+            <div>
+                <div class="row cl col-sm-12">
+                    <!-- 只有销售单的时候，才有运费 -->
+                    <IF condition="$data['workflow_type'] eq 1">
+                        <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">运费:</label>
+                        <div class="formControls  col-sm-3">
+                            <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['delivery_money']}>" readonly="readonly" disabled/>
+                        </div>
+                    </IF>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">付款方式:</label>
+                    <div class="formControls  col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['pay_type']}>" readonly="readonly" disabled/>
+                    </div>
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">我方公司:</label>
+                    <div class="formControls  col-sm-3">
+                        <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['our_company_name']}>" readonly="readonly" disabled/>
+                    </div>
+                </div>
+            </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">是否特需:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['is_special']}>" readonly="readonly" disabled/>
+                </div>
+                <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;"><{$data.order_info.company_name_n}>:</label>
+                <div class="formControls  col-sm-3">
+                    <input type="text" class="input-text" style="width:100%"  name="goods_code" value="<{$data['order_info']['company_name']}>" readonly="readonly" disabled/>
+                </div>
+                <!-- 只有销售单的时候并且单价小于采购定价，才有运费 -->
+                <IF condition="$data['order_info']['is_market'] eq 2">
+                    <label class="form-label col-xs-1 " style="padding-left: 0; padding-right: 0;">是否含市场信息:</label>
+                    <div class="formControls  col-sm-3">
+                        <input type="text" class="input-text" style="width:100%" value="<{$data['order_info']['provide_market_info']}>" readonly="readonly" disabled/>
+                    </div>
+                </IF>
+            </div>
+        </div>
+        <IF condition="$data['order_info']['is_market'] eq 2">
+            <div>
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-1" style="padding-left: 0; padding-right: 0;">市场信息备注:</label>
+                    <div class="formControls col-xs-11">
+                        <textarea class="textarea" cols="" rows="" id="remark__" name="remark" readonly="readonly" disabled  style="height:80px;" ><{$data.order_info.market_info}></textarea>
+                    </div>
+                </div>
+            </div>
+        </IF>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-1" style="padding-left: 0; padding-right: 0;">单据备注:</label>
+                <div class="formControls col-xs-11">
+                    <textarea class="textarea" cols="" rows="" id="remark_" name="remark" readonly="readonly" disabled style="height:80px;" ><{$data.order_info.remark}></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+<br /><br />
+<div style="padding-left: 2%">审批流程：
+    <IF condition="empty($data)">
+        <tr role="row" class="odd">
+            <td colspan="9">暂无审核记录</td>
+        </tr>
+    <ELSE />
+        <volist name = "data.work_flow_step_data" id = "vo"><if condition="data.total_step_num LT $key">-></if><{$vo.assignor}>
+        </volist>
+    </IF>
+</div>
+<article class="page-container" style="overflow:hidden;" id="input_list">
+<div class="layui-layer-title">审批历史</div>
+    <div style="overflow-x:scroll;white-space:nowrap;">
+    <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+        <thead>
+        <tr class="text-c">
+            <th>单号</th>
+            <th>流程名称</th>
+            <th>单据类型</th>
+            <th>申请人</th>
+            <th>申请时间</th>
+            <th>审批人</th>
+            <th>审批时间</th>
+            <th>审批状态</th>
+            <th>备注</th>
+        </tr>
+        </thead>
+        <tbody>
+        <IF condition="empty($data['work_flow_log'])">
+            <tr role="row" class="odd">
+                <td colspan="9">暂无审批历史</td>
+            </tr>
+        <ELSE />
+            <volist name="data.work_flow_log" id = "vo">
+                <tr role="row" class="odd">
+                    <td><{$data.workflow_order_number}></td>
+                    <td><{$data.workflow_name}></td>
+                    <td><{$data.workflow_type_info}></td>
+                    <td><{$data.creater}></td>
+                    <td><{$data.create_time}></td>
+                    <td><{$vo.perator}></td>
+                    <td><{$vo.create_time}></td>
+                    <td><{$vo.operating_state}></td>
+                    <td><{$vo.remark}></td>
+                </tr>
+            </volist>
+        </IF>
+        </tbody>
+    </table>
+    </div>
+    <br />
+</div>
+</article>

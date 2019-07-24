@@ -1,0 +1,235 @@
+<span style="padding-left: 800px;"></span>
+<input class="btn btn-primary radius" id="reset_num" type="button" value="重置数量">
+<div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+    <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+        <thead>
+        <tr class="text-c">
+            <th>序号</th>
+            <th>商品代码</th>
+            <th>仓库</th>
+            <th>系统批次号</th>
+            <th>货权形式</th>
+            <th>货权号</th>
+            <th>入库数量</th>
+            <th>可退数量</th>
+            <th>退货数量</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+</div>
+<script type="text/javascript">
+    //addressInit('goodsName', 'goodsGrade','goodsLevel', ['请选择','请选择','请选择']);
+    var table = '';
+    /** 控制权限  **/
+    //var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    //getCheckAccess();
+    //var editor;
+    /** end 控制权限  **/
+    $(function () {
+
+        var storehouse_id = $('#storehouse_ids').val();
+        var goods_id = $('#goods_id').val();
+        var stock_type = $('#stock_type').val();
+        var our_company_id = $('#our_company_id').val();
+        var source_number = $('#source_number').val();
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                url: "<{:U('ErpBatch/erpBatchListByPurchaseReturnOrder')}>",
+                data:{
+                    "storehouse_id":storehouse_id,
+                    "goods_id":goods_id,
+                    "stock_type":stock_type,
+                    "our_company_id":our_company_id,
+                    "source_number":source_number,
+                },
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {"data": "id"},
+                {"data": "goods_code"},
+                {"data": "storehouse_name"},
+                {"data": "sys_bn"},
+                {"data": "cargo_bn_type"},
+                {"data": "cargo_bn"},
+                {"data": "total_num"},
+                {"data": "actual_balance_num"},
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" onkeyup="checknum4(this)" class="checkchild"  value="0" id="'+data.id+'" name="use_batch_num"/>';
+                        return str;
+                    }
+
+                },
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+        $('.table-sort tbody').on('dblclick', 'tr', function () {
+            var num = $(this).find('td').eq(8).find('span').html();
+            $(this).find('td').eq(8).find('span').hide();
+            $(this).find('td').eq(8).find('input').show().val(num).focus();
+            $(this).siblings().find('td').find('input').hide();
+            $(this).siblings().find('td').find('span').show();
+        });
+        $('.table-sort tbody').on('blur', 'tr', function () {
+            //批次可退数量
+            var balance_num = parseFloat($(this).find('td').eq(7).html());
+            //该批次退货数量
+            var batch_num = parseFloat($(this).find('td').eq(8).find('input').val());
+            //待出总数
+            var wait_outbound_num = parseFloat($("#wait_outbound_num").val());
+
+            // 判断是否为数字
+            var patrn = /^(-)?\d+(\.\d+)?$/;
+    		if (patrn.exec(batch_num) == null || batch_num == "" && batch_num != 0) {
+    			batch_num = 0;
+    			$(this).find('td').eq(8).find('input').val(0);
+                layer.msg('退货数量必须为数字！', {icon: 2});
+    		}
+
+    		// 判断 是否为负数
+    		if ( batch_num < 0 ) {
+    			batch_num = 0;
+    			$(this).find('td').eq(8).find('input').val(0);
+                layer.msg('退货数量必须为正整数！', {icon: 2});
+    		}
+            //验证出库数量和批次可用数量
+            if (batch_num > balance_num) {
+                batch_num = 0;
+                $(this).find('td').eq(8).find('input').val(0);
+                layer.msg('退货数量不能大于可退数量', {icon: 2});
+            }
+            // 获取 在途数量 标签
+            var return_goods_num_ = $("#return_goods_num_").val();
+
+            //批次出库数量合计
+            var inputs = $('input[name="use_batch_num"]');//找到div里面所有的input
+            var use_batch_num = 0;
+            inputs.each(function(){
+                use_batch_num += this.value * 1;//值转换为number，然后相加
+            });
+            outbound_num = parseFloat(use_batch_num);
+        	$('#return_goods_num').val(Number(return_goods_num_) + outbound_num);
+
+            $(this).find('td').eq(8).find('span').show().html(batch_num);
+            $(this).find('td').eq(8).find('input').hide();
+            // $("#actual_in_num").val(outbound_num);
+        });
+    });
+
+	// 重置数量
+	$('#reset_num').on('click',function(){
+		// 获取 在途数量 标签
+        var return_goods_num_ = $("#return_goods_num_").val();
+        $('#return_goods_num').val(return_goods_num_);
+		$('input[name="use_batch_num"]').each(function(){
+            $(this).prev().html(0);
+        });
+	})
+
+    // 清除元素标签 select 框
+	$(function(){
+		$('.dataTables_length').remove();
+	})
+
+    searchErpInventoryOrderDetail = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpInventory/inventoryOrderDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+
+</script>

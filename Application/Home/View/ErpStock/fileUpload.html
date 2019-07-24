@@ -1,0 +1,199 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text, select {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+
+                    <div style="overflow: hidden">
+                        
+                        <div class="row cl">
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 ">附件:</label>
+
+                                <div class="formControls col-xs-10 col-sm-10 wu-example">
+                                    <div class="yanzRight">
+                                        <span class="btn-upload form-group" style="width: 100%">
+                                            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly style=" width: 70%;"> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>
+                                            <input style="margin-top:5px;float: left;" name="attachment" id="attachment" onchange="previewImage(this,1)" type="file" multiple name="file-1" class="input-file"/>
+                                        </span>
+                                        <span class="dui" style="display: none;"></span>
+                                    </div>
+                                    <div id="preview1" style="clear:both; padding-top:15px;">
+                                       
+                                        <img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="row cl" style="margin-top:20px;">
+                        <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                           <input type="hidden" name="stockOutId" id="id" value="<{$stockOutId}>"> 
+                            <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    //图片预览功能
+    function previewImage(file,imgNum)
+    {
+        var MAXWIDTH  = 200;
+        var MAXHEIGHT = 200;
+        var div = document.getElementById('preview'+imgNum);
+        if (file.files && file.files[0])
+        {
+            div.innerHTML ='';
+            var length=0;
+            //imgContent为图片展示的区域
+            var reader=new FileReader();
+            reader.readAsDataURL(file.files[length]);
+            //异步读取图片，读取完会触onload
+            reader.onload=function() {
+                div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";
+                var img = document.getElementById('imghead'+imgNum+'_'+length);
+                img.onload = function(){
+                    var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                    img.width  =  rect.width;
+                    img.height =  rect.height;
+                }
+                //多张预览，上传多张时开启
+//                length++;
+//                if (length < file.files.length) {
+//                    reader.readAsDataURL(file.files[length]);
+//                }
+            }
+        }
+        else //
+        {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead'+imgNum+'>';
+            var img = document.getElementById('imghead2');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+        }
+    }
+    function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+        var param = {top:0, left:0, width:width, height:height};
+        if( width>maxWidth || height>maxHeight )
+        {
+            rateWidth = width / maxWidth;
+            rateHeight = height / maxHeight;
+
+            if( rateWidth > rateHeight )
+            {
+                param.width =  maxWidth;
+                param.height = Math.round(height / rateWidth);
+            }else
+            {
+                param.width = Math.round(width / rateHeight);
+                param.height = maxHeight;
+            }
+        }
+        param.left = Math.round((maxWidth - param.width) / 2);
+        param.top = Math.round((maxHeight - param.height) / 2);
+        return param;
+    }
+
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        $('#remark,#outbound_density,#outbound_num,#depot_id,#attachment,#uploadfile-1,#DealerSaveBtn,#reset_num').attr('disabled', false).removeClass('disabled');
+    });
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+
+        var formData = new FormData();
+        formData.append("attachment",$("#attachment")[0].files[0]);
+        formData.append("source_object_id",$("#id").val());
+        
+        if ($("#attachment")[0].files[0]) {
+            submitTrue();
+            layer.load(1, {shade: 0.3});
+
+            $.ajax({
+                url : '<{:U("ErpStock/fileUpload")}>',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(_data) {
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        parent.searchErpStockOutList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(XMLHttpRequest);
+                    console.log('请求异常，请检查！');
+                }
+            });
+        }
+    });
+
+    
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

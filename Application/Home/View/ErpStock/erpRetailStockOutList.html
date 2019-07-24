@@ -1,0 +1,479 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 库存管理 <span class="c-gray en">&gt;</span> 零售出库单管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <span class="ml-10">出库单号：</span>
+            <input type="text" class="input-text" style="width:10%;" name="outbound_code" id="outbound_code" value=""/>
+
+            <span class="ml-10">来源单号：</span>
+            <input type="text" class="input-text" style="width:10%;" name="source_number" id="source_number" value=""/>
+            <span class="ml-10">起始订单日期：</span>
+            <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:10%;"
+                   placeholder="起始订单日期" readonly
+                   onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+            <span class="ml-10">截止订单日期：</span>
+            <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:10%;"
+                   placeholder="截止订单日期" readonly
+                   onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+
+
+            <br/>
+
+            <div class="mt-10">
+                <span class="ml-10">商品代码：</span>
+                <select name="goods_code" id="goods_code" class="input-text" style="width:25.4%">
+                    <option value="0">全部商品</option>
+                    <volist name="data.erpGoods" id="vo" key="k">
+                        <option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>
+                    </volist>
+                </select>
+
+                <span class="ml-10" style="margin-left: 2.3%">加油网点：</span>
+                <select name="facilitator_skid" class="input-text" id="facilitator_skid" style="width:10%">
+                    <option value="0">全部加油网点</option>
+                    <volist name="data.facilitatorSkidData" id="vo" key="k">
+                        <option value="<{$vo.id}>">
+                            <{$vo.name}>
+                        </option>
+                    </volist>
+
+                </select>
+
+                <span class="ml-10" style="margin-left: 3%">服务商：</span>
+                <select name="facilitator_id" class="input-text" id="facilitator_id" style="width:10%">
+                    <option></option>
+
+                </select>
+
+                <!--<input type="text" class="input-text" style="width:10%;" name="goods_code" id="goods_code" value=""/>-->
+
+                <!--<span class="ml-10">订单状态：　　</span>-->
+                <!--<select id="outbound_status" name="outbound_status" class="input-text" style="width:10%">-->
+                    <!--<option value="">请选择</option>-->
+                    <!--<option value="1">未审核</option>-->
+                    <!--<option value="2">已取消</option>-->
+                    <!--<option value="10">已审核</option>-->
+                <!--</select>-->
+
+                <!--<span class="ml-10">单据类型：　　</span>-->
+                <!--<select id="outbound_type" name="outbound_type" class="input-text" style="width:10%">-->
+                    <!--<option value="">请选择</option>-->
+                    <!--<option value="1">销售</option>-->
+                    <!--<option value="2">调拨</option>-->
+                <!--</select>-->
+
+                <input type="hidden" name="outbound_type" value="1">
+                <input type="hidden" name="type" value="2">
+                <input type="hidden" name="def" value="2">
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <!--<span><a href="javascript:;" onclick="erpstockin_update('编辑', '<{:U(\'ErpStock/updateErpStockOut\')}>','', '900','550')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe6df;</i>编辑</a>&nbsp;</span>-->
+        <!--<span><a href="javascript:;" onclick="erpstockin_delete('取消')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>取消</a>&nbsp;</span>-->
+        <!--<span><a href="javascript:;" onclick="erpstockin_audit('审核')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>审核</a>&nbsp;</span>-->
+        <!--<span><a href="javascript:;" onclick="erpstockin_audit_cancel('取消审核')" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe6f7;</i>取消审核</a>&nbsp;</span>-->
+        <!--<span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>-->
+        <span><input type="button" class="btn btn-secondary radius" value="导出" onclick="export_excel()" id="export_excel">&nbsp;</span>
+
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <th>订单日期</th>
+                <th>出库单号</th>
+                <th>来源单号</th>
+                <th>单据类型</th>
+                <th>城市</th>
+                <!--<th>仓库</th>-->
+                <th>服务商</th>
+                <th>服务网点</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>商品标注</th>
+                <th>出库数量(吨)</th>
+                <th>实际出库(升)</th>
+                <th>单价(元/升)</th>
+                <th>成本(元/吨)</th>
+                <th>实际出库密度</th>
+                <th>成本(元/升)</th>
+                <th>是否红冲</th>
+                <th>红冲来源单号</th>
+                <th>订单状态</th>
+                <th>系统批次号</th>
+                <th>货权号</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpStock/erpRetailStockOutList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" /><input type="hidden" value="' + data.status + '">';
+                }
+            },
+            {"data": "id"},
+            {"data": "create_time"},
+            {"data": "outbound_code"},
+            {"data": "source_number"},
+            {"data": "outbound_type_font"},
+            {"data": "region_font"},
+//            {"data": "storehouse_name"},
+            {"data": "facilitator_name"},
+            {"data": "facilitator_skid_name"},
+//            {"data": "facilitator_id"},
+            {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "label"},
+            //{"data": "outbound_num"}, //计划出库数量
+            {"data": "actual_retail_num"},
+            {"data":"actual_outbound_litre"},
+            {"data":"price"},
+            {"data":"cost"},
+            {"data":"outbound_density"},
+            {"data":"cost_litre"},
+            {"data":"is_reverse"},
+            {"data":"reverse_source"},
+            {"data": "outbound_status"},
+            {"data" : "batch_sys_bn"},
+            {"data" : "batch_cargo_bn"},
+            {"data": "outbound_remark"},
+        ],
+    });
+
+    var selectGoodsCode = $("#goods_code").select2({
+        placeholder: '请选择商品',
+        language: "zh-CN",
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    /*出库单-编辑*/
+    function erpstockin_update(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+
+//            var id = $(".checkchild:checked").val();
+//            var info_url = '<{:U("ErpStock/getStockOutInfo")}>';
+//            ajax(info_url, {id: id}, 'post', 'json', function (_data) {
+//                console.log(_data)
+//                if (_data.outbound_status == 1) {
+//                    url = url + '/id/' + id;
+//                    layer_show(title, url, w, h);
+//                } else {
+//                    layer.msg('只有未审核的出库单可以编辑', {icon: 2});
+//                    return false;
+//                }
+//            });
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*出库单-取消*/
+    function erpstockin_delete(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/cancelStockOut")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否取消！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpStockOutList();
+                            }, 500);
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量删除，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*出库单-审核*/
+    function erpstockin_audit(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/auditErpStockOut")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否审核！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpStockOutList();
+                            }, 500);
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    /* 导出 */
+    function export_excel() {
+            layer.confirm('确认导出？', {
+                btn: ['是', '取消']
+            }, function () {
+                $('#export_excel').val('导出中...');
+                $('#export_excel').attr('disabled',true);
+                var param = $('#searchErp').serialize();
+                var url = '<{:U("ErpStock/exportStockOutRetailData")}>?'+param;
+                $.ajax({
+                    url : '<{:U("ErpStock/exportStockOutRetailData")}>',
+                    data : param,
+                    type : 'post',
+                    dataType : 'json',
+                    success : function(data){
+                        layer.closeAll('loading');
+                        if(data.status == 1){
+                            layer.msg(data.message, {icon: 1});
+                            window.location.href=url;
+                        }else{
+                            layer.msg(data.message, {icon: 2});
+                        }
+                        $('#export_excel').val('导出');
+                        $('#export_excel').attr('disabled',false);
+                    },
+                    error:function(XMLHttpRequest, textStatus, errorThrown){
+                        layer.closeAll('loading');
+                        $('#export_excel').val('导出');
+                        $('#export_excel').attr('disabled',false);
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('网络异常，请刷新后重试！');
+                        layer.msg('对不起，网络异常，请刷新后重试！', {icon: 2});
+                    }
+                });
+            });
+        }
+
+    // @搜索框搜索查询
+    searchErpStockOutList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpStock/erpRetailStockOutList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpStockOutList(true);
+
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    /*出库单-取消审核*/
+    function erpstockin_audit_cancel(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/cancelAuditErpStockOut")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否取消审核！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpStockOutList();
+                            }, 500);
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    $("#facilitator_skid").select2({
+        placeholder : '请选择网点',
+        allowClear : true,
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    $("#facilitator_skid").change(function(){
+        var facilitator_skid = $.trim($(this).val());
+        var url = '<{:U("ErpSupplier/getSupplierByStorehouse")}>';
+        var data = {facilitator_skid_id: facilitator_skid};
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, data, type, dataType, function (_data) {
+            var options = '';
+            options += '<option value="' + _data.id + '">' + _data.supplier_name + '</option>';
+            $("#facilitator_id").html(options);
+        });
+    });
+
+</script>

@@ -1,0 +1,31 @@
+<include file="./Application/Home/View/headers.html"/>
+<article class="page-container" style=" overflow:hidden;">
+    <form action="" method="post" class="form form-horizontal" id="form-clients-add">
+        <div style="overflow: hidden">
+            <div class="row cl">
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 col-sm-2">文件下载：</label>
+                    <div class="formControls col-xs-10 col-sm-10">
+                        <a href="<{$attachment['url']}>" download="<{$attachment['name']}>"><{$attachment['name']}></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row cl">
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 col-sm-2">文件预览：</label>
+                    <div class="formControls col-xs-10 col-sm-10">
+                        <img src="<{$attachment['url']}>" alt="" style="max-width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+
+    })
+</script>
+</body>
+</html>

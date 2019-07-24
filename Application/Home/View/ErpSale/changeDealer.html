@@ -1,0 +1,334 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+    .input-text{width: 78%;}
+</style>
+<div class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-change-dealer" style="display: none;">
+
+        <div style="overflow: hidden">
+            <div class="row cl">
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>销售单号：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="<{$data.order.order_number}>" disabled/>
+                        <span id="sps30"></span>
+                    </div>
+                </div>
+
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>订单金额(元)：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="<{$data.order.order_amount}>" disabled/>
+                        <span id="sps31"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row cl">
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>原交易员：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <input type="text" class="input-text" value="<{$data.order.dealer_name}>" placeholder="" id="old_dealer_name" name="old_dealer_name" disabled>
+                        <span id="sps5"></span>
+                    </div>
+                </div>
+
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>新交易员：</label>
+
+                    <div class="formControls col-xs-8 col-sm-8">
+                        <select id="new_dealer_id" name="new_dealer_id" class="input-text" style="width:78%;">
+                            <option></option>
+                        </select>
+                        <span id="sps6"></span>
+                        <input type="hidden" value="" name="new_dealer_name" id="new_dealer_name">
+                    </div>
+                </div>
+            </div>
+            <div class="row cl">
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                    <div class="formControls col-xs-10 col-sm-10">
+                        <textarea id="remark" name="remark" style="height:100px;width:96%;" class="input-text"><{$data['order']['remark']}></textarea>
+                        <span id="sps23"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl" style="margin-top:20px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$data['order']['id']}>">
+                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                <input class="btn btn-primary radius" id="goback" type="button" value="返回">
+            </div>
+        </div>
+    </form>
+    <div>
+        <!--<br/>-->
+
+        <!--<p>交易员变更记录</p>-->
+        <!--<hr/>-->
+        <div class="row cl" style="margin-top:10px; margin-bottom: 10px;">
+            <div style="margin-left: 15px;">
+                <input class="btn btn-primary radius" id="from_show" type="button" value="申请变更" onclick="doSlideDown();">
+            </div>
+        </div>
+        <div class="row cl">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                <thead>
+                <tr class="text-c">
+                    <th>ID</th>
+                    <th>销售单号</th>
+                    <th>原交易员</th>
+                    <th>新交易员</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-spstem .tabBar span", "#tab-spstem .tabCon", "current", "click", "0");
+
+
+        /* 基本信息 */
+        $('#DealerSaveBtn').click(function () {
+
+            submitTrue();
+            var da = {
+                'id': $.trim($("#id").val()),
+                'new_dealer_id': $.trim($("#new_dealer_id").val()),
+                'remark': $.trim($("#remark").val()),
+            };
+            if (da.id == '') {
+                layer.msg('订单信息有误', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            else if (da.new_dealer_id <= 0) {
+                layer.msg('请输入变更的交易员', {icon: 2});
+                submitFalse();
+                return false;
+            }
+            else {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpSale/changeDealer")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+
+                ajax(url, data, type, dataType, function (_data) {
+                    if (_data.status == 1) {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 1});
+                        //top.searchErpPurchaseOrderList();
+                        searchErpSaleChangeDealerList();
+                        doSlideUp();
+                        submitFalse();
+                        clearFrom();
+                        $('#select2-new_dealer_id-container').find('span').remove();
+                        var new_dealer_name = $.trim($('#select2-new_dealer_id-container').text());
+
+                        $('#old_dealer_name').val(new_dealer_name);
+                        parent.searchErpSaleOrderList();
+//                        setTimeout(function () {
+//                            var index = parent.layer.getFrameIndex(window.name);
+//                            parent.layer.close(index);
+//                            submitFalse();
+//                        }, 500);
+                        return;
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                        return false;
+                    }
+                });
+            }
+        });
+    })
+    var order_id = $('#id').val();
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+
+    $("#new_dealer_id").select2({
+        ajax: {
+            type: 'GET',
+            url: "<{:U('Dealer/ajaxGetDealerByName')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data,//itemList
+
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请输入交易员姓名',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.dealer_name) != 'undefined') return '<option value="' + repo.id + '" name="' + repo.dealer_name + '">' + repo.dealer_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.dealer_name) != 'undefined') {
+                return repo.dealer_name;
+            } else if (repo.text == '请输入交易员姓名') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    //变更明细 xiaowen
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+
+            url: "<{:U('ErpSale/changeDealerList')}>",
+            data:{order_id:order_id},
+            type: 'post',
+
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+
+            {"data": "id"},
+            {"data": "sale_order_number"},
+            {"data": "old_dealer_name"},
+            {"data": "new_dealer_name"},
+            {"data": "operator"},
+            {"data": "create_time"},
+            {"data": "remark"},
+
+        ],
+    });
+
+    searchErpSaleChangeDealerList = function (status) {
+        var current_page = status || false;
+        var param = 'show_all=1';
+
+        table.api().ajax.url("<{:U('ErpSale/changeDealerList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $("#goback").click(function () {
+        doSlideUp();
+    })
+
+    function doSlideUp() {
+        $("#form-change-dealer").slideUp();
+    }
+    function doSlideDown(){
+        $("#form-change-dealer").slideDown();
+    }
+    function clearFrom(){
+        $('#form-change-dealer').find('#remark').val(''); //清除备注
+        $('#new_dealer_id').html('<option></option>');//清除交易员下拉搜索
+    }
+
+//    function change_dealer(){
+//        var dealer_id = $('#new_dealer_id').val();
+//        //var dealer_name = $('#new_dealer_id').();
+//        //console.log(dealer_id);
+//        var dealer_name = $('#new_dealer_id').find('option[value='+dealer_id+']').attr('name');
+//        console.log(dealer_name);
+//        $('#new_dealer_name').val(dealer_name);
+//    }
+//    function getDealer(obj){
+//        console.log($(obj).find('option').text());
+//    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

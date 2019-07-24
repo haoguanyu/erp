@@ -1,0 +1,141 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+</style>
+<article class="page-container">
+    <form action="__SELF__" method="post" class="form form-horizontal" id="form-admin-role-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>节点名称：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="<{$data['node_name']}>" placeholder="" id="node_name"
+                       name="node_name" datatype="*4-16" nullmsg="用户账户不能为空">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>类型：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="radio" name="type" value="1"
+                <if condition="$data.type eq 1"> checked</if>
+                >菜单 <input type="radio" name="type" value="2"
+                <if condition="$data.type eq 2"> checked</if>
+                >操作
+                <!--<input type="text" class="input-text" value="<{$data['desc']}>" placeholder="" id="type" name="type">-->
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>上级：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <!--<input type="text" class="input-text" value="<{$data['desc']}>" placeholder="" id="pid" name="pid">-->
+                <select id="pid" name="pid" class="select-box">
+                    <option value="0" class="select"
+                    <if condition="$data['pid'] eq 0">selected="selected"</if>
+                    >顶级菜单</option>
+                    <volist name="menu" id="o">
+                        <option value="<{$o.id}>" class="select"
+                        <if condition="$data['pid'] eq $o['id']">selected="selected"</if>
+                        ><{$o.node_name}></option>
+                        <volist name="o.child" id="s">
+                            <option value="<{$s.id}>" class="select"
+                            <if condition="$data['pid'] eq $s['id']">selected="selected"</if>
+                            >&nbsp;&nbsp;|--&nbsp;&nbsp;<{$s.node_name}></option>
+                            <volist name="s.child" id="t">
+                                <option value="<{$t.id}>" class="select"
+                                <if condition="$data['pid'] eq $t['id']">selected="selected"</if>
+                                >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--&nbsp;&nbsp;&nbsp;&nbsp;<{$t.node_name}></option>
+                            </volist>
+                        </volist>
+                    </volist>
+
+                </select>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限代码</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="<{$data['node_code']}>" placeholder="" id="node_code"
+                       name="node_code">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">url：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" value="<{$data['url']}>" placeholder="" id="url" name="url">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">是否显示：</label>
+
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="radio" name="is_show" value="1"
+                <if condition="$data.is_show eq 1"> checked</if>
+                >显示 <input type="radio" name="is_show" value="2"
+                <if condition="$data.is_show eq 2"> checked</if>
+                >不显示
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input type="hidden" value="<{$data['id']}>" name="id" id="Node_id">
+                <button type="button" class="btn btn-success radius" id="admin-role-save" name="admin-role-save"><i
+                        class="icon-ok"></i> 确定
+                </button>
+            </div>
+        </div>
+    </form>
+</article>
+
+</body>
+</html>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $('#admin-role-save').click(function () {
+        var url = '<{:U("Api/Node/addNode")}>';
+        if ($('#Node_id').val()) {
+            url = '<{:U("Api/Node/editNode")}>';
+        }
+
+        var type = 'post';
+        var dataType = 'json';
+        var data = $('form').serializeArray();
+        submitTrue();
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.msg(_data.msg, {icon: 1});
+                top.searthes();
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                }, 1000);
+
+            } else {
+                submitFalse();
+                layer.alert(_data.msg, {icon: 2});
+                return false;
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#admin-role-save').attr("disabled", true).val('处理中').addClass('disabled');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#admin-role-save').attr("disabled", false).val('提交').removeClass('disabled');
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

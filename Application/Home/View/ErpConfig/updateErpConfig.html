@@ -1,0 +1,304 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-2 "><span class="c-red">*</span>配置类型:</label>
+
+            <div class="formControls col-xs-9 col-sm-4">
+                <select id="type" name="type" class="input-text" width="10%" onchange="changeConfigType(this.value)">
+                    <volist name="typeArr" id="v" key="k">
+
+                        <option value="<{$k}>" <if condition="$data['type'] eq $k">selected</if> ><{$v}></option>
+
+                    </volist>
+                </select>
+                <span id="sps5"></span>
+            </div>
+            <div id="business_type_div">
+                <label class="form-label col-xs-2 ">业务类型:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="purchase_business_type" name="purchase_business_type" class="input-text disabled" width="10%" disabled onchange="changeBusinessType(this.value)">
+                        <option value="0">请选择</option>
+                        <volist name="businessType" id="v" key="k">
+                            <option value="<{$k}>" <if condition="$data['purchase_business_type'] eq $k">selected</if>><{$v}></option>
+                        </volist>
+
+                        <!--<option value="2">关闭</option>-->
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>配置名称:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="name" name="name" value="<{$data.name}>" placeholder=""/>
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>配置key:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="key" name="key" value="<{$data.key}>" placeholder=""/>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>配置值:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="value" value="<{$data.value}>" onkeyup="check_value_number()" name="value" placeholder=""/>
+                    <span id="sps3"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>状态:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="status" name="status" class="input-text" width="10%">
+                        <option value="1" <if condition="$data['status'] eq 1">selected</if>>启用</option>
+                        <option value="2" <if condition="$data['status'] eq 2">selected</if>>关闭</option>
+                    </select>
+
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+        <!--<div>-->
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 "><span class="c-red">*</span>配置类型:</label>-->
+
+                <!--<div class="formControls col-xs-9 col-sm-4">-->
+                    <!--<select id="type" name="type" class="input-text" width="10%">-->
+                        <!--<volist name="typeArr" id="v" key="k">-->
+
+                            <!--<option value="<{$k}>" <if condition="$data.type eq $k"> selected </if>><{$v}></option>-->
+
+                        <!--</volist>-->
+                    <!--</select>-->
+                    <!--<span id="sps5"></span>-->
+                <!--</div>-->
+
+            <!--</div>-->
+        <!--</div>-->
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">描述信息:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="info" name="info"><{$data.info}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input class="btn btn-primary radius" id="id" type="hidden" value="<{$data.id}>">
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证名称
+    function checkname() {
+        if ($.trim($("#name").val()) == '') {
+            layer.msg("请填写配置名称！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证key
+    function checkkey() {
+        if ($.trim($("#key").val()) == '') {
+            layer.msg("请填写配置key！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证值
+    function checkvalue() {
+        if ($.trim($("#value").val()) == '') {
+            layer.msg("请选择配置值！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证状态
+    function checkstatus() {
+        if ($.trim($("#status").val()) == '') {
+            layer.msg("请选择状态！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    // 输入key 验证
+    function check_value_number(){
+        if($.trim($("#key").val()) =='Config_Density') {
+            var value = $.trim($("#value").val());
+            if(isNaN(value)){
+                layer.msg("配置密度必须为数字！", {icon: 2});
+                checkfalse('sps3');
+                submitFalse();
+                return false;
+            }
+            if(String(value).indexOf(".") > -1 && value.toString().split(".")[1].length > 4){
+                layer.msg("小数最多4位！", {icon: 2});
+                checkfalse('sps3');
+                submitFalse();
+                return false;
+            }
+            if(value > 1){
+                layer.msg("配置密度不能大于1！", {icon: 2});
+                checkfalse('sps3');
+                submitFalse();
+                return false;
+            }
+            if(value < 0.7){
+                layer.msg("配置密度不能小于0.7！", {icon: 2});
+                checkfalse('sps3');
+                submitFalse();
+                return false;
+            }
+
+            checktrue('sps3');
+            return true;
+
+        }else{
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留4位小数）
+    function checknumthree(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // @添加
+    $(function () {
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'name': $("#name").val(),
+                'key': $("#key").val(),
+                'value': $("#value").val(),
+                'status': $("#status").val(),
+                'type': $("#type").val(),
+                'purchase_business_type': $("#purchase_business_type").val(),
+                'info': $("#info").val(),
+            };
+            if (checkname() && checkvalue() && checkstatus() && checkkey() && check_value_number()) {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpConfig/updateErpConfig")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    layer.load(1, {shade: 0.3});
+                    if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                top.searthes_erp_configList();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                submitFalse();
+                            }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+    changeConfigType('<{$data.type}>');
+    function changeConfigType(v) {
+        if(v == 3){
+            $('#purchase_business_type').removeClass('disabled').attr('disabled',false);
+
+            $('#key').attr('disabled',true).addClass('disabled');
+        }else{
+            $('#purchase_business_type').addClass('disabled').attr('disabled',true);
+            $('#key').val('').attr('disabled',false).removeClass('disabled');
+        }
+    }
+
+    function changeBusinessType(v) {
+        var purchase_config_key = 'p_business_type_' + v;
+        $('#key').val(purchase_config_key);
+    }
+</script>

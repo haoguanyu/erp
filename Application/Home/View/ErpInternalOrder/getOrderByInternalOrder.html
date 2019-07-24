@@ -1,0 +1,60 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+</style>
+<div class="page-container">
+     <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>id</th>
+                <th>零售销售单号</th>
+                <th>订单时间</th>
+                <th>订单来源</th>
+                <th>交易员</th>
+                <th>客户</th>
+                <th>手机</th>
+                <th>公司</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>商品标注</th>
+                <th>数量</th>
+                <th>金额</th>
+            </tr>
+            </thead>
+            <tbody>
+                <volist name="arr" id="vo" key="k">
+                <tr>
+                    <td><{$vo.id}></td>
+                    <td><{$vo.order_number}></td>
+                    <td><{$vo.add_order_time}></td>
+                    <td><{$vo.order_source}></td>
+                    <td><{$vo.dealer_name}></td>
+                    <td><{$vo.user_name}></td>
+                    <td><{$vo.user_phone}></td>
+                    <td><{$vo.company_name}></td>
+                    <td><{$vo.type}></td>
+                    <td><{$vo.source}></td>
+                    <td><{$vo.level}></td>
+                    <td><{$vo.rank}></td>
+                    <td>-</td>
+                    <td><{$vo.number}></td>
+                    <td><{$vo.actual_price}></td>
+                </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

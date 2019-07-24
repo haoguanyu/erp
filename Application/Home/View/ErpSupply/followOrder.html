@@ -1,0 +1,311 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 交易单管理 <span class="c-gray en">&gt;</span> 交易单列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+        <div class="cl pd-5 bg-1 bk-gray mt-20">
+            <form id="searchSupply" action="" method="post" autocomplete="off">
+                <input type="hidden" name="supply_id" value="<{$id}>">
+
+                <select name="goodsSource" class="input-text" style="width:10%">
+                    <option value=''>商品来源</option>
+                    <volist name="data.source" id="vo" key="k">
+                        <option value='<{$vo}>'><{$vo}></option>
+                    </volist>
+                </select>
+                <select name="goodsName" class="input-text" style="width:10%" id="goodsName">
+
+                </select>
+                <select name="goodsLevel" class="input-text" style="width:10%" id="goodsLevel">
+
+                </select>
+                <select name="goodsGrade" class="input-text" style="width:10%" id="goodsGrade">
+
+                </select>
+
+                <div class="mt-10">
+                    <select name="buy_company_id" class="input-text" id="buy_company_id" style="width:20%">
+                        <option value='0'>请选择采购商</option>
+                        <volist name="data.companyList" id="vo" key="k">
+                            <option value='<{$vo.id}>'><{$vo.company_name}></option>
+                        </volist>
+                    </select>
+
+                    <select name="sale_company_id" class="input-text" id="sale_company_id" style="width:20%">
+                        <option value='0'>请选择供应商</option>
+                        <volist name="data.companyList" id="vo" key="k">
+                            <option value='<{$vo.id}>'><{$vo.company_name}></option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="mt-10">
+                    <select name="region" class="input-text" style="width:10%" id="search_region">
+                        <optgroup label="城市列表">
+                            <option value="0">全部城市</option>
+                            <volist name="data.regionList" id="vo" key="k">
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+
+                    <select name="depot_id" class="input-text" style="width:10%" id="search_depot">
+                        <optgroup label="油库列表">
+                            <option value="0">全部油库</option>
+                        </optgroup>
+                    </select>
+
+                    <select name="status" class="input-text" style="width:10%">
+                        <option value=''>单据状态</option>
+                        <volist name="data.erpOrderStatus" id="vo" key="k">
+                            <option value='<{$key}>'><{$vo}></option>
+                        </volist>
+                    </select>
+                </div>
+
+                <div class="mt-10">
+                    <input type="text" name="order_number" id="order_number" class="input-text" style="width:10%;"
+                           placeholder="交易单号">
+                    <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+                </div>
+            </form>
+        </div>
+        <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+        <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                <thead>
+                <tr class="text-c">
+                    <th>填单时间</th>
+                    <th>交易单号</th>
+                    <th>供货单号</th>
+                    <th>交易员</th>
+                    <th>状态</th>
+                    <th>城市</th>
+                    <th>油库</th>
+                    <th>供应商用户</th>
+                    <th>供应商公司</th>
+                    <th>采购用户</th>
+                    <th>采购公司</th>
+                    <th>商城商品</th>
+                    <th>商品代码</th>
+                    <th>商品名称</th>
+                    <th>商品来源</th>
+                    <th>商品标号</th>
+                    <th>商品级别</th>
+                    <th>价格</th>
+                    <th>数量</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+
+        <input type="hidden" id="id" value="<{$id}>">
+
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript">
+    addressInit('goodsName', 'goodsLevel', 'goodsGrade', ['请选择', '请选择', '请选择']);
+    $(function () {
+        var data = Array();
+        data['supply_id'] = $("#id").val();
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                url: "<{:U('ErpSupply/followOrder')}>",
+                type: 'post',
+                data: data
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {"data": "create_time"},
+                {"data": "order_number"},
+                {"data": "supply_number"},
+                {"data": "dealer_name"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        if (data.status == 1) {
+                            return '<span class="c-warning"><b>未审核</b></span>';
+                        } else if (data.status == 2) {
+                            return '<span class="c-error"><b>已删除</b></span>';
+                        } else if (data.status == 3) {
+                            return '<span class="c-primary"><b>已预审</b></span>';
+                        } else if (data.status == 10) {
+                            return '<span class="c-success"><b>已审核</b></span>';
+                        }
+                    }
+                },
+                {"data": "region_name"},
+                {"data": "depot_name"},
+                {"data": "s_user_name"},
+                {"data": "s_company_name"},
+                {"data": "b_user_name"},
+                {"data": "b_company_name"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        if (data.mall_goods == 2) {
+                            return '<span class="c-warning"><b>否</b></span>';
+                        } else if (data.mall_goods == 1) {
+                            return '<span class="c-success"><b>是</b></span>';
+                        }
+                    }
+                },
+                {"data": "goods_code"},
+                {"data": "goods_name"},
+                {"data": "source_from"},
+                {"data": "grade"},
+                {"data": "level"},
+                {"data": "price"},
+                {"data": "buy_num"},
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+    });
+    top.searchSupplyList = function () {
+
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        //table.api().ajax.url("<{:U('Galaxy/orderList')}>?"+param);
+        table.api().ajax.url("<{:U('ErpOrder/orderList')}>?" + param);
+        table.api().ajax.reload(null, false);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searchSupplyList();
+        setTimeout(function () {
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, 1000);
+
+    }
+
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCompany = $("#sale_company_list").select2({
+        placeholder: '请选择供应商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var region_depots = <{$data.depots}>;
+    $("#search_region").change(function () {
+        //alert($(this).val());
+        var region = $.trim($(this).val());
+        var depots = region_depots[region];
+        var depots_list = [];
+        var options = '<option value="0">请选择油库</option>';
+        for (var i in depots) {
+            //depots_list.push(v.);//push();
+            options += '<option value="' + depots[i].id + '">' + depots[i].depot_name + '</option>';
+        }
+        $("#search_depot").html(options);
+        //selectDepot.val(depots).trigger('change');
+    });
+    var selectDepot = $("#search_depot").select2({
+        placeholder: '请选择油库',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectDepot = $("#sale_company_id").select2({
+        placeholder: '请选择供应商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectDepot = $("#buy_company_id").select2({
+        placeholder: '请选择供应商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCompany = $("#search_company").select2({
+        placeholder: '请选择服务商',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+</script>

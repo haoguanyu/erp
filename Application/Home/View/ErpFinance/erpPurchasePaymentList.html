@@ -1,0 +1,782 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .list_red{
+        color: red;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 财务管理 <span
+        class="c-gray en">&gt;</span> 应付管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <span class="ml-10">　　　业务单号：&nbsp;</span><input type="text" class="input-text" style="width:15%;"
+                                                            name="purchase_order_number" id="purchase_order_number"
+                                                            value="" placeholder="业务单号"/>
+
+            <span class="ml-10">起始申请付款日期：</span>
+            <input type="text" name="apply_pay_start_time" placeholder="起始申请付款日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                   id="apply_pay_start_time" style="width:15%;" class="input-text Wdate">
+
+            <span class="ml-10">截止申请付款日期：</span>
+            <input type="text" name="apply_pay_end_time" placeholder="截止申请付款日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                   id="apply_pay_end_time" style="width:15%;" class="input-text Wdate">
+
+            <br/>
+
+            <div class="mt-10">
+                <span class="ml-10">供应商（公司）：</span>
+                <select id="sale_company_id" name="sale_company_id" class="input-text" style="width:15%">
+                    <option></option>
+                </select>
+
+                <span class="ml-10">起始实际付款日期：</span>
+                <input type="text" name="pay_start_time" placeholder="起始实际付款日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="pay_start_time" style="width:15%;" class="input-text Wdate">
+
+                <span class="ml-10">截止实际付款日期：</span>
+                <input type="text" name="pay_end_time" placeholder="截止实际付款日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="pay_end_time" style="width:15%;" class="input-text Wdate">
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">　　　采购单号：&nbsp;</span><input type="text" class="input-text" style="width:15%;"
+                                                                name="from_purchase_order_number" id="from_purchase_order_number"
+                                                                value="" placeholder="采购单号"/>
+                <span class="ml-10">　　　　　采购员：</span>
+                <select id="buyer_dealer_id" name="buyer_dealer_id" class="input-text" style="width:15%">
+                    <option></option>
+                </select>
+
+                <span class="ml-10">　　　　付款状态：</span>
+                <select id="status" name="status" class="input-text" style="width:15%">
+                    <option value="">请选择</option>
+                    <option value="99">全部状态</option>
+                    <option value="1">已申请</option>
+                    <option value="2">已驳回</option>
+                    <option value="3">已同意</option>
+                    <option value="10">已付款</option>
+                </select>
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="payment_agree('同意')" class="btn btn-success radius check_access" value="ErpFinance-paymentAgree">同意</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="payment_confirmation('付款确认')" class="btn btn-primary radius check_access" value="ErpFinance-paymentConfirmation">付款确认</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="payment_reject('驳回', '<{:U(\'ErpFinance/paymentReject\')}>', '', '600','300')" class="btn btn-danger radius check_access" value="ErpFinance-paymentReject">驳回</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="payment_reverse()" class="btn btn-danger radius check_access" value="ErpFinance-reversePurchasePayment" id="roll_back">付款红冲</a></span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <!--<th>采购单号</th>-->
+                <th>业务单号</th>
+                <th>来源单号</th>
+                <th>城市</th>
+                <th>银行简称</th>
+                <th>供应商（公司）</th>
+                <th>对方开户银行</th>
+                <th>对方银行账号</th>
+                <th>付款方式</th>
+                <th>商品</th>
+                <th>单价(元)</th>
+                <th>申请付款金额</th>
+                <th>余额抵扣</th>
+                <th>实际付款</th>
+                <th>付款金额</th>
+                <th>订单总额</th>
+                <th>申请付款人</th>
+                <th>申请付款状态</th>
+                <th>申请时间</th>
+                <th>申请付款日期</th>
+                <th>实际付款时间</th>
+                <th>申请备注</th>
+                <th>财务备注</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<script type="text/javascript">
+
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    /** end 控制权限  **/
+
+    $("#sale_company_id").select2({
+        ajax: {
+            type: 'GET',
+            //url: "<{:U('Clients/getCompanyByName')}>",
+            url: "<{:U('ErpSupplier/getSupplierData')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    restrict: 2,
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                /*var itemList = [];//当数据对象不是{id:0,text:'ANTS'}这种形式的时候，可以使用类似此方法创建新的数组对象
+                 var arr = data.result.list
+                 for(item in arr){
+                 itemList.push({id: item, text: arr[item]})
+                 }*/
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请选择',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.company_name) != 'undefined') {
+                return repo.company_name;
+            } else if (repo.text == '请选择') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+    $("#buyer_dealer_id").select2({
+        ajax: {
+            type: 'GET',
+            url: "<{:U('User/getDealerByName')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                /*var itemList = [];//当数据对象不是{id:0,text:'ANTS'}这种形式的时候，可以使用类似此方法创建新的数组对象
+                 var arr = data.result.list
+                 for(item in arr){
+                 itemList.push({id: item, text: arr[item]})
+                 }*/
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请选择',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.dealer_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.dealer_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.dealer_name) != 'undefined') {
+                return repo.dealer_name;
+            } else if (repo.text == '请选择') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpFinance/erpPurchasePaymentList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    var url = data.source_order_type == 1 ? '<{:U("ErpPurchase/updatePurchaseOrder")}>' : '<{:U("ErpReturned/editPurchaseReturn")}>';
+                    //var onclick = "update_order('编辑', '<{:U(\'ErpPurchase/updatePurchaseOrder\')}>', '900','550' ,'" + data.purchase_id + "')";
+                    var onclick = "update_order('编辑', '"+url+"', '900','550' ,'" + data.purchase_id + "')";
+                    return '<a onclick="' + onclick + '" class="c-primary">' + data.order_number + '</a>';
+                }
+            },
+            {"data": "from_sale_order_number"},
+            {"data": "region_font"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    var url = '<{:U(\'ErpBank/getErpBankInfo\')}>';
+                    //var onclick = "update_order('编辑', '<{:U(\'ErpPurchase/updatePurchaseOrder\')}>', '900','550' ,'" + data.purchase_id + "')";
+
+                    var onclick = "erp_bank_detail('银行账号详情', '"+url+"', '900','550' ,'" + data.id + "')";
+                    return '<a onclick="' + onclick + '" class="c-primary">' + data.bank_simple_name + '</a>';
+                }
+            },
+            {"data": "sale_company_name"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if(data.sale_collection_info){
+                        var message = data.sale_collection_info.substr(0, data.sale_collection_info.indexOf("--"));
+                    }else{
+                        var message = '无';
+                    }
+                    return '<span>' + message + '</span>';
+                }
+            },
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if(data.sale_collection_info){
+                        var message = data.sale_collection_info.substr(data.sale_collection_info.indexOf("--") + 2);
+                    }else{
+                        var message = '无';
+                    }
+                    return '<span>' + message + '</span>';
+                }
+            },
+            {"data": "pay_type"},
+            {
+                "data": null,
+                render: function (data, type, full, meta) {
+                    var tt = data.goods.source_from + '/' + data.goods.goods_name + '/' + data.goods.grade + '/' + data.goods.level;
+                    var str = '';
+                    str += '<a href="javascript:;" title="' + tt + '" class="c-primary">' + data.goods.goods_code + '</a>';
+                    return str;
+                }
+            },
+            {"data": "price"},
+            {"data": "pay_money"},
+            {"data": "balance_deduction"},
+            {"data": "actual_pay_money"},
+            {"data": "payed_money"},
+            {"data": "order_amount"},
+            {"data": "buyer_dealer_name"},
+            {"data": "status_font"},
+            {"data": "create_time"},
+            {"data": "apply_pay_time"},
+            {"data": "pay_time"},
+            {"data": "remark"},
+            {"data": "audit_remark"},
+        ],
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                $('#sum_total th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }else{
+                var total_pay_money = data[0].sumTotal['total_pay_money'];
+                var total_order_amount = data[0].sumTotal['total_order_amount'];
+                var total_balance_deduction = data[0].sumTotal['total_balance_deduction'];
+                $('#sum_total th').eq(12).html(parseFloat(total_pay_money).toFixed(2));
+                $('#sum_total th').eq(13).html(parseFloat(total_balance_deduction).toFixed(2));
+                $('#sum_total th').eq(14).html(parseFloat(total_pay_money - total_balance_deduction).toFixed(2));
+                $('#sum_total th').eq(15).html(parseFloat(total_pay_money).toFixed(2));
+                $('#sum_total th').eq(16).html(parseFloat(total_order_amount).toFixed(2));
+                //$('#sum_total th').eq(13).html(parseFloat(total_payed_money).toFixed(2));
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            //Total over all pages
+
+            for(i=0;i<20;i++){
+
+                if(i == 0){
+
+                    continue;
+                }
+
+                if(i < 12 || i > 16){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                $(api.column(i).footer()).html(
+                    '' + parseFloat(pageTotals).toFixed(2)
+                );
+            }
+        }
+    });
+
+    /*同意申请*/
+    function payment_agree(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择一条数据', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            var url = '<{:U("ErpFinance/checkAccount")}>';
+            var type = 'post';
+            var dataType = 'json';
+            ajax(url, {id:id,account_type:2}, type, dataType, function (_data) {
+                if (_data.payment_status != 1) {
+                    layer.msg("只有已申请单据才能进行同意操作", {icon: 2});
+                    return;
+                } else {
+                    var url = '<{:U("ErpFinance/paymentAgree")}>';
+                    var type = 'post';
+                    var dataType = 'json';
+                    layer.confirm('确认同意？', {
+                        btn: ['是', '取消']
+                    }, function () {
+                        layer.load(1, {shade: 0.3});
+                        $.ajax({
+                            url: url,
+                            data: {id: id},
+                            type: type,
+                            dataType: dataType,
+                            success: function (_data) {
+                                if (_data.status == 1) {
+                                    layer.closeAll();
+                                    layer.msg(_data.message, {icon: 1});
+                                    setTimeout(function () {
+                                        top.searthes_erpPurchasePaymentList();
+                                    }, 1000);
+                                } else {
+                                    layer.closeAll();
+                                    layer.msg(_data.message, {icon: 2});
+                                    setTimeout(function () {
+                                        top.searthes_erpPurchasePaymentList();
+                                    }, 1000);
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                is = 1;
+                                console.log(XMLHttpRequest);
+                                console.log(textStatus);
+                                console.log(errorThrown);
+                                console.log('请求异常，请检查！');
+                            }
+                        });
+                    });
+                }
+            });
+        } else {
+            layer.msg('无法批量确认，只能选择一项', {icon: 2});
+        }
+    }
+
+    //确认付款
+    function payment_confirmation() {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.msg("一次只能选择一条数据", {icon: 2});
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.msg("请选择一条数据", {icon: 2});
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var url = '<{:U("ErpFinance/checkAccount")}>';
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, {id:id,account_type:2}, type, dataType, function (_data) {
+            if (_data.payment_status != 3) {
+                layer.msg("该付款申请未同意，无法确认付款", {icon: 2});
+                return;
+            } else {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpFinance/prepayPaymentConfirmation")}>';
+                var title = '付款确认';
+                var w = 900;
+                var h = 500;
+                url = url + '/id/' + id;
+                layer.closeAll();
+                layer_show(title, url, w, h);
+//                var prepay_status = 0;
+//                if (_data.account_status == 1 && _data.source_order_type == 1) {
+//                    layer.confirm('当前余额为：' + _data.account_info.account_balance + '<br/>是否使用预付余额进行抵扣', {
+//                        btn: ['是','否（确认付款）'] //按钮
+//                    }, function(){
+//                        layer.load(1, {shade: 0.3});
+//                        var url = '<{:U("ErpFinance/prepayPaymentConfirmation")}>';
+//                        var title = '预付款余额管理';
+//                        var w = 900;
+//                        var h = 500;
+//                        url = url + '/id/' + id;
+//                        layer.closeAll();
+//                        layer_show(title, url, w, h);
+//                    }, function(){
+//                        layer.confirm('确定要付款吗？', function () {
+//                            layer.load(1, {shade: 0.3});
+//                            var url = '<{:U("ErpFinance/paymentConfirmation")}>';
+//                            var data = {id: id,prepay_status:prepay_status};
+//                            var dataType = 'json';
+//                            var type = 'post';
+//                            ajax(url, data, type, dataType, function (_data) {
+//                                if (_data.status == 1) {
+//                                    layer.closeAll();
+//                                    layer.msg(_data.message, {icon: 1});
+//                                    top.searthes_erpPurchasePaymentList();
+//                                } else {
+//                                    layer.closeAll();
+//                                    layer.msg(_data.message, {icon: 2});
+//                                    return false;
+//                                }
+//                            });
+//                        })
+//                    });
+//                } else {
+//                    layer.confirm('确定要付款吗？', function () {
+//                        layer.load(1, {shade: 0.3});
+//                        var url = '<{:U("ErpFinance/paymentConfirmation")}>';
+//                        var data = {id: id,prepay_status:prepay_status};
+//                        var dataType = 'json';
+//                        var type = 'post';
+//                        ajax(url, data, type, dataType, function (_data) {
+//                            if (_data.status == 1) {
+//                                layer.closeAll();
+//                                layer.msg(_data.message, {icon: 1});
+//                                top.searthes_erpPurchasePaymentList();
+//                            } else {
+//                                layer.closeAll();
+//                                layer.msg(_data.message, {icon: 2});
+//                                return false;
+//                            }
+//                        });
+//                    })
+//                }
+            }
+        });
+    }
+
+    //付款红冲
+    function payment_reverse() {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.msg("一次只能选择一条数据", {icon: 2});
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.msg("请选择一条数据", {icon: 2});
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+
+        var url = '<{:U("ErpFinance/checkAccount")}>';
+        var type = 'post';
+        var dataType = 'json';
+        ajax(url, {id:id,account_type:2}, type, dataType, function (_data) {
+            if (_data.payment_status != 10) {
+                layer.msg("该付款申请未确认付款，无法红冲", {icon: 2});
+                return;
+            } else {
+                layer.confirm('确定要对该笔付款进行红冲吗？', function () {
+                    layer.load(1, {shade: 0.3});
+                    var url = '<{:U("ErpReverse/reversePayment")}>';
+                    var data = {id: id};
+                    var dataType = 'json';
+                    var type = 'post';
+                    ajax(url, data, type, dataType, function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            top.searthes_erpPurchasePaymentList();
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+                            return false;
+                        }
+                    });
+                })
+            }
+        });
+    }
+
+    /*申请驳回*/
+    function payment_reject(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量驳回，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*采购单-详情*/
+    function update_order(title, url, w, h, id) {
+
+        url = url + '/id/' + id + '/is_show/1';
+
+        layer_show(title, url, w, h);
+    }
+
+    /*银行账号-详情*/
+    function erp_bank_detail(title, url, w, h, id) {
+        url = url + '/id/' + id +'/type/' + 1;
+        layer_show(title, url, w, h);
+    }
+
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpFinance/exportPaymentData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+    // @搜索框搜索查询
+    top.searthes_erpPurchasePaymentList = function(status){
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpFinance/erpPurchasePaymentList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        top.searthes_erpPurchasePaymentList(true);
+
+    }
+
+    //    // @搜索
+    //    top.searthesRetailFinance = function(){
+    //        var url = "<{:U('RetailFinance/orderReconciliationList')}>" + '?' + $("#form1").serialize();
+    //        table.api().ajax.url(url);
+    //        table.api().ajax.reload();
+    //    }
+    //
+    //    function sub_select(){
+    //        $('#subes').val('查询中...');
+    //        var index = layer.load(0, {shade: false});
+    //        top.searthesRetailFinance();
+    //        setTimeout(function(){
+    //            $('#subes').val('查询');
+    //            layer.closeAll('loading');
+    //        }, 1000);
+    //    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+$("#dataTable_length").append('<span style="padding-left:10px;">标记<span class="list_red">红色</span>的业务单号为采购退货单</span>');
+</script>

@@ -1,0 +1,312 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 业务报表管理 <span class="c-gray en">&gt;</span> 二级仓库存出入库汇总报表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <span class="ml-10">网点：　　　　　　</span>
+                <select id="search_storehouse" name="search_storehouse[]" class="input-text" style="width:15%" multiple="multiple">
+                    <option value="0">请选择</option>
+                    <volist name="data.facilitatorSkidData" id="vo" key="k">
+                        <option value="<{$vo.id}>">
+                            <{$vo.name}>
+                        </option>
+                    </volist>
+                </select>
+                <span class="ml-10">商品：　　　　　　</span>
+                <select name="goods_id" class="input-text" style="width:15%" id="search_goods_code">
+                    <optgroup label="商品列表">
+                        <option value="0">全部商品</option>
+                        <volist name="data.erpGoods" id="vo" key="k">
+                            <option value="<{$vo.id}>">
+                                <{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="mt-10">
+                <span class="ml-10">起始时间（<span style="color: red;">必选</span>）：</span>
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:15%;" readonly onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <span class="ml-10">截止时间（<span style="color: red;">必选</span>）：</span>
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:15%;" readonly onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+        <!--<span class="l"><a href="javascript:;" onclick="erpstockin_delete('取消')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>取消</a>&nbsp;</span>-->
+        <!--<span class="l"><a href="javascript:;" onclick="erpstockin_audit('审核')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>审核</a></span>-->
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>仓库</th>
+                <th>商品</th>
+                <th>期初数量</th>
+                <th>期初成本</th>
+                <th>本期入库数量</th>
+                <th>本期入库金额</th>
+                <th>本期出库数量</th>
+                <th>本期出库成本</th>
+                <th>期末数量</th>
+                <th>期末成本</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpReport/stockInOutSummaryLevelTwo')}>",
+            type: 'post'
+        },
+        "aaSorting": [[0, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+
+            {"data": "id"},
+            {"data": "object_name"},
+            {"data": "goods_code"},
+            {"data": "first_stock_num"},
+            {"data": "first_stock_price"},
+            {"data": "total_in_stock_num"},
+            {"data": "total_in_stock_price"},
+            {"data": "total_out_stock_num"},
+            {"data": "total_out_stock_price"},
+            {"data": "last_stock_num"},
+            {"data": "last_stock_price"},
+        ],
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                $('#sum_total th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }else{
+                var sum_first_stock_num = data[0].sumTotal['sum_first_stock_num'];
+                var sum_first_stock_price = data[0].sumTotal['sum_first_stock_price'];
+                var sum_in_stock_num = data[0].sumTotal['sum_in_stock_num'];
+                var sum_in_stock_price = data[0].sumTotal['sum_in_stock_price'];
+                var sum_out_stock_num = data[0].sumTotal['sum_out_stock_num'];
+                var sum_out_stock_price = data[0].sumTotal['sum_out_stock_price'];
+                var sum_last_stock_num = data[0].sumTotal['sum_last_stock_num'];
+                var sum_last_stock_price = data[0].sumTotal['sum_last_stock_price'];
+                $('#sum_total th').eq(3).html(parseFloat(sum_first_stock_num).toFixed(4));
+                $('#sum_total th').eq(4).html(parseFloat(sum_first_stock_price).toFixed(4));
+                $('#sum_total th').eq(5).html(parseFloat(sum_in_stock_num).toFixed(4));
+                $('#sum_total th').eq(6).html(parseFloat(sum_in_stock_price).toFixed(4));
+                $('#sum_total th').eq(7).html(parseFloat(sum_out_stock_num).toFixed(4));
+                $('#sum_total th').eq(8).html(parseFloat(sum_out_stock_price).toFixed(4));
+                $('#sum_total th').eq(9).html(parseFloat(sum_last_stock_num).toFixed(4));
+                $('#sum_total th').eq(10).html(parseFloat(sum_last_stock_price).toFixed(4));
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            //Total over all pages
+
+            for(i=0;i<11;i++){
+
+                if(i == 0){
+                    continue;
+                }
+
+                if(i < 3 || i > 10){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a) && a.sale_wait_num == undefined) {
+                            a = 0;
+                        }
+                        if (isNaN(b) && b.sale_wait_num == undefined) {
+                            b = 0;
+                        }
+                        if(a.sale_wait_num != undefined){
+                            a = a.sale_wait_num
+                        }
+                        if(b.sale_wait_num != undefined){
+                            b = b.sale_wait_num
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a) && a.sale_wait_num == undefined) {
+                            a = 0;
+                        }
+                        if (isNaN(b) && b.sale_wait_num == undefined) {
+                            b = 0;
+                        }
+                        if(a.sale_wait_num != undefined){
+                            a = a.sale_wait_num
+                        }
+                        if(b.sale_wait_num != undefined){
+                            b = b.sale_wait_num
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                $(api.column(i).footer()).html(
+                    '' + parseFloat(pageTotals).toFixed(4)
+                );
+            }
+        }
+    });
+
+    // @搜索框搜索查询
+    searchStockInOutSummaryLevelTwo = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpReport/stockInOutSummaryLevelTwo')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchStockInOutSummaryLevelTwo(true);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    $("#search_goods_code").select2({
+        placeholder: '请选择商品',
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    $("#search_storehouse").select2({
+        placeholder : '请选择仓库',
+        allowClear : true,
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpReport/exportStockInOutSummaryLevelTwo")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+</script>

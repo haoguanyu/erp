@@ -1,0 +1,590 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar clearfix">
+                <span>基本信息</span>
+                <span>联系人</span>
+                <span>银行账户</span>
+            </div>
+            <div id="information" class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>供应商名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="supplier_name" name="supplier_name" value=""/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red"></span>简称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " id="supplier_short_name" name="supplier_short_name" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>企业税号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" id="tax_number" name="tax_number" maxlength="20" />
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>注册银行名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" id="registered_bank" name="registered_bank" maxlength="50" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>注册银行账号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" id="registered_bank_number" name="registered_bank_number" maxlength="50" />
+
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red"></span>注册电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" placeholder="" id="registered_tel" name="registered_tel" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>注册地址：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " placeholder="" id="registered_address" name="registered_address" />
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red"></span>公司电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" placeholder="" id="company_tel" name="company_tel" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red"></span>邮编：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text " value="" placeholder="" id="post_code" name="post_code" maxlength="10"/>
+
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>是否团内：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="is_inner" name="is_inner" class="input-text " style="width:100%;" >
+                                        <option value="0">请选择</option>
+                                        <volist name="data.isInner" id="vo" key="k">
+                                            <option value="<{$key}>">
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-8">
+                                <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>公司地址：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select name="address_province" class="input-text" style="width:35%" id="address_province" onchange="change_shipping_city(this.value)">
+                                        <optgroup label="省份列表">
+                                            <option value="0">省份</option>
+                                            <volist name="data.province_list" id="vo" key="k">
+                                                <option value="<{$key}>">
+                                                    <{$vo}>
+                                                </option>
+                                            </volist>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="address_city" class="input-text" style="width:29%" id="address_city" onchange="change_shipping_county(this.value)">
+                                        <optgroup label="城市列表">
+                                            <option value="0">城市</option>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="address_zone" class="input-text" style="width:31%" id="address_zone" >
+                                        <optgroup label="地区列表">
+                                            <option value="0">地区</option>
+                                        </optgroup>
+                                    </select>
+                                    <span id="sps23"></span>
+
+                                    <!--<input type="text" class="input-text" value="" placeholder="" id="company_address" name="company_address" />-->
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-4">
+                                <input type="text" class="input-text" id="company_address" name="company_address" onkeyup=""/>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">公司级别：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="company_level" name="company_level" class="input-text " style="width:100%;" >
+                                        <option value="0">请选择</option>
+                                        <volist name="data.level" id="vo" key="k">
+                                            <option value="<{$key}>">
+
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>业务属性：</label>
+
+                                <div class="formControls col-xs-7 col-sm-7">
+                                    <select id="business_attributes" name="business_attributes" class="input-text " style="width:100%;" >
+                                        <volist name="data.businessAttributes" id="vo" key="k">
+                                             <!-- 只支持 批发 属性 Time 2018-11-20 -->
+                                            <if condition="$key eq 1 ">
+                                                <option value="<{$key}>">
+                                                    <{$vo}>
+                                                </option>
+                                            </if>
+                                        </volist>
+                                    </select>
+                                </div>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>状态：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="radio" name="status" value="1" checked> 有效
+
+                                    <input type="radio" name="status" value="2"> 无效
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                            </div>
+                        </div>
+
+                        <div class="row cl">
+                            <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                            <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px">
+                                <textarea id="company_remark" name="company_remark" style="height:100px;width:96%;" class="input-text " maxlength="255" ></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row cl" style="margin-top:20px;">
+                        <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-5">
+
+                            <input class="btn btn-primary radius" id="goNext" type="button" value="增加联系人">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-invoice-add" style="">
+                    <div style="overflow: hidden" id="userList">
+                        <div class="row cl user_info">
+                            <div class="row cl col-sm-5">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>联系人：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text"  name="user_name[]" value="" maxlength="8"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-7">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>联系电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text"  name="user_phone[]" value="" maxlength="11" style="width:180px;"/>
+                                    <span id="sps2"></span>
+                                    <span><a href="javascript:;" onclick="addUserInfo(this);" class="btn btn-primary radius check_access" value="ErpGoods-showAddErpGoods"><i class="Hui-iconfont"></i>+</a>&nbsp;</span><!--&#xe600;-->
+                                    <span><a href="javascript:;" onclick="delUserInfo(this);" class="btn btn-primary radius check_access delUser" value="ErpGoods-showAddErpGoods"><i class="Hui-iconfont"></i>-</a>&nbsp;</span><!--&#xe600;-->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row cl" style="margin-top:20px;">
+                            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-5">
+                                <input class="btn btn-primary radius" id="addSupplierBtn" type="button" value="提交">&nbsp;&nbsp;&nbsp;
+                                <input class="btn btn-primary radius" id="goback" type="button" value="返回">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- 银行账号 -->
+            <div class = "tabCon">
+                <form action="" method="post" class="form form-horizontal" id="form-back-add" style="">
+                    <div style="overflow: hidden" id = "backList">
+                        <div class="row c1 back_info">
+                            <div class="row c1 col-sm-5">
+                                <label class="form-label col-xs-4 col-sm-4">银行名称</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="backName"  name="backName" value="" maxlength="50"/>
+                                    <span id="back1"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-7">
+                                <label class="form-label col-xs-4 col-sm-4">银行卡号：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="backNum"  name="backNum" value="" maxlength="30" style="width:180px;"/>
+                                    <span id="back2"></span>
+                                </div>
+                            </div>
+                            <div class="row cl" style="margin-top:20px;">
+                                <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-5">
+                                    <input class="btn btn-primary radius" id="addSupplierBtn2" type="button" value="提交">&nbsp;&nbsp;&nbsp;
+                                    <input class="btn btn-primary radius" id="go_back" type="button" value="返回">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+        //$('input,select,textarea', $('#information')).attr('disabled', true);
+
+    });
+    hiddenFirstDel();
+    function hiddenFirstDel() {
+        $('.delUser').eq(0).hide();
+    }
+    function addUserInfo(obj) {
+        var user_obj = $(obj).parents('.user_info');
+        user_obj.find('.delUser').show();
+        var user_tpl = user_obj.clone();
+        user_obj.after(user_tpl);
+        hiddenFirstDel();
+    }
+    function delUserInfo(obj) {
+        $(obj).parents('.user_info').remove();
+    }
+    $("#goNext").click(function () {
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "1");
+    })
+
+
+    $("#goback , #go_back").click(function () {
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "0");
+    })
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    var selectProvince = $("#address_province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#address_city").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCounty = $("#address_zone").select2({
+        placeholder: '请选择地区',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var city    = <{$data.city}>;
+    var county  = <{$data.county}>;
+    // 二级联动提油城市
+    function change_shipping_city(id) {
+        var citylist = city[id];
+        $('#address_city').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#address_city').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#address_city').html(options);
+    }
+    // 三级联动提油地区
+    function change_shipping_county(id) {
+        var citylist = county[id];
+        $('#address_zone').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#address_zone').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#address_zone').html(options);
+    }
+
+    var userInfoList = {};
+    userInfoList.user_name= [];
+    userInfoList.user_phone= [];
+    /* 验证联系人信息*/
+    function checkuUserInfo() {
+        var user_name_list = $('input[name="user_name[]"]').val();
+        var user_phone_list = $('input[name="user_phone[]"]').val();
+
+        console.log(user_name_list);
+        console.log(user_phone_list);
+        var is_pass = true;
+        userInfoList.user_name= [];
+        userInfoList.user_phone= [];
+        $('input[name="user_name[]"]').each(function () {
+            if($.trim($(this).val()) == ''){
+                console.log("联系人不能为空");
+                //layer.alert("联系人不能为空");
+                layer.msg("联系人不能为空", {icon: 2});
+                is_pass = false;
+                return false;
+            }else{
+                userInfoList.user_name.push($.trim($(this).val()));
+            }
+        })
+
+        $('input[name="user_phone[]"]').each(function () {
+            if($.trim($(this).val()) == ''){
+
+                layer.msg("联系电话不能为空", {icon: 2});
+                is_pass = false;
+                return false;
+            }else{
+                userInfoList.user_phone.push($.trim($(this).val()));
+            }
+        })
+        console.log(is_pass);
+        console.log(userInfoList);
+        return is_pass;
+    }
+
+    $('#addSupplierBtn , #addSupplierBtn2').click(function () {
+
+        //var params_data = $('#form-order-add').serialize();
+        var da = {
+            'supplier_name': $.trim($("#supplier_name").val()),
+            'supplier_short_name': $.trim($("#supplier_short_name").val()),
+            'tax_number': $.trim($("#tax_number").val()),
+            'registered_bank': $.trim($("#registered_bank").val()),
+            'registered_bank_number': $.trim($("#registered_bank_number").val()),
+            'registered_tel': $.trim($("#registered_tel").val()),
+            'registered_address': $.trim($("#registered_address").val()),
+            'company_remark': $.trim($("#company_remark").val()),
+            'company_tel': $.trim($("#company_tel").val()),
+            'post_code': $.trim($("#post_code").val()),
+            'is_inner': $.trim($("#is_inner").val()),
+            'company_address': $.trim($("#company_address").val()),
+            'company_level': $.trim($("#company_level").val()),
+            'business_attributes': $.trim($("#business_attributes").val()),
+            'address_province': $.trim($("#address_province").val()),
+            'address_city': $.trim($("#address_city").val()),
+            'address_zone': $.trim($("#address_zone").val()),
+            'status': $.trim($("input[name='status']:checked").val()),
+            'backName' : $.trim($('#backName').val()),
+            'backNum' : $.trim($('#backNum').val()),
+        };
+        da.userInfo = userInfoList;
+        if ( checkuUserInfo()) {
+            var urls = '<{:U("ErpCustomer/findCustomerName")}>';
+            var types = 'post';
+            var dataTypes = 'json';
+            var datas = { 'supplier_name': $.trim($("#supplier_name").val())}; 
+            ajax(urls, datas, types, dataTypes, function (_data) {
+                if ( _data.status != 1 && _data.status != 3 ) {
+                    layer.msg(_data.message, {icon: 1});
+                    return false;
+                }
+
+                if ( _data.status != 1 ) {
+                    ajaxAddSupplier(da);
+                    return false;
+                }
+                
+                layer.confirm('目前已存在一条客户记录！', function () {
+                    ajaxAddSupplier(da);
+                });
+
+            });
+        }
+    })
+
+    function ajaxAddSupplier(da)
+    {   
+        submitTrue('addSupplierBtn');
+        layer.load(1, {shade: 0.3});
+        var url = '<{:U("ErpSupplier/addSupplier")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = da;
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 1});
+                parent.searchErpSupplierList();
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    submitFalse('addSupplierBtn');
+                    //doSlideUp();
+                }, 500);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                submitFalse('addSupplierBtn');
+                return false;
+            }
+        });
+    }
+
+    top.searchErpPurchaseInvoiceList = function (status) {
+        var current_page = status || false;
+        var param = 'show_all=1';
+
+        table.api().ajax.url("<{:U('ErpFinance/erpPurchaseShowInvoiceList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue(id) {
+        //$('#DealerSaveBtn').attr("", true).addClass('disabled').val('处理中');
+        $('#'+id).attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse(id) {
+        //$('#DealerSaveBtn').attr("", false).removeClass('disabled').val('提交');
+        $('#'+id).attr("disabled", false).removeClass('disabled').val('提交');
+    }
+    /* @end 基本信息 */
+
+    /* 拜访记录 */
+
+    function saveVisitInfo() {
+        var url = '<{:U("User/saveVisitInfo")}>';
+        var data = $('#form-visit-add').serialize();
+        data.id = '<{$Think.get.id}>';
+        var dataType = 'json';
+        var type = 'post';
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.msg(_data.message, {icon: 1});
+                window.location.reload();
+                return false;
+            } else {
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        })
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        if ($('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked') == false) {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        } else {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+        }
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

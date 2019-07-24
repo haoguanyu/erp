@@ -1,0 +1,237 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" style="margin-top: 60px;">
+
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-4 "><span class="c-red">*</span>剩余库存：</label>
+
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" id="buy_num" name="num" placeholder="" value="<{$data.buy_num}>"
+                       disabled/>
+            </div>
+
+        </div>
+
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-4 "><span class="c-red">*</span>本次配送：</label>
+
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" id="delivery_num" name="delivery_num" placeholder="" value=""
+                       onkeyup="checknum(this);" onblur="checkdeliverynum()"/>
+                <span id="sps1"></span>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-4 "><span class="c-red">*</span>配送日期：</label>
+
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" name="delivery_time" placeholder="配送日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="delivery_time" class="input-text Wdate" onchange="checkdeliverytime()">
+                <span id="sps2"></span>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12" style="margin-top:10px;margin-left:5%;width: 90%;">
+            <p>历史配送：</p>
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                <thead>
+                <th>配送时间</th>
+                <th>配送数量</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-6 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.20>
+
+    //验证是否是数字（保留4位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    function checkdeliverynum() {
+        if ($.trim($("#delivery_num").val()) == '') {
+            layer.msg("请输入配送数量！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else if (parseInt($("#delivery_num").val()) > parseInt($("#buy_num").val())) {
+            layer.msg("配送数量不能大于购买数量！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    function checkdeliverytime() {
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        if ($.trim($("#delivery_time").val()) == '') {
+            layer.msg("请输入配送日期！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#delivery_time").val()) < currentdate) {
+            layer.msg("请选择今天之后的日期！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    // @提交  <author:senpai | 2017.3.20>
+    $(function () {
+        var data = Array();
+        data['id'] = $("#id").val();
+        table = $('.table-sort').dataTable({
+            ajax: {
+                url: "<{:U('ErpOrder/distributionBatch')}>",
+                type: 'post',
+                data: data
+            },
+            "aaSorting": [[0, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            "columns": [
+                {
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        var date = data.delivery_time;
+                        return date.substr(0, 10);
+                    }
+                },
+                {"data": "delivery_num"},
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "无历史配送信息",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+
+        //添加erp商品操作
+        $('#add').click(function () {
+            //submitTrue();
+            if (checkdeliverynum() && checkdeliverytime()) {
+                var da = $('#form-member-add').serialize();
+                var url = '<{:U("ErpOrder/updateDelivery")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                layer.load(1, {shade: 0.3});
+                ajax(url, data, type, dataType, function (_data) {
+                    console.log(_data.status);
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        top.searchMyErpOrderList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.msg(_data.message, {icon: 2});
+                        setTimeout(function () {
+                            //window.parent.location.reload();
+                            layer.closeAll();
+                            submitFalse();
+                        }, 1000);
+                        submitFalse();
+                    }
+                });
+            } else {
+                layer.closeAll();
+            }
+
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

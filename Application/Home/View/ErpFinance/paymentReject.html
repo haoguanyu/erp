@@ -1,0 +1,94 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="audit_remark" name="audit_remark"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+
+    // @添加
+    $(function () {
+
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'id': $("#id").val(),
+                'audit_remark': $("#audit_remark").val(),
+            };
+            layer.confirm('确认驳回？', {
+                btn: ['确定', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpFinance/paymentReject")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    layer.load(1, {shade: 0.3});
+                    if (_data.status == 1) {
+                        if (_data.new_code) {
+                            setTimeout(function () {
+                                layer.closeAll();
+                                top.searthes_erpPurchasePaymentList();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                submitFalse();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                top.searthes_erpPurchasePaymentList();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                submitFalse();
+                            }, 1000);
+                        }
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                });
+            });
+
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

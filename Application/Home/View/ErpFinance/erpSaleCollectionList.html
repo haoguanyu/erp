@@ -1,0 +1,796 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 财务管理 <span
+        class="c-gray en">&gt;</span> 应收管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <span class="ml-10">业务单号：&nbsp;</span><input type="text" class="input-text" style="width:15%;"
+                                                                name="order_number" id="order_number"
+                                                                value="" placeholder="代码号"/>
+
+                <span class="ml-10">起始订单日期：</span>
+                <input type="text" name="start_time" placeholder="起始订单日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="start_time" style="width:15%;" class="input-text Wdate">
+
+                <span class="ml-10">截止订单日期：</span>
+                <input type="text" name="end_time" placeholder="截止订单日期" onfocus="WdatePicker({lang:'zh-cn'})"
+                       id="end_time" style="width:15%;" class="input-text Wdate">
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">销售单号：</span>
+                <input type="text" class="input-text" style="width:15%;" name="business_order_number" id="business_order_number" value="" placeholder="销售单号"/>
+
+                <span class="ml-10">&nbsp;&nbsp;&nbsp;&nbsp;客户(公司)：</span>
+                <select id="sale_company_id" name="sale_company_id" class="input-text" style="width:15%">
+                    <option></option>
+                </select>
+                <!--
+                日期插件，Y-m-d  : onfocus="WdatePicker({lang:'zh-cn'})"
+                         Y-m-d  : onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm:ss' })"
+                -->
+                <!--<span class="ml-10">起始收款时间：</span>-->
+                <!--<input type="text" name="put_start_time" placeholder="起始收款时间" onfocus="WdatePicker({lang:'zh-cn'})"-->
+                       <!--id="put_start_time" style="width:15%;" class="input-text Wdate">-->
+
+                <!--<span class="ml-10">截止收款时间：</span>-->
+                <!--<input type="text" name="put_end_time" placeholder="截止收款时间" onfocus="WdatePicker({lang:'zh-cn'})"-->
+                       <!--id="put_end_time" style="width:15%;" class="input-text Wdate">-->
+
+                <span class="ml-10">　　　交易员：</span>
+                <select id="dealer_id" name="dealer_id" class="input-text" style="width:15%">
+                    <option></option>
+                </select>
+
+            </div>
+
+            <div class="mt-10">
+
+                <span class="ml-10">损耗状态：</span>
+                <select id="is_loss" name="is_loss" class="input-text" style="width:15%">
+                    <option value="">请选择</option>
+                    <option value="1">有损耗</option>
+                    <option value="2">无损耗</option>
+                    <option value="3">已处理</option>
+                </select>
+                <span class="ml-10">　　收款状态：</span>
+                <select id="collection_status" name="collection_status" class="input-text" style="width:15%">
+                    <option value="">请选择</option>
+                    <option value="20">全部状态</option>
+                    <option value="1">未收款</option>
+                    <option value="2">部分预收</option>
+                    <option value="3">已收预付款</option>
+                    <option value="4">部分收款</option>
+                    <option value="10">已收款</option>
+                </select>
+                <span class="ml-10">是否二次定价：</span>
+                <select name="is_update_price" class="input-text" style="width:15%">
+                    <option value=''>请选择</option>
+                    <option value='2'>否</option>
+                    <option value='1'>是</option>
+                </select>
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">是否作废：</span>
+                <select id="is_void" name="is_void" class="input-text" style="width:15%">
+                    <option value="">请选择</option>
+                    <option value="2">否</option>
+                    <option value="1">是</option>
+                </select>
+                　　
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius" value="查询"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20" style="display:none" id="show">
+        <!--<span class="l"><a href="javascript:;" onclick="collection_confirmation('整单收款')" class="btn btn-primary radius check_access" value="ErpCollection-cash">整单收款</a>&nbsp;</span>-->
+        <span class="l"><a href="javascript:;" onclick="collection_detail('收款确认', '<{:U(\'ErpFinance/erpSaleCollectionDetail\')}>', '90%','550')" class="btn btn-primary radius check_access" value="ErpCollection-detail">收款确认</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="loss_detail('损耗详情', '<{:U(\'ErpFinance/erpSaleLossDetail\')}>', '80%','550')" class="btn btn-primary radius check_access" value="ErpCollection-detailLoss">损耗详情</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-primary radius ">导出</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="sale_order_collection_detail('收款明细查询', '<{:U(\'ErpFinance/erpSaleReceivables\')}>', '90%','650')" class="btn btn-primary radius ">明细查询</a>&nbsp;</span>
+    </div>
+    <!--<div class="cl pd-5 bg-1 bk-gray mt-20">-->
+        <!--<php>if(in_array('ErpCollection-cash',$data_node)){</php>-->
+            <!--<span class="l">-->
+                <!--<a href="javascript:;" onclick="collection_confirmation('整单收款')" class="btn btn-primary radius " value="ErpCollection-cash">整单收款</a>&nbsp;-->
+            <!--</span>-->
+        <!--<php>}</php>-->
+        <!--<php>if(in_array('ErpCollection-detail',$data_node)){</php>-->
+            <!--<span class="l">-->
+                <!--<a href="javascript:;" onclick="collection_detail('收款详情', '<{:U(\'ErpFinance/erpSaleCollectionDetail\')}>', '80%','550')" class="btn btn-primary radius " value="ErpCollection-detail">收款详情</a>&nbsp;-->
+            <!--</span>-->
+        <!--<php>}</php>-->
+        <!--<php>if(in_array('ErpCollection-detailLoss',$data_node)){</php>-->
+            <!--<span class="l">-->
+                <!--<a href="javascript:;" onclick="loss_detail('损耗详情', '<{:U(\'ErpFinance/erpSaleLossDetail\')}>', '80%','550')" class="btn btn-primary radius " value="ErpCollection-detailLoss">损耗详情</a>&nbsp;-->
+            <!--</span>-->
+        <!--<php>}</php>-->
+        <!--<php>if(in_array('ErpCollection-export',$data_node)){</php>-->
+            <!--<span class="l">-->
+                <!--<a href="javascript:;" onclick="export_excel('导出')" class="btn btn-primary radius " value="ErpCollection-export">导出</a>&nbsp;-->
+            <!--</span>-->
+        <!--<php>}</php>-->
+<!--</div>-->
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <th>销售单号</th>
+                <th>来源单号</th>
+                <th>订单日期</th>
+                <th>付款方式</th>
+                <th>交易员</th>
+                <th>城市</th>
+                <th>客户</th>
+                <th>开户银行</th>
+                <th>银行账号</th>
+                <th>商品代码</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>运费</th>
+                <th>订单金额</th>
+                <th>已收金额</th>
+                <th>待收金额</th>
+                <th>订单状态</th>
+                <th>收款状态</th>
+                <th>是否损耗</th>
+                <th>损耗金额（元）</th>
+                <th>已退损耗（元）</th>
+                <th>是否作废</th>
+                <th>二次定价</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<script type="text/javascript">
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    /** end 控制权限  **/
+
+</script>
+<script type="text/javascript">
+    $("#sale_company_id").select2({
+        ajax: {
+            type: 'GET',
+            //url: "<{:U('Clients/getCompanyByName')}>",
+            url: "<{:U('ErpCustomer/getCustomerData')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    restrict: 2,
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                /*var itemList = [];//当数据对象不是{id:0,text:'ANTS'}这种形式的时候，可以使用类似此方法创建新的数组对象
+                 var arr = data.result.list
+                 for(item in arr){
+                 itemList.push({id: item, text: arr[item]})
+                 }*/
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请选择',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.company_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.company_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.company_name) != 'undefined') {
+                return repo.company_name;
+            } else if (repo.text == '请选择') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+    $("#dealer_id").select2({
+        ajax: {
+            type: 'GET',
+            url: "<{:U('User/getDealerByName')}>",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term 请求参数
+                    //page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                /*var itemList = [];//当数据对象不是{id:0,text:'ANTS'}这种形式的时候，可以使用类似此方法创建新的数组对象
+                 var arr = data.result.list
+                 for(item in arr){
+                 itemList.push({id: item, text: arr[item]})
+                 }*/
+                return {
+                    results: data.data,//itemList
+//                    pagination: {
+//                        more: (params.page * 30) < data.total_count
+//                    }
+                };
+            },
+            cache: true,
+
+        },
+        placeholder: '请选择',//默认文字提示
+        language: "zh-CN",
+        tags: true,//允许手动添加
+        allowClear: true,//允许清空
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // 自定义格式化防止xss注入
+        minimumInputLength: 1,
+        templateResult: function formatRepo(repo) {
+            if (repo.loading == true) return repo.text; else if (typeof(repo.dealer_name) != 'undefined') return '<option value="' + repo.id + '">' + repo.dealer_name + '</option>';
+        }, // 函数用来渲染结果
+        templateSelection: function formatRepoSelection(repo) {
+            if (typeof(repo.dealer_name) != 'undefined') {
+                return repo.dealer_name;
+            } else if (repo.text == '请选择') {
+                return repo.text;
+            }
+        } // 函数用于呈现当前的选择
+    });
+
+//    var Totaldeliverymoney = 0;
+//    var Totalorderamount = 0;
+//    var Totalcollectedamount = 0;
+//    var Totalnocollectamount = 0;
+
+    var total_num = 0;
+
+    var da = new Array();
+    da['status'] = 10;
+    da['collection'] = 1;
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpFinance/erpSaleCollectionList')}>",
+            data: da,
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    var is_returned_order = data.returned_order_number == 0 ? 0:1;
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" order_type="'+is_returned_order+'"  order_number="' + data.order_number + '"/>';
+                }
+            },
+            {"data": "No"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    var is_returned_order = data.returned_order_number == 0 ? 0:1;
+                    if(is_returned_order == 0){
+                        var onclick = "update_order('编辑', '<{:U(\'ErpSale/updateSaleOrder\')}>', '900','550' ,'" + data.id + "')";
+                        return '<a onclick="' + onclick + '" class="c-primary">' + data.order_number + '</a>';
+                    }else{
+                        return '<span onclick="' + onclick + '" class="c-primary" style="color: red;">' + data.order_number + '</span>';
+                    }
+
+                }
+            },
+            {"data": "source_order_number"},
+            {"data": "add_order_time"},
+            {"data": "pay_type"},
+            {"data": "dealer_name"},
+            {"data":"region_name"},
+            {"data": "s_company_name"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if(data.user_bank_info){
+                        var message = data.user_bank_info.substr(0, data.user_bank_info.indexOf("--"));
+                    }else{
+                        var message = '无';
+                    }
+                    return '<span>' + message + '</span>';
+                }
+            },
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if(data.user_bank_info){
+                        var message = data.user_bank_info.substr(data.user_bank_info.indexOf("--") + 2);
+                    }else{
+                        var message = '无';
+                    }
+                    return '<span>' + message + '</span>';
+                }
+            },
+//            {
+//                "data": null,
+//                render: function (data, type, full, meta) {
+//                    var tt = data.source_from + '/' + data.goods_name + '/' + data.grade + '/' + data.level;
+//                    var str = '';
+//                    str += '<a href="javascript:;" title="' + tt + '" class="c-primary">' + data.goods_code + '</a>';
+//                    return str;
+//                }
+//            },
+            {"data": "goods_info"},
+            {"data": "price"},
+            {"data": "buy_num"},
+            {"data": "delivery_money"},
+            {"data": "order_amount"},
+            {"data": "collected_amount"},
+            {"data": "no_collect_amount"},
+            {"data": "order_status"},
+            {"data": "collection_status"},
+            {"data": "is_loss"},
+            {"data": "loss_amount"},
+            {"data": "entered_loss_amount"},
+//            {"data": "c_creator"},
+//            {"data": "collect_time"},
+            {"data": "is_void"},
+            {"data": "is_update_price"},
+        ],
+//        fnFooterCallback: function(nFoot, aData, iStart, iEnd, aiDisplay) {
+//            console.log(aData);
+//            for (var i=0;i<aData.length;i++) {
+//                Totaldeliverymoney += parseInt(aData[i].delivery_money);
+//                Totalorderamount += parseInt(aData[i].order_amount);
+//                Totalcollectedamount += parseInt(aData[i].collected_amount);
+//                Totalnocollectamount += parseInt(aData[i].no_collect_amount);
+//            }
+//
+//            nFoot.getElementsByTagName('th')[0].innerHTML = "合计";
+//            nFoot.getElementsByTagName('th')[12].innerHTML = Totaldeliverymoney;
+//            nFoot.getElementsByTagName('th')[13].innerHTML = Totalorderamount;
+//            nFoot.getElementsByTagName('th')[14].innerHTML = Totalcollectedamount;
+//            nFoot.getElementsByTagName('th')[15].innerHTML = Totalnocollectamount;
+//
+//            Totaldeliverymoney = 0;
+//            Totalorderamount = 0;
+//            Totalcollectedamount = 0;
+//            Totalnocollectamount = 0;
+//        }
+//        fnFooterCallback: function(nFoot, aData, iStart, iEnd, aiDisplay) {
+//            console.log(aData);
+//            if (aData.length != 0) {
+//                total_num = parseInt(aData[0].delivery_money);
+//            } else {
+//                total_num = 0;
+//            }
+//
+//            nFoot.getElementsByTagName('th')[0].innerHTML = "合计";
+//            nFoot.getElementsByTagName('th')[12].innerHTML = total_num;
+//
+//            total_num = 0;
+//        }
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                $('#sum_total th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }else{
+                var total_buy_num = data[0].sumTotal['total_buy_num'];
+                var total_returned_goods_num = data[0].sumTotal['total_returned_goods_num'];
+                var total_delivery_money = data[0].sumTotal['total_delivery_money'];
+                var total_order_amount = data[0].sumTotal['total_order_amount'];
+                var total_amount = data[0].sumTotal['total_amount'];
+                var total_collected_amount = data[0].sumTotal['total_collected_amount'];
+                var total_no_collected_amount = data[0].sumTotal['total_no_collected_amount'];
+                var total_loss_amount = data[0].sumTotal['total_loss_amount'];
+                var total_entered_loss_amount = data[0].sumTotal['total_entered_loss_amount'];
+                $('#sum_total th').eq(13).html(parseFloat(total_buy_num).toFixed(4));
+                $('#sum_total th').eq(14).html(parseFloat(total_delivery_money).toFixed(2));
+                $('#sum_total th').eq(15).html(parseFloat(total_order_amount).toFixed(2));
+                $('#sum_total th').eq(16).html(parseFloat(total_collected_amount).toFixed(2));
+                $('#sum_total th').eq(17).html(parseFloat(total_no_collected_amount).toFixed(2));
+                $('#sum_total th').eq(21).html(parseFloat(total_loss_amount).toFixed(2));
+                $('#sum_total th').eq(22).html(parseFloat(total_entered_loss_amount).toFixed(2));
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                                i : 0;
+            };
+            //Total over all pages
+
+            for(i=0;i<23;i++){
+
+                if(i == 0){
+
+                    continue;
+                }
+
+                if(i < 13 || (i > 17 && i < 21) || i > 23){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                if(i == 13){
+                    $(api.column(i).footer()).html(
+                            '' + parseFloat(pageTotals).toFixed(4)
+                    );
+                }else{
+                    $(api.column(i).footer()).html(
+                            '' + parseFloat(pageTotals).toFixed(2)
+                    );
+                }
+
+            }
+        }
+    });
+
+    /*收款确认*/
+    function collection_confirmation(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var ids = new Array();
+            var  order_type = 0;
+            $("input[type='checkbox']:checked").each(function(){
+                ids.push($(this).val());
+                order_type = $(this).attr('order_type');
+
+            });
+//            if(order_type == 1){
+//                layer.msg('整单收款不支持退货单,请确认选择的单据是否包含退货单', {icon: 2});
+//                return false;
+//            }
+            var url = '<{:U("ErpFinance/confirmSaleCollection")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('确认已经收款？', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {id: ids, order_type:order_type},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searthesErpSaleCollectionList();
+                            }, 1000);
+                        } else if(_data.wrong_message) {
+                            layer.closeAll();
+                            layer.confirm(_data.wrong_message, {
+                                btn: ['确认']
+                            }, function () {
+                                layer.closeAll();
+                                searthesErpSaleCollectionList();
+                            })
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                searthesErpSaleCollectionList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量操作，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*收款详情*/
+    function collection_detail(title, url, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            var order_type = $(".checkchild:checked").attr('order_type');
+            var order_number = $(".checkchild:checked").attr('order_number');
+            console.log("订单标识：" + order_type);
+            url = url + '/id/' + id + '/order_type/' + order_type + '/sale_order_number/' + order_number;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量操作，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*损耗详情*/
+    function loss_detail(title, url, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量操作，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*导出*/
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var order_number        = $.trim($("#order_number").val());
+            var start_time          = $("#start_time").val();
+            var end_time            = $("#end_time").val();
+            var sale_company_id     = $("#sale_company_id").val();
+//            var put_start_time      = $("#put_start_time").val();
+//            var put_end_time        = $("#put_end_time").val();
+            var dealer_id           = $("#dealer_id").val();
+            var collection_status   = $("#collection_status").val();
+            var is_loss             = $("#is_loss").val();
+            if(order_number         == '')order_number      = 'null';
+            if(start_time           == '')start_time   = 'null';
+            if(end_time             == '')end_time    = 'null';
+//            if(put_start_time       == '')put_start_time   = 'null';
+//            if(put_end_time         == '')put_end_time   = 'null';
+            if(sale_company_id      == '')sale_company_id     = 'null';
+            if(dealer_id            == '')dealer_id    = 'null';
+            if(collection_status    == '')collection_status    = 'null';
+            if(is_loss              == '')is_loss    = 'null';
+
+            var url = '<{:U("ErpFinance/exportCollection/order_number/'+order_number+'/start_time/'+start_time+'/end_time/'+end_time+'/sale_company_id/'+sale_company_id+'/dealer_id/'+dealer_id+'/collection_status/'+collection_status+'/is_loss/'+is_loss+'/status/10")}>';
+            layer.load(1, {shade: 0.3});
+            window.location.href=url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+    /*销售单-详情*/
+    function update_order(title, url, w, h, id) {
+
+        url = url + '/id/' + id + '/is_show/1';
+
+        layer_show(title, url, w, h);
+    }
+
+    // @搜索框搜索查询
+    searthesErpSaleCollectionList = function(status){
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpFinance/erpSaleCollectionList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searthesErpSaleCollectionList(true);
+
+    }
+
+    //    // @搜索
+    //    searthesRetailFinance = function(){
+    //        var url = "<{:U('RetailFinance/orderReconciliationList')}>" + '?' + $("#form1").serialize();
+    //        table.api().ajax.url(url);
+    //        table.api().ajax.reload();
+    //    }
+    //
+    //    function sub_select(){
+    //        $('#subes').val('查询中...');
+    //        var index = layer.load(0, {shade: false});
+    //        searthesRetailFinance();
+    //        setTimeout(function(){
+    //            $('#subes').val('查询');
+    //            layer.closeAll('loading');
+    //        }, 1000);
+    //    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+    });
+    $("#show").show();
+    $("#dataTable_length").append('<span style="padding-left:10px;">标记<span style="color: red">红色</span>的业务单号为销售退货单</span>');
+
+    /*明细查询-详情*/
+    function sale_order_collection_detail(title, url, w, h, id) {
+
+        //url = url + '/id/' + id ;
+        url = url + '/id/' + id ;
+
+        layer_show(title, url, w, h);
+    }
+</script>

@@ -1,0 +1,456 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>来源单号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text disabled" id="source_number" name="source_number" width="10%" value="<{$data['order']['source_number']}>" disabled />
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="region" class="input-text disabled" id="region"  width="10%" value="<{$data['order']['region_font']}>" disabled />
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>单据类型:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select name="storage_type" id="storage_type" class="input-text disabled" disabled>
+                        <option value="1">采购入库</option>
+                        <option value="2">配货</option>
+                    </select>
+                </div>
+
+                <label class="form-label col-xs-2 ">产品代码:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="goods_code" class="input-text disabled" id="goods_code"  width="10%" value="<{$data['order']['goods_code']}>" disabled />
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品名称:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="goods_name" class="input-text disabled" id="goods_name"  width="10%" value="<{$data['order']['goods_name']}>" disabled />
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品标号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="grade" class="input-text disabled" id="grade"  width="10%" value="<{$data['order']['grade']}>" disabled />
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>商品来源:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="source_from" class="input-text disabled" id="source_from"  width="10%" value="<{$data['order']['source_from']}>" disabled />
+                </div>
+
+                <label class="form-label col-xs-2 ">商品级别:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input name="level" class="input-text disabled" id="level"  width="10%" value="<{$data['order']['level']}>" disabled />
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>待入数量:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text disabled" id="stock_not_in" name="stock_not_in" value="<{$data['order']['stock_not_in']}>" disabled />
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span><IF condition="$data['order']['storage_type'] eq 3">退货数量<else/>需求数量</IF>:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text disabled" id="goods_num" name="goods_num" value="<{$data['order']['goods_num']}>" disabled />
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>油品密度:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="outbound_density" name="outbound_density" placeholder="规格限制为0.7~1.0" maxlength="8" value="<{$data['order']['outbound_density']}>" onkeyup="checknum4(this)"/>
+                    <span id="sps1"></span>
+                    <div style="color: red; font-weight: bold;">(请输入0.7 ~ 1 之间的密度值)</div>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>入库数量:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <if condition="$data['order']['stock_type'] neq 4">
+                        <input type="text" class="input-text" id="actual_storage_num" name="actual_storage_num" maxlength="16" value="<{$data['order']['actual_storage_num']}>" onkeyup="checknum4(this)" />
+                        <else />
+                        <input type="text" class="input-text" id="actual_storage_num" name="actual_storage_num" maxlength="16" value="<{$data['order']['actual_storage_num']}>" onkeyup="checknum8(this)" />
+                    </if>
+                    <span id="sps2"></span>
+                    <div style="color: red; font-weight: bold;" class="loss_tips"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>货权类型:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+
+                    <select name="cargo_bn_type" id="cargo_bn_type" class="input-text">
+                        <volist name="cargo_type_arr" id="vo" key="k">
+                            <option value="<{$vo.id}>" <if condition="$data['order']['cargo_info']['cargo_bn_type'] eq $vo['id']"> selected </if> ><{$vo.name}></option>
+                        </volist>
+                        <!--<option value="2">配货</option>-->
+                    </select>
+                </div>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>货权号:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="cargo_bn" name="cargo_bn" maxlength="50" value="<{$data['order']['cargo_info']['cargo_bn']}>"/>
+                    <!--<span id="sps2"></span>-->
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">附件:</label>
+
+                <div class="formControls col-xs-10 col-sm-10 wu-example">
+                    <div class="yanzRight">
+                        <span class="btn-upload form-group" style="width: 100%">
+                            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly style=" width: 70%;"> <a href="javascript:void();" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i> 浏览文件</a>
+                            <input style="margin-top:5px;float: left;" name="attachment" id="attachment" onchange="previewImage(this,1)" type="file" multiple name="file-1" class="input-file"/>
+                        </span>
+                        <span class="dui" style="display: none;"></span>
+                    </div>
+                    <div id="preview1" style="clear:both; padding-top:15px;">
+                        <img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="storage_remark" name="storage_remark"><{$data['order']['storage_remark']}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$data['order']['id']}>"/>
+                <input type="hidden" id="source_object_id" name="source_object_id" value="<{$data['order']['source_object_id']}>"/>
+                <input type="hidden" id="goods_id" name="goods_id" value="<{$data['order']['goods_id']}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                <input type="hidden" id="business_type" name="business_type" value="<{$data['order']['business_type']}>"/>
+                <input type="hidden" id="config_density" name="config_density" value="<{$data['order']['config_density']}>"/>
+
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    //图片预览功能
+    function previewImage(file,imgNum)
+    {
+        var MAXWIDTH  = 200;
+        var MAXHEIGHT = 200;
+        var div = document.getElementById('preview'+imgNum);
+        if (file.files && file.files[0])
+        {
+            div.innerHTML ='';
+            var length=0;
+            //imgContent为图片展示的区域
+            var reader=new FileReader();
+            reader.readAsDataURL(file.files[length]);
+            //异步读取图片，读取完会触onload
+            reader.onload=function() {
+                div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";
+                var img = document.getElementById('imghead'+imgNum+'_'+length);
+                img.onload = function(){
+                    var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                    img.width  =  rect.width;
+                    img.height =  rect.height;
+                }
+                //多张预览，上传多张时开启
+//                length++;
+//                if (length < file.files.length) {
+//                    reader.readAsDataURL(file.files[length]);
+//                }
+            }
+        }
+        else //
+        {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead'+imgNum+'>';
+            var img = document.getElementById('imghead2');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+        }
+    }
+    function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+        var param = {top:0, left:0, width:width, height:height};
+        if( width>maxWidth || height>maxHeight )
+        {
+            rateWidth = width / maxWidth;
+            rateHeight = height / maxHeight;
+
+            if( rateWidth > rateHeight )
+            {
+                param.width =  maxWidth;
+                param.height = Math.round(height / rateWidth);
+            }else
+            {
+                param.width = Math.round(width / rateHeight);
+                param.height = maxHeight;
+            }
+        }
+        param.left = Math.round((maxWidth - param.width) / 2);
+        param.top = Math.round((maxHeight - param.height) / 2);
+        return param;
+    }
+    // @表单验证 <senpai | 2017.3.10>
+
+    var type = "<{$data['order']['storage_type']}>";
+    var storage_status = "<{$data['order']['storage_status']}>";
+    var finance_status = "<{$data['order']['finance_status']}>";
+    var stock_type = "<{$data['order']['stock_type']}>";
+    var is_loss = "<{$data['order']['is_loss']}>";
+    // 是否可以更改
+    var is_update = "<{$is_update}>";
+    $(function(){
+        if (is_update != 1 ) {
+            if(storage_status != 1 || type == 3 || type == 4 || type== 5){
+            $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+            }
+            if ( (finance_status == 1 || finance_status == 2 && storage_status != 2) ) {
+                $('form').find('#attachment,#uploadfile-1,#add').attr('disabled', false).removeClass('disabled');
+            }
+            // 损耗
+            if ( is_loss == 1 ) {
+                 $('form').find('#actual_storage_num').attr('disabled', true).addClass('disabled');
+                 $('.loss_tips').html('(存在损耗数量不允许编辑)');
+            }
+            $("#storage_type").find("option[value='"+type+"']").prop("selected",true).attr("selected",true);
+        } else {
+            $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        }
+       
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证油品密度
+    function checkoutbounddensity() {
+        if ($.trim($("#outbound_density").val()) != '') {
+            if ($.trim($("#outbound_density").val()) < 0.7 || $.trim($("#outbound_density").val()) > 1) {
+                layer.msg("油品密度超出规格！", {icon: 2});
+                checkfalse('sps1');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps1');
+                return true;
+            }
+        }
+        return true;
+    }
+
+    //验证入库数量
+    function checkstoragenum() {
+        if ($.trim($("#actual_storage_num").val()) == '' || $.trim($("#actual_storage_num").val()) == 0 ) {
+            layer.msg("请输入入库数量！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else if (parseFloat($.trim($("#actual_storage_num").val())) > parseFloat($.trim($("#stock_not_in").val())) && storage_status != 10) {
+            layer.msg("入库数量不能超出待入数量！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留8位小数）
+    function checknum8(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{8,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{8}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    // @添加
+    $(function () {
+        if(type == 1 && $("#business_type").val() == 4){
+            // 获取配置密度
+            var density = $.trim($("#config_density").val());
+            $("#outbound_density").val(density);
+            $("#outbound_density").attr('disabled', true).addClass('disabled');
+
+        }
+        //添加erp商品操作
+        $('#add').click(function () {
+            if ( !checkoutbounddensity() ) {
+                return false;
+            }
+            if ( !checkstoragenum() ) {
+                return false;
+            }
+            
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+
+            submitTrue();
+
+            var formData = new FormData();
+            formData.append("attachment",$("#attachment")[0].files[0]);
+            formData.append("id",$("#id").val());
+            formData.append("storage_type",$("#storage_type").val());
+            formData.append("storage_remark",$("#storage_remark").val());
+            formData.append("source_number",$("#source_number").val());
+            formData.append("source_object_id",$("#source_object_id").val());
+            formData.append("goods_id",$("#goods_id").val());
+            formData.append("storage_num",$("#storage_num").val());
+            formData.append("actual_storage_num",$("#actual_storage_num").val());
+            formData.append("outbound_density",$("#outbound_density").val());
+            formData.append("cargo_bn_type",$("#cargo_bn_type").val());
+            formData.append("cargo_bn",$("#cargo_bn").val());
+//            var da = {
+//                'id': $("#id").val(),
+//                'storage_type': $("#storage_type").val(),
+//                'storage_remark': $("#storage_remark").val(),
+//                'source_number': $("#source_number").val(),
+//                'source_object_id': $("#source_object_id").val(),
+//                'goods_id': $("#goods_id").val(),
+//                'storage_num': $("#actual_storage_num").val(),
+//                'actual_storage_num': $("#actual_storage_num").val(),
+//                'outbound_density': $("#outbound_density").val()
+//            };
+            
+
+            if ((checkstoragenum() || ((type == 2 || type == 3) && finance_status == 1)) && (checkoutbounddensity()) || stock_type != 4) {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url : '<{:U("ErpStock/showUpdateErpStockIn")}>',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success : function(_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            parent.searchErpStockInList();
+                            setTimeout(function () {
+                                layer.closeAll();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                submitFalse();
+                            }, 1000);
+                        } else {
+                            layer.closeAll();
+                            layer.msg(_data.message, {icon: 2});
+                            submitFalse();
+                        }
+                    },
+                    error:function(XMLHttpRequest, textStatus, errorThrown){
+                        console.log(XMLHttpRequest);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

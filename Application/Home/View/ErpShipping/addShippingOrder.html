@@ -1,0 +1,882 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar clearfix">
+                <span>基本信息</span>
+                <span>配送信息</span>
+            </div>
+            <div id="information" class="tabCon">
+                <form action="" method="post" class="form form-horizontal">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">需求单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="source_number" name="source_number" value="<{$data.order.source_number}>" disabled/>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">业务单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="source_order_number" name="source_order_number" value="<{$data.order.source_order_number}>" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">来源单据类型：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="source_type" name="source_type" class="input-text disabled" style="width:78%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="data.source_type" id="vo" key="k">
+                                            <option value="<{$key}>"
+                                            <if condition="$data['order']['source_type'] eq $key">selected</if>
+                                            >
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">公司名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="company_name" name="company_name" value="<{$data.order.company_name}>" disabled/>
+                                    <input type="hidden" class="input-text disabled" id="company_id" name="company_id" value="<{$data.order.company_id}>" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">客户：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="user_name" name="user_name" value="<{$data.order.user_name}>" disabled/>
+                                    <input type="hidden" class="input-text disabled" id="user_id" name="user_id" value="<{$data.order.user_id}>" disabled/>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">客户联系方式：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="user_phone" name="user_phone" value="<{$data.order.user_phone}>" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品代码：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="goods_code" name="goods_code" value="<{$data['order']['goods_code']}>" disabled>
+                                    <input type="hidden" class="input-text disabled" id="goods_id" name="goods_id" value="<{$data['order']['goods_id']}>" disabled>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="goods_name" name="goods_name" value="<{$data['order']['goods_name']}>" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品来源：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="goods_from" name="goods_from" value="<{$data['order']['source_from']}>" disabled>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品标号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="goods_grade" name="goods_grade" value="<{$data['order']['grade']}>" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">商品级别：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="goods_level" name="goods_level" value="<{$data['order']['level']}>" disabled>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">配送数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text disabled" id="shipping_num" name="shipping_num" value="<{$data.order.shipping_num}>" disabled/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">城市：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="region" name="region" class="input-text disabled" style="width:78%;">
+                                        <option value="0">请选择</option>
+                                        <volist name="region.region_list" id="vo" key="k">
+                                            <option value="<{$key}>"
+                                            <if condition="$data['order']['region'] eq $key">selected</if>
+                                            >
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tabCon">
+                <form action="" method="post" class="form form-horizontal">
+                    <div style="overflow: hidden">
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>需求送达日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="" id="business_shipping_time" name="business_shipping_time" maxlength="20" onfocus="WdatePicker({lang:'zh-cn',dateFmt: 'yyyy-MM-dd HH:mm:ss'})" onchange="checkbusinessshippingtime()"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">铅封号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="seal_number" name="seal_number"/>
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>提油城市：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select name="province" class="input-text" style="width:35%" id="search_shipping_province" onchange="change_shipping_city(this.value)">
+                                        <optgroup label="省份列表">
+                                            <option value="0">省份</option>
+                                            <volist name="data.province_list" id="vo" key="k">
+                                                <option value="<{$key}>">
+                                                    <{$vo}>
+                                                </option>
+                                            </volist>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="region" class="input-text" style="width:29%" id="search_shipping_region" onchange="change_shipping_county(this.value)">
+                                        <optgroup label="城市列表">
+                                            <option value="0">城市</option>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="county" class="input-text" style="width:31%" id="search_shipping_county" onchange="check_shipping_county()">
+                                        <optgroup label="地区列表">
+                                            <option value="0">地区</option>
+                                        </optgroup>
+                                    </select>
+                                    <span id="sps23"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>提油详细地址：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="shipping_address" name="shipping_address" onblur="checkshippingaddress()"/>
+                                    <span id="sps3"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>送油城市：</label>
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select name="province" class="input-text" style="width:35%" id="search_receiving_province" onchange="change_receiving_city(this.value)">
+                                        <optgroup label="省份列表">
+                                            <option value="0">省份</option>
+                                            <volist name="data.province_list" id="vo" key="k">
+                                                <option value="<{$key}>">
+                                                    <{$vo}>
+                                                </option>
+                                            </volist>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="region" class="input-text" style="width:29%" id="search_receiving_region" onchange="change_receiving_county(this.value)">
+                                        <optgroup label="城市列表">
+                                            <option value="0">城市</option>
+                                        </optgroup>
+                                    </select>
+
+                                    <select name="county" class="input-text" style="width:31%" id="search_receiving_county"  onchange="check_receiving_county()">
+                                        <optgroup label="地区列表">
+                                            <option value="0">地区</option>
+                                        </optgroup>
+                                    </select>
+                                    <span id="sps24"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>送油详细地址：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="receiving_address" name="receiving_address" onblur="checkreceivingaddress()"/>
+                                    <span id="sps4"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>承运方：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <select id="shipper" name="shipper" class="input-text" style="width:78%;" onchange="checkshipper()">
+                                        <option value="0">请选择</option>
+                                        <volist name="data.shipper_list" id="vo" key="k">
+                                            <option value="<{$key}>"
+                                            <if condition="$data['order']['shipper'] eq $key">selected</if>
+                                            >
+                                            <{$vo}>
+                                            </option>
+                                        </volist>
+                                    </select>
+                                    <span id="sps5"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>承运方联系电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="shipper_phone" name="shipper_phone"   onkeyup="checknum(this)" onblur="check_shipper_phone()"/>
+                                    <span id="sps6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>提油地址电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="shipping_phone" name="shipping_phone" onkeyup="checknum(this)" onblur="check_shipping_phone();"/>
+                                    <span id="sps17"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>收油地址电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="receiving_phone" name="receiving_phone" onkeyup="checknum(this)" onblur="check_receiving_phone()"/>
+                                    <span id="sps18"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>车牌号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="car_number" name="car_number" onblur="checkcarnumber();"/>
+                                    <span id="sps16"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>司机姓名：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="driver_name" name="driver_name" onblur="checkdrivername()"/>
+                                    <span id="sps7"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>司机联系电话：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="driver_phone" name="driver_phone" onkeyup="checknum(this)" onblur="checkdriverphone()"/>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">卸货量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="unloading_num" name="unloading_num" onkeyup="checknum4(this)"/>
+                                    <span id="sps9"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">装载量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="loading_num" name="loading_num" onkeyup="checknum4(this)"/>
+                                    <span id="sps10"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">运费：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="freight" name="freight" onkeyup="checknum4(this)"/>
+                                    <span id="sps11"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">杂费：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="incidental" name="incidental" onkeyup="checknum4(this)"/>
+                                    <span id="sps12"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">视温：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="temperature" name="temperature" onkeyup="checknumnegative1(this)"/>
+                                    <span id="sps13"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">视密：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="density" name="density" onkeyup="checknum4(this)"/>
+                                    <span id="sps14"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4">损耗：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" id="loss_num" name="loss_num" onkeyup="checknum4(this)"/>
+                                    <span id="sps15"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-12">
+                                <label class="form-label col-xs-2 col-sm-2">备注：</label>
+
+                                <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px">
+                                    <textarea id="remark" name="remark" style="height:100px;width:96%;" class="input-text" maxlength="255"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row cl" style="margin-top:20px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "1");
+        $('input,select,textarea', $('#information')).attr('disabled', true);
+    });
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        submitTrue();
+        var da = {
+            'source_number': $("#source_number").val(),
+            'source_order_number': $("#source_order_number").val(),
+            'source_type': $("#source_type").val(),
+            'shipping_type': $("#shipping_type").val(),
+            'unloading_num': $("#unloading_num").val(),
+            'loading_num': $("#loading_num").val(),
+            'temperature': $("#temperature").val(),
+            'density': $("#density").val(),
+            'region': $("#region").val(),
+            'shipping_county': $("#search_shipping_county").val(),
+            'shipping_region': $("#search_shipping_region").val(),
+            'shipping_province': $("#search_shipping_province").val(),
+            'shipping_address': $("#shipping_address").val(),
+            'receiving_county': $("#search_receiving_county").val(),
+            'receiving_region': $("#search_receiving_region").val(),
+            'receiving_province': $("#search_receiving_province").val(),
+            'receiving_address': $("#receiving_address").val(),
+            'shipper': $("#shipper").val(),
+            'shipper_phone':$("#shipper_phone").val(),
+            'shipping_phone':$("#shipping_phone").val(),
+            'receiving_phone':$("#receiving_phone").val(),
+            'driver_name': $("#driver_name").val(),
+            'driver_phone': $("#driver_phone").val(),
+            'car_number': $("#car_number").val(),
+            'freight': $("#freight").val(),
+            'incidental': $("#incidental").val(),
+            'loss_num': $("#loss_num").val(),
+            'seal_number': $("#seal_number").val(),
+            'remark': $("#remark").val(),
+            'business_shipping_time': $("#business_shipping_time").val(),
+        };
+        if (
+            checkbusinessshippingtime() && checkshippingaddress() && checkreceivingaddress()
+            && checkshipper() && checkcarnumber() && check_shipper_phone() && check_shipping_phone()
+            && check_receiving_phone() && checkdrivername() && checkdriverphone()
+            && check_shipping_county() && check_receiving_county()
+        ) {
+            layer.load(1, {shade: 0.3});
+            var url = '<{:U("ErpShipping/addShippingOrder")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+
+            ajax(url, data, type, dataType, function (_data) {
+                if (_data.status == 1) {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 1});
+                    parent.searchShippingDemandPool();
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 500);
+                } else {
+                    layer.closeAll();
+                    layer.msg(_data.message, {icon: 2});
+                    submitFalse();
+                    return false;
+                }
+            });
+        }
+    });
+
+    //验证需求送达日期
+    function checkbusinessshippingtime(){
+        if ($.trim($("#business_shipping_time").val()) == 0) {
+            layer.msg("请选择需求送达日期！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            return true;
+        }
+    }
+
+    //验证提油地址
+    function checkshippingaddress(){
+        if ($.trim($("#shipping_address").val()) == 0) {
+            layer.msg("请填写提油地址！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证送油地址
+    function checkreceivingaddress(){
+        if ($.trim($("#receiving_address").val()) == 0) {
+            layer.msg("请填写送油地址！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证承运商
+    function checkshipper(){
+        if ($.trim($("#shipper").val()) == 0) {
+            layer.msg("请选择承运商！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+    //验证承运商电话
+    function check_shipper_phone(){
+        if ($.trim($("#shipper_phone").val()) == 0) {
+            layer.msg("请填写承运联系人电话！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        }else if(!isMobile($.trim($("#shipper_phone").val()))){
+            layer.msg("手机号格式不正确！", {icon: 2});
+            checkfalse('sps6');
+            submitFalse();
+            return false;
+        }else{
+            checktrue('sps6');
+            return true;
+        }
+    }
+    //验证提油地址电话
+    function check_shipping_phone(){
+        if ($.trim($("#shipping_phone").val()) == 0) {
+            layer.msg("请填写提油地址电话！", {icon: 2});
+            checkfalse('sps17');
+            submitFalse();
+            return false;
+        }else if(!isMobile($.trim($("#shipping_phone").val()))){
+            layer.msg("手机号格式不正确！", {icon: 2});
+            checkfalse('sps17');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps17');
+            return true;
+        }
+    }
+    //验证提油地址电话
+    function check_receiving_phone(){
+        if ($.trim($("#receiving_phone").val()) == 0) {
+            layer.msg("请填写收油地址电话！", {icon: 2});
+            checkfalse('sps18');
+            submitFalse();
+            return false;
+        }else if(!isMobile($.trim($("#receiving_phone").val()))){
+            layer.msg("手机号格式不正确！", {icon: 2});
+            checkfalse('sps18');
+            submitFalse();
+            return false;
+        }  else {
+            checktrue('sps18');
+            return true;
+        }
+    }
+    //验证车牌号
+    function checkcarnumber(){
+        if ($.trim($("#car_number").val()) == 0) {
+            layer.msg("请填写车牌号！", {icon: 2});
+            checkfalse('sps16');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps16');
+            return true;
+        }
+    }
+
+    //验证司机姓名
+    function checkdrivername(){
+        if ($.trim($("#driver_name").val()) == 0) {
+            layer.msg("请填写司机姓名！", {icon: 2});
+            checkfalse('sps7');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps7');
+            return true;
+        }
+    }
+
+    //验证司机联系方式
+    function checkdriverphone(){
+        if ($.trim($("#driver_phone").val()) == 0) {
+            layer.msg("请填写司机联系方式！", {icon: 2});
+            checkfalse('sps8');
+            submitFalse();
+            return false;
+        }else if(!isMobile($.trim($("#driver_phone").val()))){
+            layer.msg("手机号格式不正确！", {icon: 2});
+            checkfalse('sps8');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps8');
+            return true;
+        }
+    }
+
+    //验证提油城市
+    function check_shipping_county(){
+        if ($.trim($("#search_shipping_county").val()) == 0 || $.trim($("#search_shipping_region").val()) == 0 || $.trim($("#search_shipping_province").val()) == 0) {
+            layer.msg("请选择提油城市！", {icon: 2});
+            checkfalse('sps23');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps23');
+            return true;
+        }
+    }
+    //验证收油城市
+    function check_receiving_county(){
+        if ($.trim($("#search_receiving_county").val()) == 0 || $.trim($("#search_receiving_region").val()) == 0 || $.trim($("#search_receiving_province").val()) == 0) {
+            layer.msg("请选择送油城市！", {icon: 2});
+            checkfalse('sps24');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps24');
+            return true;
+        }
+    }
+    //@验证是否是手机号
+    function isMobile(phone) {
+        var reg = /^0?1[3|4|5|7|8][0-9]\d{8}$/;
+        if (reg.test(phone)) {
+            return true;
+        } else {
+            //layer.msg('手机号格式不正确', {icon: 2});
+            return false;
+        }
+    }
+
+    //验证是否是数字
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+    //验证是否是数字（保留4位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留一位小数可以为负数）
+    function checknumnegative1(obj){
+        obj.value = obj.value.replace(/[^\-\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{1,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            if(!isNaN(obj.value)){
+                obj.value= parseFloat(obj.value);
+            }
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+        var regex = new RegExp("-","g");
+        var result = obj.value.match(regex);
+        result = result ? result : [];
+        if(obj.value.indexOf("-") > 0 || result.length > 1){
+            obj.value = '';
+        }
+    }
+
+    //    //验证是否是数字（保留两位小数可以为负数）
+    //    function checknum(obj){
+    //        obj.value = obj.value.replace(/[^\-\d.]/g,"");  //清除“数字”和“.”以外的字符
+    //        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+    //        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+    //        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+    //        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+    //            if(!isNaN(obj.value)){
+    //                obj.value= parseFloat(obj.value);
+    //            }
+    //        }
+    //        if(obj.value.indexOf(".") == 0){
+    //            obj.value = '';
+    //        }
+    //        var regex = new RegExp("-","g");
+    //        var result = obj.value.match(regex);
+    //        result = result ? result : [];
+    //        if(obj.value.indexOf("-") > 0 || result.length > 1){
+    //            obj.value = '';
+    //        }
+    //    }
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        if ($('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked') == false) {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        } else {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+        }
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+    var selectProvince = $("#search_shipping_province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#search_shipping_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCounty = $("#search_shipping_county").select2({
+        placeholder: '请选择地区',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectProvince = $("#search_receiving_province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#search_receiving_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectCounty = $("#search_receiving_county").select2({
+        placeholder: '请选择地区',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var city    = <{$data.city}>;
+    var county  = <{$data.county}>;
+    // 二级联动提油城市
+    function change_shipping_city(id) {
+        var citylist = city[id];
+        $('#search_shipping_region').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_shipping_region').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_shipping_region').html(options);
+    }
+    // 三级联动提油地区
+    function change_shipping_county(id) {
+        var citylist = county[id];
+        $('#search_shipping_county').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_shipping_county').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_shipping_county').html(options);
+    }
+    // 二级联动送油城市
+    function change_receiving_city(id){
+        var citylist = city[id];
+        $('#search_receiving_region').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_receiving_region').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_receiving_region').html(options);
+    }
+    // 三级联动送油城市
+    function change_receiving_county(id){
+        var citylist = county[id];
+        $('#search_receiving_county').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_receiving_county').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_receiving_county').html(options);
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

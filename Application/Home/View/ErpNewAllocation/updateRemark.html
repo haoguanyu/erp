@@ -1,0 +1,132 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" style="margin-top: 60px;">
+
+        <div class="row cl col-sm-12">
+            <label class="form-label col-xs-4 "><span class="c-red">*</span>请修改备注信息:</label>
+
+            <div class="formControls col-xs-8 col-sm-8">
+
+                <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$data.remark}></textarea>
+            </div>
+
+        </div>
+
+        <!--<div class="row cl col-sm-12" style="margin-top: 30px;">-->
+            <!--<label class="form-label col-xs-4 "><span class="c-red">*</span>请输入价格:</label>-->
+
+            <!--<div class="formControls col-xs-8 col-sm-8">-->
+                <!--<input type="text" class="input-text" id="price" name="price" placeholder="" value="<{$data.price}>"-->
+                       <!--onkeyup="checknum(this);"/>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-6 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.10>
+
+    //验证数字（整数）
+    function checkinteger(oInput) {
+        if ('' != oInput.value.replace(/^[1-9]\d*/, '')) {
+            oInput.value = oInput.value.match(/^[1-9]\d*/) == null ? '' : oInput.value.match(/^[1-9]\d*/);
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    //验证是否是数字（保留两位小数）
+    function checknum4(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{4,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d{4}).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+    // @提交  <author:xiaowen | 2017.3.10>
+    $(function () {
+
+        //添加erp商品操作
+        $('#add').click(function () {
+            //submitTrue();
+            if ($.trim($("#remark").val()) == '') {
+
+                layer.msg('请输入新备注', {icon: 1});
+                return false;
+            }
+
+            var da = $('#form-member-add').serialize();
+            var url = '<{:U("ErpNewAllocation/updateRemark")}>';
+            var type = 'post';
+            var dataType = 'json';
+            var data = da;
+            layer.load(1, {shade: 0.3});
+            ajax(url, data, type, dataType, function (_data) {
+                console.log(_data.status);
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    top.searthesErpAllocationOrderList();
+                    setTimeout(function () {
+                        layer.closeAll();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        submitFalse();
+                    }, 1000);
+                } else {
+                    //console.log(_data);
+                    layer.msg(_data.message, {icon: 2});
+                    //layer.closeAll();
+                    setTimeout(function () {
+                        //window.parent.location.reload();
+                        layer.closeAll();
+                        submitFalse();
+                    }, 1000);
+                    submitFalse();
+                }
+            });
+
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

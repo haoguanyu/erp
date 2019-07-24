@@ -1,0 +1,401 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<script type="text/javascript" src="__TPL__static/select.js"></script>-->
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 客户管理 <span
+        class="c-gray en">&gt;</span> 客户列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <span class="ml-10">客户名称：&nbsp;</span><input type="text" class="input-text" style="width:15%;"
+                                                         name="customer_name" id="customer_name" value="" placeholder="客户名称"/>
+
+            <span class="ml-10">　　业务属性：</span>
+            <select id="business_attributes" name="business_attributes" class="input-text" style="width:15%">
+                <option value="">请选择</option>
+                <volist name="data.businessAttributesArr" id="vo" key="k">
+                    <option value="<{$key}>">
+                        <{$vo}>
+                    </option>
+                </volist>
+            </select>
+            <span class="ml-10">　　是否有效：</span>
+            <select id="status" name="status" class="input-text" style="width:15%">
+                <option value="">请选择</option>
+                <volist name="data.statusArr" id="vo" key="k">
+                    <option value="<{$key}>">
+                        <{$vo}>
+                    </option>
+                </volist>
+            </select>
+            <span class="ml-10">　　审核状态：</span>
+            <select id="audit_status" name="audit_status" class="input-text" style="width:15%">
+                <option value="">请选择</option>
+                <volist name="data.auditStatusArr" id="vo" key="k">
+                    <option value="<{$key}>">
+                        <{$vo}>
+                    </option>
+                </volist>
+            </select>
+            &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                               value="查询"/>
+            <br/>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l"><a href="javascript:;" onclick="erpgoods_add('新增', '<{:U(\'ErpCustomer/addCustomer\')}>', '', '850','550')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i>新增</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpgoods_update('编辑', '<{:U(\'ErpCustomer/updateCustomer\')}>', '', '850','550')" class="btn btn-secondary radius check_access" value="ErpCustomer-updateErpCustomer" ><i class="Hui-iconfont">&#xe6df;</i>编辑</a>&nbsp;</span>
+        <!-- 查看客户 Time 2018-11-18 -->
+        <span class="l"><a href="javascript:;" onclick="erpgoods_select('详情', '<{:U(\'ErpCustomer/SelectCustomer\')}>', '', '850','550')" class="btn btn-secondary radius"><i class="Hui-iconfont Hui-iconfont-edit2"></i>详情</a>&nbsp;</span>
+        <!-- END -->
+        <span class="l"><a href="javascript:;" onclick="ErpCustomerUpload('证件上传', '<{:U(\'ErpCustomer/uploadVoucher\')}>', '', '850','550')" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i>证件上传</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpgoods_update('证件预览', '<{:U(\'ErpCustomer/voucherList\')}>', '', '850','550')" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i>证件预览</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpgoods_audit('审核')" class="btn btn-success radius check_access" value="ErpCustomer-actAuditErpCustomer"><i class="Hui-iconfont">&#xe6e1;</i>审核</a>  &nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius check_access" value="ErpCustomer-exportData"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+        <!--<span class="l"><a href="javascript:;" onclick="export_excel('导出', '<{:U(\'ErpCustomer/exportData\')}>', '', '800','550')" class="btn btn-secondary radius check_access" value="ErpGoods-showUpdateErpGoods"><i class="Hui-iconfont">&#xe6df;</i>导出</a>&nbsp;</span>-->
+
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>id</th>
+                <th>客户名称</th>
+                <th>业务属性</th>
+                <th>是否有效</th>
+                <th>审核状态</th>
+                <!--<th>创建人</th>-->
+                <!--<th>创建时间</th>-->
+                <th>更新人</th>
+                <th>更新时间</th>
+                <th>审核人</th>
+                <th>审核时间</th>
+                <th>客户来源</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+
+<script type="text/javascript">
+
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    /** end 控制权限  **/
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('ErpCompany/companyList')}>",
+            url: "<{:U('ErpCustomer/getCustomerList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {"data": "customer_name"},
+            {"data": "business_attributes"},
+            {"data": "status"},
+            {"data": "audit_status"},
+//            {"data": "creater"},
+//            {"data": "create_time"},
+            {"data": "updater"},
+            {"data": "update_time"},
+            {"data": "auditer"},
+            {"data": "audit_time"},
+            {"data": "data_source_name"},
+
+
+        ],
+    });
+
+    /*商品-添加*/
+    function erpgoods_add(title, url, id, w, h) {
+        url = url + '/id/' + id;
+        layer_show(title, url, w, h);
+    }
+
+    /*商品-编辑*/
+    function erpgoods_update(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*客户-查看*/
+    function erpgoods_select(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量查看，只能选择一项', {icon: 2});
+        }
+    }
+
+
+    /*证件-上传*/
+    function ErpCustomerUpload(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*商品-删除*/
+    function erpgoods_delete(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpGoods/actDeleteErpGoods")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否删除！', {
+                btn: ['是', '取消']
+            }, function () {
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpCustomerList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                searchErpCustomerList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量删除，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*商品-审核*/
+    function erpgoods_audit(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            layer.confirm('请确认是否审核！', {
+                btn: ['是', '取消']
+            }, function () {
+                var urls = '<{:U("ErpSupplier/findSupplierName")}>';
+                var types = 'post';
+                var dataTypes = 'json';
+                var datas = { 'customer_id': id }; 
+                ajax(urls, datas, types, dataTypes, function (_data) {
+
+                    if ( _data.status != 1 && _data.status != 3 ) {
+                        layer.msg(_data.message, {icon: 1});
+                        return false;
+                    }
+
+                    if ( _data.status != 1 ) {
+                        ajaxAuditCustomer(id);
+                        return false;
+                    }
+                    
+                    layer.confirm('该公司目前客户和供应商并存!', function () {
+                        ajaxAuditCustomer(id);
+                    });
+
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    function ajaxAuditCustomer(id)
+    {
+        var url = '<{:U("ErpCustomer/auditCustomer")}>';
+        var type = 'post';
+        var dataType = 'json';
+        $.ajax({
+            url: url,
+            data: {id: id},
+            type: type,
+            dataType: dataType,
+            success: function (_data) {
+                if (_data.status == 1) {
+                    layer.msg(_data.message, {icon: 1});
+                    setTimeout(function () {
+                        searchErpCustomerList();
+                    }, 1000);
+                } else {
+                    layer.msg(_data.message, {icon: 2});
+//                            setTimeout(function () {
+//                                searchErpCustomerList();
+//                            }, 1000);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                is = 1;
+                console.log(XMLHttpRequest);
+                console.log(textStatus);
+                console.log(errorThrown);
+                console.log('请求异常，请检查！');
+            }
+        });
+    }
+
+    // @搜索框搜索查询
+    searchErpCustomerList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        //table.api().ajax.url("<{:U('ErpGoods/erpGoodsList')}>?" + param);
+        table.api().ajax.url("<{:U('ErpCustomer/getCustomerList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpCustomerList(true);
+
+    }
+
+    //    // @搜索
+    //    top.searthesRetailFinance = function(){
+    //        var url = "<{:U('RetailFinance/orderReconciliationList')}>" + '?' + $("#form1").serialize();
+    //        table.api().ajax.url(url);
+    //        table.api().ajax.reload();
+    //    }
+    //
+    //    function sub_select(){
+    //        $('#subes').val('查询中...');
+    //        var index = layer.load(0, {shade: false});
+    //        top.searthesRetailFinance();
+    //        setTimeout(function(){
+    //            $('#subes').val('查询');
+    //            layer.closeAll('loading');
+    //        }, 1000);
+    //    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //导出配送单
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpCustomer/exportData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+</script>

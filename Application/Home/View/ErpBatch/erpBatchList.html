@@ -1,0 +1,280 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<script type="text/javascript" src="__TPL__static/select.js"></script>-->
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>  货权批次管理 <span
+        class="c-gray en">&gt;</span> 货权批次列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <div class="mt-10">
+                <!-- <span class="ml-10"> 系统批次号：</span>
+                 &nbsp;&nbsp; -->
+                <input type="text" name="sys_bn" id="sys_bn" class="input-text" style="width:20%;"
+                       placeholder="系统批次号">
+
+                <!-- <span class="ml-10"> 外部货权号：</span> -->
+                <input type="text" name="cargo_bn" id="cargo_bn" class="input-text" style="width:15%;"
+                       placeholder="外部货权号">
+
+                <!-- <span class="ml-10">货权类型：</span> -->
+                <select id="cargo_bn_type" name="cargo_bn_type" class="input-text" style="width:15%">
+                    <option value="">货权类型</option>
+                  	<volist name="data.cargo_bn_type" id="vo" key="k">
+                        <option value="<{$vo.id}>">
+                            <{$vo.name}>
+                        </option>
+                    </volist>
+                </select>
+            </div>
+
+            <div class="mt-10">
+            	<!-- <span class="ml-10"> 商品代码：</span>
+            	&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; -->
+
+                 <select name="goods_id" class="input-text" style="width:20%" id="search_goods_code">
+                    <optgroup label="商品列表">
+                        <option value="0">全部商品</option>
+                        <volist name="data.goodsList" id="vo" key="k">
+                            <option value="<{$vo.id}>">
+                                <{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+
+               <!--  <span class="ml-10"> 全部城市：</span>
+                &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; -->
+                <select name="region" class="input-text" style="width:15%" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+
+                <select id="search_storehouse" name="storehouse_id" class="input-text" style="width:15%">
+                    <option value="0">仓库</option>
+                </select>
+                <!-- <span class="ml-10">批次状态：</span>
+                 <!--&nbsp;&nbsp; &ndash;&gt;-->
+                <!--<select id="status" name="status" class="input-text" style="width:15%">-->
+                    <!--<option value="">批次状态</option>-->
+                    <!--<volist name="data.batchStatusList" id="vo" key="k">-->
+                        <!--<option value="<{$key}>"><{$vo}></option>-->
+                    <!--</volist>-->
+
+                    <!--&lt;!&ndash;<option value="2">使用中</option>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<option value="3">已完成</option>&ndash;&gt;-->
+                  <!---->
+                <!--</select>-->
+                <input type="hidden" name="show_all" value="1">
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l"> <a href="javascript:;" onclick="erpBatch_update('编辑', '<{:U(\'ErpBatch/updateErpBatch\')}>','', '900','550')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe6df;</i>编辑</a> &nbsp;</span>
+
+         <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <th>系统批次号</th>
+                <th>货权类型</th>
+                <th>外部货权号</th>
+                <th>城市</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>仓库</th>
+                <th>批次数量</th>
+                <th>批次库存</th>
+                <th>预留数量</th>
+                <th>实际可用数量</th>
+                <th>批次状态</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpBatch/exportBatchData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+    // /** 控制权限  **/
+    // var access_node = <{$access_node}>;
+    // //console.log(access_node);
+    // var check_access = [];
+    // function getCheckAccess(){
+
+    //     $('.check_access').each(function(){
+    //         //console.log($.trim($(this).attr('value')));
+    //         //console.log($.inArray($.trim($(this).attr('value')),access_node));
+    //         if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+    //             $(this).show();
+    //         }else{
+    //             $(this).hide();
+    //         }
+    //     });
+
+    // };
+    // getCheckAccess();
+    /** end 控制权限  **/
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            url: "<{:U('ErpBatch/erpBatchList?show_all=1')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" />';
+                }
+            },
+            {"data": "id"},
+            {"data": "sys_bn"},
+            {"data": "cargo_bn_type"},
+            {"data": "cargo_bn"},
+            {"data": "region"},
+            {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "storehouse_name"},
+            {"data": "total_num"},
+            {"data": "balance_num"},
+            {"data": "reserve_num"},
+            {"data": "actual_balance_num"},
+            {"data": "status"},
+
+
+        ],
+    });
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpBatchList(true);
+
+    }
+
+
+    /*货权批次-编辑*/
+    function erpBatch_update(title, url, id, w, h) {
+    	if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+        // layer_show(title, url, w, h);
+    }
+
+    searchErpBatchList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpBatch/erpBatchList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    var selectGoods = $("#search_goods_code").select2({
+        placeholder: '请选择商品',
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#search_storehouse").select2({
+        placeholder: '请选择仓库',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var region_storehouse = <{$data.regionStorehouse}>;
+    $("#search_region").change(function () {
+        var region = $.trim($("#search_region").val());
+        var storehouses = region_storehouse[region];
+        var options = '<option value="0">全部仓库</option>';
+        for (var i in storehouses) {
+            options += '<option value="' + storehouses[i].id + '">' + storehouses[i].storehouse_name + '</option>';
+        }
+        $("#search_storehouse").html(options);
+    });
+
+</script>

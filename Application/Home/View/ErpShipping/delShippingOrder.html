@@ -1,0 +1,128 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: #9D9D9D;
+    }
+
+    .input-text {
+        width: 78%
+    }
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div style="overflow: hidden">
+            <div class="row cl">
+                <div class="row cl col-sm-12">
+                    <label class="form-label col-xs-2 col-sm-2">取消原因备注：</label>
+
+                    <div class="formControls col-xs-10 col-sm-10" style="padding-left: 10px">
+                        <textarea id="cancell_remark" name="cancell_remark" style="height:100px;width:100%;" class="input-text" maxlength="255"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row cl" style="margin-top:20px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                <input type="hidden" id="id" value="<{$id}>">
+                <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $.Huitab("#tab-system .tabBar span", "#tab-system .tabCon", "current", "click", "1");
+    });
+
+    /* 基本信息 */
+    $('#DealerSaveBtn').click(function () {
+        submitTrue();
+        var da = {
+            'id': $("#id").val(),
+            'cancell_remark': $("#cancell_remark").val(),
+        };
+        layer.load(1, {shade: 0.3});
+        var url = '<{:U("ErpShipping/delShippingOrder")}>';
+        var type = 'post';
+        var dataType = 'json';
+        var data = da;
+
+        ajax(url, data, type, dataType, function (_data) {
+            if (_data.status == 1) {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 1});
+                parent.searchShippingOrderList();
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                    submitFalse();
+                }, 300);
+            } else {
+                layer.closeAll();
+                layer.msg(_data.message, {icon: 2});
+                submitFalse();
+                return false;
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#DealerSaveBtn').attr("disabled", true).addClass('disabled').val('处理中');
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#DealerSaveBtn').attr("disabled", false).removeClass('disabled').val('提交');
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        if ($('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked') == false) {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        } else {
+            $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+        }
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

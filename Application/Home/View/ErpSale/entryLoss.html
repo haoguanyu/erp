@@ -1,0 +1,533 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+   
+</style>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar cl">
+                <span>基本信息</span>
+            </div>
+            <div class="">
+                <form action="" method="post" class="form form-horizontal" id="form-order-add">
+                    <div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>业务单号：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <input type="text" class="input-text" value="<{$orderInfo.order_number}>"
+                                           id="orderNumber" name="orderNumber" maxlength="20" disabled />
+                                    <input type="hidden" name="orderId" id = "orderId" value="<{$orderInfo.orderid}>">
+                                    <span id="sps2"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>下单日期：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text Wdate" value="<{$orderInfo.add_order_time}>"
+                                           id="addOrderTime" name="addOrderTime" maxlength="20" disabled onfocus="WdatePicker({lang:'zh-cn',maxDate:'%y-%M-%d',dateFmt: 'yyyy-MM-dd'})"/>
+                                    <span id="sps1"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>公司名称：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                <input type="text" class="input-text" value="<{$orderInfo.s_company_name}>"
+                                           id="companyName" name="companyName" maxlength="20" disabled />
+                                    <span id="sps3"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>交易员：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$orderInfo.dealer_name}>" placeholder=""
+                                           id="dealerName" name="dealerName" disabled>
+                                    <span id="sps4"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>地区：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                <input type="text" class="input-text" value="<{$orderInfo.regionName}>"
+                                           id="regionName" name="regionName" maxlength="20" disabled />
+                                    <span id="sps5"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>仓库：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$orderInfo.storehouseName}>" placeholder=""
+                                           id="storehouseName" name="storehouseName" disabled>
+                                    <span id="sps6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>商品代码：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                <input type="text" class="input-text" value="<{$orderInfo.goods_code}>"
+                                           id="goodCode" name="goodCode" maxlength="20" disabled />
+                                    <span id="sps7"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>销售单价：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="<{$orderInfo.price}>" placeholder=""
+                                           id="price" name="price" disabled>
+                                    <span id="sps8"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>出库数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                <input type="text" class="input-text" value="<{$orderInfo.outbound_quantity}>"
+                                           id="outboundQuantity" name="outboundQuantity" maxlength="20" disabled />
+                                    <span id="sps9"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>损耗数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="" placeholder=""
+                                           id="totalLoss" name="totalLoss" disabled>
+                                    <span id="sps10"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>合理损耗：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                <input type="text" class="input-text" value=""
+                                           id="reasonableLoss" name="reasonableLoss" maxlength="20" disabled />
+                                    <span id="sps11"></span>
+                                </div>
+                            </div>
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>超损数量：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                    <input type="text" class="input-text" value="" placeholder=""
+                                           id="overLoss" name="overLoss" disabled>
+                                    <span id="sps12"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cl">
+                            <div class="row cl col-sm-6">
+                                <label class="form-label col-xs-4 col-sm-4"><span class="c-red">*</span>损耗比列：</label>
+
+                                <div class="formControls col-xs-8 col-sm-8">
+                                     <select name="lossRatio" id = "lossRatio" class="input-text" >
+                                        <volist name="lossRatios" id="vo" key="k">
+                                            <option value='<{$key}>'><{$vo}></option>
+                                        </volist>
+                                    </select>
+                                    <span id="sps11"></span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="tabBar cl">
+                        <span>出库记录</span>
+                    </div>
+                    <div class="row cl">
+                        <div class="row cl col-sm-12" >
+                            <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+                                <thead>
+                                <tr class="text-c">
+                                    <th>出库单编号</th>
+                                    <th>系统批次号</th>
+                                    <th>货权号</th>
+                                    <th>出库数量(吨)</th>
+                                    <th>损耗数量(吨)</th>
+                                    <th>合理损耗(吨)</th>
+                                    <th>超损数量(吨)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <volist name="stockOutList" id="stockOut">
+                                        <tr>
+                                            
+                                            <td>
+                                                <{$stockOut['outbound_code']}>
+                                            </td>
+                                            <td><{$stockOut['batch_sys_bn']}></td>
+                                            <td><{$stockOut['cargoBn']}></td>
+                                            <td><{$stockOut['actual_outbound_num']}></td>
+                                            <td class="lossNum">
+                                                <span>0</span>
+                                                <input type='text'  style="display: none;width: 100%;"  onkeyup='checknum4(this)' class='lossInfo' value= '0' stockOutId = '<{$stockOut.id}>' />
+                                            </td>
+                                            <td class="reasonableLoss">
+                                                <span>0</span>
+                                                 <input type='text'  style="display: none;width: 100%;"  onkeyup='checknum4(this)' class='reasonableLossInfo' value= '0' />
+                                            </td>
+                                            <td class="overLoss">
+                                                 <span>0</span>
+                                                 <input type='text'  style="display: none;width: 100%;"  onkeyup='checknum4(this)' class='overLossInfo' value= '0' />
+                                            </td>
+                                        <tr/>
+                                    </volist>
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+                        </div>
+                    </div>
+                    <div class="row cl" style="margin-top:20px;">
+                        <div class="col-xs-8 col-sm-6 col-xs-offset-6 col-sm-offset-6">
+                            <input class="btn btn-primary radius" id="DealerSaveBtn" type="button" value="提交">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-8 col-xs-offset-4 col-sm-offset-2">
+            </div>
+        </div>
+    </form>
+</div>
+
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<script type="text/javascript" src="__TPL__static/accuracy.js"></script>
+<script type="text/javascript">
+
+     //损耗|合理损耗双击事件
+    $(".lossNum , .reasonableLoss , .overLoss").dblclick(function(){
+        var lossRatio = $("#lossRatio").val() ;
+        if(lossRatio == 0){
+             layer.msg("请选择损耗比例", {icon: 2});
+             return false ;
+        }
+         var outboundNum = $(this).parents("tr").find(".lossNum").prev().html() ;//实际出库数量
+        if(outboundNum < 0.1){
+            layer.msg("出库数量低于0.1吨不可录入损耗", {icon: 2});
+             return false ;
+        }
+
+        $(this).find('span').hide();
+        $(this).find('input').show();
+        $(this).parents("tr").siblings().find('input').hide();
+        $(this).parents("tr").siblings().find('span').show();
+    });
+    //损耗文本框的按钮
+    $("tbody").on('blur' , '.lossInfo',function(){
+        var lossNum = $(this).val() ;//损耗数量
+        $(this).parents("tr").find(".reasonableLossInfo").val("0") ;
+        $(this).parents("tr").find(".overLossInfo").val("0") ;
+        if(isNaN(lossNum)){
+            // alert("请输入正确的损耗数量");
+            layer.msg("请输入正确的损耗数量", {icon: 2});
+            return false ;
+        }
+        //判断输入损耗的数量是否大于出库
+        var outboundNum = $(this).parent("td").prev().html() ;
+        if(accSub(outboundNum , lossNum) <= 0){
+            layer.msg("损耗数量不能大于等于出库数量", {icon: 2});
+            // alert("损耗数量不能高于出库数量");
+            return false ;
+        }
+        var reasonableLoss = amount() ;
+        if(accSub(reasonableLoss , lossNum) < 0 ){ //实际损耗大于损耗范围
+            var overLoss =  accSub(lossNum , reasonableLoss) ;
+            $(this).parents("tr").find('.reasonableLoss').find("span").html(reasonableLoss) ;
+            $(this).parents("tr").find(".reasonableLossInfo").val(reasonableLoss) ;
+            $(this).parents("tr").find('.overLoss').find("span").html(overLoss) ;
+            $(this).parents("tr").find(".overLossInfo").val(overLoss) ;
+        }else{
+            $(this).parents("tr").find('.reasonableLoss').find("span").html(lossNum) ;
+            $(this).parents("tr").find(".reasonableLossInfo").val(lossNum) ;
+            $(this).parents("tr").find('.overLoss').find("span").html(0) ;
+            $(this).parents("tr").find(".overLossInfo").val(0) ;
+        }
+        $(this).parent("td").find("span").html(lossNum).show(); 
+        $(this).hide();
+        orderLoss() ;
+    });
+   
+    //输入合理损耗
+     $("tbody").on('blur' , '.reasonableLossInfo',function(){
+         // var reasonableLoss = amount() ;//剩余得合理数量
+         // if(reasonableLoss < 0){
+         //    var oldReasonableLoss =  $(this).parent('td').find("span").html() ;
+         //    $(this).val(oldReasonableLoss) ; 
+         //    layer.msg("超过最大合理损耗，请重新输入");
+         //    return false ;
+         // }
+        var oldReasonableLoss =  $(this).parent('td').find("span").html() ;
+         var nowReasonableLoss = $(this).val() ;//当前合理损耗数量
+         var lossNum = $(this).parents("tr").find(".lossInfo").val();//损耗数量
+         var overLossInfo = accSub(lossNum , nowReasonableLoss);
+         if(overLossInfo < 0){
+            $(this).val(oldReasonableLoss) ; 
+            layer.msg("输入信息不能超过损耗数量");
+            return false ;
+         }
+         $(this).parents("tr").find(".overLoss").find("span").html(overLossInfo);
+         $(this).parents("tr").find(".overLossInfo").val(overLossInfo);
+         $(this).parent("td").find("span").html(nowReasonableLoss).show() ;
+         $(this).hide();
+         orderLoss() ;
+     });
+    //输入超损
+    $("tbody").on('blur' , '.overLossInfo',function(){
+        
+        var nowoverLoss = $(this).val() ;//当前超损损耗数量
+        var oldoverLoss = $(this).parent('td').find("span").html() ;//原来超损数量
+        var lossNum = $(this).parents("tr").find(".lossInfo").val();//损耗数量
+        if(accSub(lossNum , nowoverLoss) < 0){
+            $(this).val(oldoverLoss) ; 
+            layer.msg("输入信息不能超过损耗数量");
+            return false ;
+        }
+        // var subOverLoss = accSub(oldoverLoss , nowoverLoss) ;
+        // if(subOverLoss > 0 ){
+        //     var reasonableLoss = amount() ;//剩余得合理数量
+        //     if(accSub(reasonableLoss , subOverLoss) < 0){
+        //         $(this).val(oldoverLoss) ; 
+        //         layer.msg("合理损耗超过最大合理损耗，请重新输入");
+        //         return false ;
+        //     }
+        // }
+        var ReasonableLoss = accSub(lossNum , nowoverLoss) ;
+        $(this).parents("tr").find(".reasonableLoss").find("span").html(ReasonableLoss);
+        $(this).parents("tr").find(".reasonableLossInfo").val(ReasonableLoss);
+        $(this).parent("td").find("span").html(nowoverLoss).show() ;
+        $(this).hide();
+        orderLoss() ;
+
+    });
+
+    //获取剩余的合理数量
+    function amount(){
+        var lossRatio = $("#lossRatio").val() ;//损耗比例
+        var outboundNum = $("#outboundQuantity").val() ;//实际出库数量
+        var reasonableLoss = outboundNum * lossRatio / 1000 ;//合理损耗
+        reasonableLoss = reasonableLoss.toFixed(4) ;
+        var totalLoss = 0 ;
+        $(".reasonableLossInfo").each(function(){
+            var lossNum = $(this).val() ;//损耗数量
+            totalLoss= accAdd(totalLoss , lossNum);
+        });
+        var amount = accSub(reasonableLoss , totalLoss) ;
+        if(amount < 0){
+            amount = 0 ;
+        }
+       return  amount ;
+    }
+    //获取订单的损耗信息
+    function orderLoss(){
+        var totalLoss = 0 ;
+        var totalReasonableLoss = 0 ;
+        var totalOverLoss = 0 ;
+        $(".lossInfo").each(function(){
+            var lossNum = $(this).val() ;//损耗数量
+            var reasonableLoss = $(this).parents("tr").find(".reasonableLossInfo").val() ;//合理损耗
+            var overLoss = $(this).parents("tr").find(".overLossInfo").val() ;//超损
+            totalLoss= accAdd(totalLoss , lossNum);
+            totalReasonableLoss = accAdd(totalReasonableLoss , reasonableLoss);
+            totalOverLoss = accAdd(totalOverLoss , overLoss) ;
+        });
+        $("#totalLoss").val(totalLoss);
+        $("#reasonableLoss").val(totalReasonableLoss) ;
+        $("#overLoss").val(totalOverLoss) ;
+    }
+   
+    //损耗单提交
+     $('#DealerSaveBtn').click(function () {
+        var lossRatio =  $("#lossRatio").val() ;
+        if(lossRatio == 0){
+            layer.msg("请选择损耗比例", {icon: 2});
+            return false ;
+        }
+        var totalLoss =  $("#totalLoss").val();
+        if((totalLoss <= 0) || (totalLoss == "")){
+            layer.msg("请输入出库单损耗数量", {icon: 2});
+            return false ;
+        }
+        // var hasAmount = amount() ;
+        // if(hasAmount < 0){
+        //      layer.msg("提交合理损耗超过最大合理损耗", {icon: 2});
+        //     return false ;
+        // }
+        var isBigLossNUm = 0 ;//损耗数量是否大于出库数量
+        var isOutboundNum = 0 ;//出库数量是否大于0.1
+        var useTotalLoss = 0 ; //真实损耗数量和
+        var formData = new FormData();
+        formData.append("lossRatio" , $("#lossRatio").val()) ;
+        formData.append("orderId" , $("#orderId").val()) ;
+         $(".lossInfo").each(function(){
+            var lossNum = $(this).val() ;//损耗数量
+            var outboundNum = $(this).parent("td").prev().html() ;
+            if(outboundNum < 0.1){
+                isOutboundNum = accAdd(isOutboundNum , 1 ) ;
+            }
+            if(accSub(outboundNum , lossNum) <= 0){
+                // layer.msg("损耗数量不能大于、等于出库数量", {icon: 2});
+                isBigLossNUm = accAdd(isBigLossNUm , 1);
+            }
+            if(lossNum > 0){
+                var stockOutId = $(this).attr("stockOutId");
+                var reasonableLossNum = $(this).parents("tr").find(".reasonableLossInfo").val() ;
+                var overLossNum = $(this).parents("tr").find(".overLossInfo").val() ;
+                formData.append('stockOut['+stockOutId+'][lossNum]' , lossNum);
+                formData.append('stockOut['+stockOutId+'][reasonableLossNum]' , reasonableLossNum);
+                formData.append('stockOut['+stockOutId+'][overLossNum]' , overLossNum);
+            }
+
+        });
+         if(isBigLossNUm > 0){
+            layer.msg("损耗数量不能大于等于出库数量", {icon: 2});
+            return false ;
+         }
+         if(isOutboundNum > 0){
+             layer.msg("出库数量低于0.1吨，不可填写损耗", {icon: 2});
+            return false ;
+         }
+         var reasonableLoss = $("#reasonableLoss").val() ;
+         var orderNum = $("#outboundQuantity").val() ;
+         var orderLoss =  orderNum*lossRatio/1000 ;
+         if ( accSub(reasonableLoss , orderLoss) > 0) {
+                layer.confirm('合理损耗将大于原单理论损耗，是否确认!', {
+                    btn: ['确定', '取消']
+                }, function () {
+                    layer.load(1, {shade: 0.3});
+                    $.ajax({
+                        url : '<{:U("ErpSale/entryLoss")}>',
+                        type: 'POST',
+                        data: formData,
+                        async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success : function(_data) {
+                            if (_data.status == 1) {
+                                layer.msg("添加损耗成功", {icon: 1});
+                                parent.searchErpSaleOrderList();
+                                setTimeout(function () {
+                                    layer.closeAll();
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(index);
+                                    submitFalse();
+                                }, 1000);
+                            } else {
+                                layer.closeAll();
+                                layer.msg(_data.message, {icon: 2});
+                                submitFalse();
+                            }
+                        },
+                        error:function(XMLHttpRequest, textStatus, errorThrown){
+                            console.log(XMLHttpRequest);
+                            console.log('请求异常，请检查！');
+                        }
+                    });
+                }, function () {
+                    submitFalse();
+                });
+                return false;
+         }
+          $.ajax({
+                url : '<{:U("ErpSale/entryLoss")}>',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(_data) {
+                    if (_data.status == 1) {
+                        layer.msg("添加损耗成功", {icon: 1});
+                        parent.searchErpSaleOrderList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(XMLHttpRequest);
+                    console.log('请求异常，请检查！');
+                }
+            })
+     });
+     
+     //修改了损耗比例下面的数据操作
+     $("#lossRatio").bind("change", function(){
+         var lossRatio = $(this).val() ;
+         if(lossRatio == 0){
+            layer.msg("请选择损耗比例", {icon: 2});
+           return false ;
+         }
+         var outboundQuantity = $("#outboundQuantity").val() ;
+         var maxReasonableLoss = outboundQuantity * lossRatio / 1000 ;//最大合理损耗
+         maxReasonableLoss = maxReasonableLoss.toFixed(4) ;
+        //重新计算损耗数据
+        var totalLoss = 0 ;
+        var totalReasonableLoss = 0 ;
+        var totalOverLoss = 0 ;
+        $(".lossInfo").each(function(){
+            var lossNum = $(this).val() ;//损耗数量
+            var reasonableLoss = 0 ; //合理损耗
+            var overLoss =0 ; //超损
+            if(maxReasonableLoss > 0){
+                var userReasonableLoss = accSub(maxReasonableLoss , lossNum) ;
+                if( userReasonableLoss > 0){ //最大合理损耗大于损耗数量
+                    reasonableLoss = lossNum ;
+                    overLoss = 0 ;
+                    maxReasonableLoss = userReasonableLoss ;
+                }else{
+                    reasonableLoss = maxReasonableLoss ;
+                    overLoss = accSub(lossNum , reasonableLoss) ;
+                    maxReasonableLoss = 0 ;
+                }
+            }
+            $(this).parents("tr").find('.reasonableLoss').find("span").html(reasonableLoss) ;
+            $(this).parents("tr").find(".reasonableLossInfo").val(reasonableLoss) ;
+            $(this).parents("tr").find('.overLoss').find("span").html(overLoss) ;
+            $(this).parents("tr").find(".overLossInfo").val(overLoss) ;
+
+
+            totalLoss= accAdd(totalLoss , lossNum);
+            totalReasonableLoss = accAdd(totalReasonableLoss , reasonableLoss);
+            totalOverLoss = accAdd(totalOverLoss , overLoss) ;
+        });
+        $("#totalLoss").val(totalLoss);
+        $("#reasonableLoss").val(totalReasonableLoss) ;
+        $("#overLoss").val(totalOverLoss) ;
+     });
+     
+</script>
+
+</body>
+</html>

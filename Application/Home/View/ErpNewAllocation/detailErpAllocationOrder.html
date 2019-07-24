@@ -1,0 +1,537 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .disabled {
+        cursor: no-drop;
+        background-color: rgb(235, 235, 228);
+    }
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12" style="margin-top: 0">
+                <p>基本信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>我方公司:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="our_company_id" name="our_company_id" class="input-text">
+                        <option value="">请选择</option>
+                        <volist name="data.ourCompany" id="vo" key="k">
+                            <option value="<{$key}>" selected="selected"><{$vo}></option>
+                        </volist>
+                    </select>
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 ">业务员:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="dealer_name" name="dealer_name" value="<{$data['dealer_name']}>" disabled/>
+                    <input type="hidden" id="dealer_id" name="dealer_id" value="<{$data['dealer_id']}>">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>配送方式:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="delivery_method" name="delivery_method" class="input-text">
+                        <option value="">请选择</option>
+                        <volist name="data.deliveryMethod" id="vo" key="k">
+                            <option value="<{$key}>" <if condition="$allocation_data['delivery_method'] eq $key">selected</if>>
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps12"></span>
+                </div>
+                <label class="form-label col-xs-2 ">实际调拨日期:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" name="actual_allocation_time" value="<{$allocation_data['actual_allocation_time']}>" id="actual_allocation_time" class="input-text Wdate" placeholder="截止订单日期" readonly="" onfocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                    <span id="sps13"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>调拨类型:</label>
+                <input type="radio" name="allocation_type" value="1" style="margin-left: 15px" checked="checked">一级仓->二级仓
+                <!--<input type="radio" name="allocation_type" value="2" style="margin-left: 15px">二级仓->二级仓-->
+                <input type="radio" name="allocation_type" value="3" style="margin-left: 15px">二级仓->一级仓
+                <input type="radio" name="allocation_type" value="4" style="margin-left: 15px">一级仓->一级仓
+            </div>
+        </div>
+        <div id="business_type_hide">
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>调拨场景:</label>
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="business_type" name="business_type" class="input-text" style="width:78%;">
+                        <option value="">请选择</option>
+                        <volist name="data.business_type" id="vo" key="k">
+                            <option value="<{$key}>" <if condition="$allocation_data['business_type'] eq $key">selected</if>>
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps15"></span>
+                </div>
+            </div>
+            <input type="hidden" name="allocation_type_show" id="allocation_type_show" value="<{$allocation_data.allocation_type}>">
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 " style="width:11%;"><span class="c-red">*</span>从城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                    <select name="out_region" class="input-text" id="out_region" style="width: 100%;" onchange="checkoutregion()">
+                        <option value="">请选择</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>"
+                            <if condition="$allocation_data['out_region'] eq $key">selected</if>>
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+
+                <div id="div_out_storehouse">
+                    <label class="form-label col-xs-2 " style="width:14%;"><span class="c-red">*</span>从一级仓:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_storehouse" name="out_storehouse" class="input-text disabled" style="width: 100%;" onchange="checkoutregion()">
+                            <option value="<{$allocation_data['out_storehouse']}>"><{$allocation_data['o_storehouse_name']}></option>
+                        </select>
+                        <span id="sps3"></span>
+                    </div>
+                </div>
+
+                <div id="div_out_facilitator_id" style="display: none;">
+                    <label class="form-label col-xs-2" style="width:14%;"><span class="c-red">*</span>从加油网点:</label>
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_facilitator_skid_id" name="out_facilitator_skid_id" class="input-text"  style="width: 100%;" onchange="checkoutfacilitatorskidid()">
+                            <option value="<{$allocation_data['out_storehouse']}>"><{$allocation_data['o_storehouse_name']}></option>
+                        </select>
+                        <span id="sps10"></span>
+                    </div>
+
+                    <label class="form-label col-xs-2" style="width:14%;"><span class="c-red">*</span>从服务商:</label>
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="out_facilitator_id" name="out_facilitator_id" class="input-text"  style="width: 100%;" onchange="checkoutfacilitatorid()">
+                            <option value="<{$allocation_data['out_facilitator_id']}>"><{$allocation_data['o_facilitator_name']}></option>
+                        </select>
+                        <span id="sps4"></span>
+                        <br/>
+                        <span style="margin-top: 10px;"><span style="color: red;" id="out_data_source"></span></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row cl col-sm-12">
+
+                <label class="form-label col-xs-2 " style="width:11%;"><span class="c-red">*</span>至城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                    <select name="in_region" class="input-text" id="in_region" style="width: 100%;" onchange="">
+                        <option value="">请选择</option>
+                        <volist name="data.regionList" id="vo" key="k">
+                            <option value="<{$key}>"
+                            <if condition="$allocation_data['in_region'] eq $key">selected</if>>
+                            <{$vo}>
+                            </option>
+                        </volist>
+                    </select>
+                    <span id="sps5"></span>
+                </div>
+
+                <div id="div_in_storehouse" style="display: none;">
+                    <label class="form-label col-xs-2 " style="width:14%;"><span class="c-red">*</span>至一级仓:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_storehouse" name="in_storehouse" class="input-text disabled" style="width: 100%;" onchange="checkinregion()">
+                            <option value="<{$allocation_data['in_storehouse']}>"><{$allocation_data['i_storehouse_name']}></option>
+                        </select>
+                        <span id="sps6"></span>
+                    </div>
+                </div>
+
+                <div id="div_in_facilitator_id">
+                    <label class="form-label col-xs-2 " style="width:14%;"><span class="c-red">*</span>至加油网点:</label>
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_facilitator_skid_id" name="in_facilitator_skid_id" class="input-text" style="width: 100%;" onchange="checkinfacilitatorskidid()">
+                            <option value="<{$allocation_data['in_storehouse']}>"><{$allocation_data['i_storehouse_name']}></option>
+                        </select>
+                        <span id="sps11"></span>
+                    </div>
+
+                    <label class="form-label col-xs-2 " style="width:14%;"><span class="c-red">*</span>至服务商:</label>
+                    <div class="formControls col-xs-9 col-sm-4" style="width:20%;">
+                        <select id="in_facilitator_id" name="in_facilitator_id" class="input-text" style="width: 100%;" onchange="checkinfacilitatorid()">
+                            <option value="<{$allocation_data['in_facilitator_id']}>"><{$allocation_data['i_facilitator_name']}></option>
+                        </select>
+                        <span id="sps7"></span>
+                        <br/>
+                        <span style="margin-top: 10px;"><span style="color: red;" id="in_data_source"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="row cl col-sm-12">
+                <p>商品信息</p>
+                <hr/>
+                <br/>
+                <label class="form-label col-xs-2 col-sm-2"><span class="c-red">*</span>商品代号：</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-left: 15px;">
+                    <select name="goods_id" class="input-text" style="width:103%" id="search_goods_code">
+                        <option value="<{$allocation_data['in_storehouse']}>"><{$allocation_data['goods_code']}>/<{$allocation_data['goods_name']}>/<{$allocation_data['source_from']}>/<{$allocation_data['grade']}>/<{$allocation_data['level']}></option>
+                    </select>
+                    <input type="hidden" id="goods_id" name="goods_id" value="<{$allocation_data.goods_id}>">
+                </div>
+                <span id="sps8" style="padding-left: 4px"></span>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>数量(吨):</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" class="input-text" id="num" name="num" value="<{$allocation_data.num}>"/>
+                    <span id="sps9"></span>
+                </div>
+            </div>
+        </div>
+        <IF condition="$allocation_data.status eq 10">
+            <div class="row cl col-sm-12">
+                <IF condition="$allocation_data.allocation_type eq 2 or $allocation_data.allocation_type eq 3">
+                    <label class="form-label col-xs-2 ">实际调出升数:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input type="text" class="input-text" id="actual_out_num_liter" name="actual_out_num_liter" value="<{$allocation_data.actual_out_num_liter}>"/>
+                    </div>
+
+                    <else/>
+
+                    <label class="form-label col-xs-2 ">实际调出吨数:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input type="text" class="input-text" id="actual_out_num" name="actual_out_num" value="<{$allocation_data.actual_out_num}>"/>
+                    </div>
+                </IF>
+
+                <IF condition="$allocation_data.allocation_type eq 1 or $allocation_data.allocation_type eq 2">
+                    <label class="form-label col-xs-2 ">实际调入升数:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input type="text" class="input-text" id="actual_in_num_liter" name="actual_in_num_liter" value="<{$allocation_data.actual_in_num_liter}>"/>
+                    </div>
+
+                    <else/>
+
+                    <label class="form-label col-xs-2 ">实际调入吨数:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input type="text" class="input-text" id="actual_in_num" name="actual_in_num" value="<{$allocation_data.actual_in_num}>"/>
+                    </div>
+                </IF>
+            </div>
+
+            <div class="row cl col-sm-12">
+                <IF condition="$allocation_data.allocation_type eq 2 or $allocation_data.allocation_type eq 3">
+                    <label class="form-label col-xs-2 ">实际调出密度:</label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <input type="text" class="input-text" id="outbound_density" name="outbound_density" value="<{$allocation_data.outbound_density}>"/>
+                    </div>
+                </IF>
+
+                <IF condition="$allocation_data.allocation_type eq 1 or $allocation_data.allocation_type eq 2">
+                    <div class="formControls col-xs-9 col-sm-4" style="float: right;">
+                        <input type="text" class="input-text" id="storage_density" name="storage_density" value="<{$allocation_data.storage_density}>"/>
+                    </div>
+
+                    <label class="form-label col-xs-2 " style="float: right;">实际调入密度:</label>
+                </IF>
+            </div>
+        </IF>
+
+        <div class="row cl col-sm-12">
+            <IF condition="$allocation_data.outbound_voucher_status eq 1">
+                <label class="form-label col-xs-2 ">出库凭证：</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <a href="<{$allocation_data.outbound_voucher}>" title="点击打开或下载合同" style="text-decoration: underline;color:#06c;"
+                       target="_blank">打开或下载合同</a>
+                </div>
+            </IF>
+
+            <IF condition="$allocation_data.storage_voucher_status eq 1">
+                <label class="form-label col-xs-2 ">入库凭证：</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <a href="<{$allocation_data.storage_voucher}>" title="点击打开或下载合同" style="text-decoration: underline;color:#06c;"
+                       target="_blank">打开或下载合同</a>
+                </div>
+            </IF>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 ">备注:</label>
+
+                <div class="formControls col-xs-9 col-sm-9" style="padding-right: 0;">
+                    <textarea class="textarea" cols="" rows="" id="remark" name="remark"><{$allocation_data.remark}></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$allocation_data.id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.10>
+    var type = "<{$allocation_data['allocation_type']}>";
+    var out_storehouse = "<{$allocation_data['out_storehouse']}>";
+    var in_storehouse = "<{$allocation_data['in_storehouse']}>";
+    var out_facilitator_id = "<{$allocation_data['out_facilitator_id']}>";
+    var out_facilitator_skid_id = "<{$allocation_data['out_facilitator_skid_id']}>";
+    var in_facilitator_id = "<{$allocation_data['in_facilitator_id']}>";
+    var in_facilitator_skid_id = "<{$allocation_data['in_facilitator_skid_id']}>";
+
+    $(function(){
+        $('form').find('input,textarea,select').attr('disabled', true).addClass('disabled');
+        $('#add').hide();
+        $('input[name="allocation_type"][value="'+type+'"]').prop('checked',true);
+        $("input[name='allocation_type']:checked").change();
+
+        var allocation_type_show = $("#allocation_type_show").val();
+        if(allocation_type_show == 1 || allocation_type_show == 3){
+            $("#business_type_hide").show();
+        }else{
+            $("#business_type_hide").hide();
+        }
+    })
+    $('input[name="allocation_type"]').change(function(){
+        var type = $(this).val();
+        switch (type){
+            case '1' :
+                $("#div_out_facilitator_id").hide();
+                $("#div_out_storehouse").show();
+                $("#div_in_facilitator_id").show();
+                $("#div_in_storehouse").hide();
+                break;
+            case '2' :
+                $("#div_out_facilitator_id").show();
+                $("#div_out_storehouse").hide();
+                $("#div_in_facilitator_id").show();
+                $("#div_in_storehouse").hide();
+                break;
+            case '3' :
+                $("#div_out_facilitator_id").show();
+                $("#div_out_storehouse").hide();
+                $("#div_in_facilitator_id").hide();
+                $("#div_in_storehouse").show();
+                break;
+            case '4' :
+                $("#div_out_facilitator_id").hide();
+                $("#div_out_storehouse").show();
+                $("#div_in_facilitator_id").hide();
+                $("#div_in_storehouse").show();
+                break;
+            default :  break;
+        }
+    })
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+    //验证来源城市
+    function checkoutregion() {
+        if ($.trim($("#out_region").val()) == '') {
+            layer.msg("请选择来源城市！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#out_region").val()) == $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() == 4) {
+            layer.msg("来源一级仓与目的一级仓不能相同！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证来源二级仓
+    function checkoutfacilitatorid() {
+        if ($("input[name='allocation_type']:checked").val() == 2 || $("input[name='allocation_type']:checked").val() == 3) {
+            if ($.trim($("#out_facilitator_id").val()) == '') {
+                layer.msg("请选择来源二级仓！", {icon: 2});
+                checkfalse('sps4');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_id").val()) == $.trim($("#in_facilitator_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源二级仓与目的二级仓不能相同！", {icon: 2});
+                checkfalse('sps4');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps4');
+                if ($("#sps7").attr('class') == 'c-red') {
+                    checktrue('sps7');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+    }
+
+    //验证来源加油网点
+    function checkoutfacilitatorskidid() {
+        if ($("input[name='allocation_type']:checked").val() == 2 || $("input[name='allocation_type']:checked").val() == 3) {
+            if ($.trim($("#out_facilitator_skid_id").val()) == '') {
+                layer.msg("请选择来源加油网点！", {icon: 2});
+                checkfalse('sps10');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_skid_id").val()) == $.trim($("#in_facilitator_skid_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源加油网点与目的加油网点不能相同！", {icon: 2});
+                checkfalse('sps10');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps10');
+                if ($("#sps11").attr('class') == 'c-red') {
+                    checktrue('sps11');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //验证目的城市
+    function checkinregion() {
+        if ($.trim($("#in_region").val()) == '') {
+            layer.msg("请选择目的城市！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else if ($.trim($("#out_region").val()) == $.trim($("#in_region").val()) && $("input[name='allocation_type']:checked").val() == 4) {
+            layer.msg("来源一级仓与目的一级仓不能相同！", {icon: 2});
+            checkfalse('sps5');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps5');
+            return true;
+        }
+    }
+
+    //验证目的二级仓
+    function checkinfacilitatorid() {
+        if ($("input[name='allocation_type']:checked").val() == 1 || $("input[name='allocation_type']:checked").val() == 2) {
+            if ($.trim($("#in_facilitator_id").val()) == '') {
+                layer.msg("请选择目的二级仓！", {icon: 2});
+                checkfalse('sps7');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_id").val()) == $.trim($("#in_facilitator_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源二级仓与目的二级仓不能相同！", {icon: 2});
+                checkfalse('sps7');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps7');
+                if ($("#sps4").attr('class') == 'c-red') {
+                    checktrue('sps4');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //验证目的加油网点
+    function checkinfacilitatorskidid() {
+        if ($("input[name='allocation_type']:checked").val() == 1 || $("input[name='allocation_type']:checked").val() == 2) {
+            if ($.trim($("#in_facilitator_skid_id").val()) == '') {
+                layer.msg("请选择目的加油网点！", {icon: 2});
+                checkfalse('sps11');
+                submitFalse();
+                return false;
+            } else if ($.trim($("#out_facilitator_skid_id").val()) == $.trim($("#in_facilitator_skid_id").val()) && $("input[name='allocation_type']:checked").val() == 2) {
+                layer.msg("来源加油网点与目的加油网点不能相同！", {icon: 2});
+                checkfalse('sps11');
+                submitFalse();
+                return false;
+            } else {
+                checktrue('sps11');
+                if ($("#sps10").attr('class') == 'c-red') {
+                    checktrue('sps10');
+                }
+                checkinregion();
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    $("input[name='allocation_type']").click(function(){
+        if ($(this).val() == 1 && $("#out_region").val() != '' && $("#in_facilitator_id").val() != '') {
+            checkoutregion();
+            checkinfacilitatorid();
+        } else if ($(this).val() == 2 && $("#out_facilitator_id").val() != '' && $("#in_facilitator_id").val() != '') {
+            checkinfacilitatorid();
+        } else if ($(this).val() == 3 && $("#out_facilitator_id").val() != '' && $("#in_region").val() != '') {
+            checkoutfacilitatorid();
+            checkinregion();
+        } else  if ($(this).val() == 4 && $("#out_region").val() != '' && $("#in_region").val() != '') {
+            checkinregion();
+        }
+    })
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

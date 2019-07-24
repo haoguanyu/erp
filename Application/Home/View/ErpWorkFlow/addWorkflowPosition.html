@@ -1,0 +1,224 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 78%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add">
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>职位名称:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="position_name" name="position_name" class="input-text" width="10%" onchange="check_position_name()">
+                        <option value="" area="">请选择职位</option>
+                        <volist name="data.positionList" id="vo">
+                            <option value="<{$key}>" area="<{$vo.area}>"><{$vo.name}></option>
+                        </volist>
+                    </select>
+                    <span id="sps1"></span>
+                </div>
+
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>城市:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <select id="region" name="region" class="input-text" width="10%" onchange="check_region()">
+                        <optgroup label="城市列表">
+                            <option value="0">全部城市</option>
+                            <volist name="data.regionList" id="vo" key="k">
+                                <option value="<{$key}>">
+                                    <{$vo}>
+                                </option>
+                            </volist>
+                        </optgroup>
+                    </select>
+                    <span id="sps2"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>审批人ID:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" id="dealer_id" name="dealer_id" class="input-text" width="10%" onblur="check_dealer_id()"/>
+                    <span id="sps3"></span>
+                </div>
+
+                <label class="form-label col-xs-2 ">审批人姓名:</label>
+
+                <div class="formControls col-xs-9 col-sm-4">
+                    <input type="text" id="dealer_name" name="dealer_name" class="input-text" width="10%" onblur="check_dealer_name()"/>
+                    <span id="sps4"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl col-sm-12" style="margin-top:10px;">
+            <div class="col-xs-8 col-sm-6 col-xs-offset-4 col-sm-offset-6">
+                <input type="hidden" id="id" name="id" value="<{$id}>"/>
+                <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;添加&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    // @表单验证 <senpai | 2017.3.10>
+
+    //验证信息正确
+    function checktrue($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe676;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-green");
+    }
+
+    //验证信息错误
+    function checkfalse($place) {
+        $('#' + $place).html("<i class='Hui-iconfont'>&#xe706;</i>");
+        $('#' + $place).removeClass();
+        $('#' + $place).addClass("c-red");
+    }
+
+
+    function check_position_name() {
+        if ($.trim($("#position_name").val()) == '') {
+            layer.msg("请选择职位！", {icon: 2});
+            checkfalse('sps1');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps1');
+            console.log($("#position_name").find("option:selected").attr('area'));
+
+            if($("#position_name").find("option:selected").attr('area') == 0){
+//                $("#region").find('option').eq(0).attr("selected",true);
+                $("#region").select2('val',0);
+                $("#region").attr('disabled', true);
+            }else{
+                $("#region").attr('disabled', false);
+            }
+
+            return true;
+        }
+    }
+
+    //验证商品标号
+    function check_region() {
+        if ($.trim($("#region").val()) == '') {
+            layer.msg("请选择地区！", {icon: 2});
+            checkfalse('sps2');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps2');
+            return true;
+        }
+    }
+
+    //验证商品级别
+    function check_dealer_id() {
+        if ($.trim($("#dealer_id").val()) == '') {
+            layer.msg("请输入审批人ID！", {icon: 2});
+            checkfalse('sps3');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps3');
+            return true;
+        }
+    }
+
+    //验证商品来源
+    function check_dealer_name() {
+        if ($.trim($("#dealer_name").val()) == '') {
+            layer.msg("请输入审批人！", {icon: 2});
+            checkfalse('sps4');
+            submitFalse();
+            return false;
+        } else {
+            checktrue('sps4');
+            return true;
+        }
+    }
+
+    //验证是否是数字（保留三位小数）
+    function checknumthree(obj){
+        obj.value = obj.value.replace(/[^\d.]/g,"");  //清除“数字”和“.”以外的字符
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d\d).*$/,'$1$2.$3');//只能输入两个小数
+        if(obj.value.indexOf(".")< 0 && obj.value !=""){//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj.value= parseFloat(obj.value);
+        }
+        if(obj.value.indexOf(".") == 0){
+            obj.value = '';
+        }
+    }
+
+    var selectRegion = $("#region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    // @添加
+    $(function () {
+
+
+        //添加erp商品操作
+        $('#add').click(function () {
+            submitTrue();
+            if ($('#form-member-add').valid() == false) {
+                return false;
+            }
+            var da = {
+                'position_name': $("#position_name").val(),
+                'region': $("#region").val(),
+                'dealer_name': $("#dealer_name").val(),
+                'dealer_id': $("#dealer_id").val(),
+
+            };
+            if (check_position_name() && check_dealer_id() && check_dealer_name() && check_region()) {
+                layer.load(1, {shade: 0.3});
+                var url = '<{:U("ErpWorkFlow/addWorkflowPosition")}>';
+                var type = 'post';
+                var dataType = 'json';
+                var data = da;
+                ajax(url, data, type, dataType, function (_data) {
+                    layer.load(1, {shade: 0.3});
+                    if (_data.status == 1) {
+
+                        layer.msg(_data.message, {icon: 1});
+                        setTimeout(function () {
+                            layer.closeAll();
+                            parent.searchWorkflowPosition();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 1000);
+
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                });
+            }
+        });
+    });
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

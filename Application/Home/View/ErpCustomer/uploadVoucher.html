@@ -1,0 +1,268 @@
+<include file="./Application/Home/View/headers.html"/>
+<link href="__TPL__lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+<style>
+    .btn-upload{position: relative; display:inline-block;height:36px; *display:inline;overflow:hidden;vertical-align:middle;cursor:pointer}
+    .upload-url{cursor: pointer}
+    .input-file{position:absolute; right:0; top:0; cursor: pointer; z-index:1; font-size:30em; *font-size:30px;opacity:0;filter: alpha(opacity=0)}
+    .btn-upload .input-text{ width:auto}
+    .form-group .upload-btn{ margin-left:-1px}
+</style>
+<script type="text/javascript" src="__TPL__lib/webuploader/0.1.5/webuploader.min.js"></script>
+
+
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" enctype="multipart/form-data">
+        <div class="container" style="margin-top: 30px;">
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 col-sm-2"></label>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>三证合一:</label>
+
+                <div class="formControls col-xs-6 col-sm-6 wu-example">
+                    <div class="yanzRight">
+                        <span class="btn-upload form-group">
+                            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i> 浏览文件</a>
+                            <input style="margin-top:5px;float: left;" name="voucher_type_1" id="voucher_type_1" onchange="previewImage(this,1)" type="file"  name="file-1" class="input-file"/>
+                        </span>
+                        <span class="dui" style="display: none;"></span>
+                    </div>
+                    <div id="preview1" style="clear:both; padding-top:15px;">
+                        <img src="" alt="" id="imghead1" height="200" width="200" style="display:none;"/>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row cl col-sm-12">
+                <label class="form-label col-xs-2 col-sm-2"></label>
+                <label class="form-label col-xs-2 "><span class="c-red">*</span>开票资料:</label>
+
+                <div class="formControls col-xs-6 col-sm-6 wu-example">
+                    <div class="yanzRight">
+                        <span class="btn-upload form-group">
+                            <input class="input-text upload-url radius" type="text" name="uploadfile-2" id="uploadfile-2" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i> 浏览文件</a>
+                            <input style="margin-top:5px;float: left;" name="voucher_type_2" id="voucher_type_2" onchange="previewImage(this,2)" type="file"  name="file-1" class="input-file"/>
+                        </span>
+                        <span class="dui" style="display: none;"></span>
+                        <br/>
+                        <!--<span style="margin-top: 10px;color: red;">最多上传两张</span>-->
+                    </div>
+                    <div id="preview2" style="clear:both; padding-top:15px;">
+                        <img src="" alt="" id="imghead2" height="200" width="200" style="display:none;"/>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 "><span class="c-red">*</span>开户许可证:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                        <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-3" id="uploadfile-3" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="voucher_type_3" id="voucher_type_3" onchange="previewImage(this,3)" type="file"  name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview3" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead3" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2" style="width:160px;margin-left:-45px;"><span class="c-red">*</span>成品油经营许可证:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                       <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-4" id="uploadfile-4" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="voucher_type_4" id="voucher_type_4" onchange="previewImage(this,4)" type="file"  name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview4" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead4" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <!--<div class="row cl col-sm-12">-->
+                <!--<label class="form-label col-xs-2 col-sm-2"></label>-->
+                <!--<label class="form-label col-xs-2 ">危化证:</label>-->
+
+                <!--<div class="formControls col-xs-6 col-sm-6 wu-example">-->
+                    <!--<div class="yanzRight">-->
+                       <!--<span class="btn-upload form-group">-->
+                            <!--<input class="input-text upload-url radius" type="text" name="uploadfile-5" id="uploadfile-5" readonly> <a href="javascript:void();" class="btn btn-primary radius"><i class="Hui-iconfont Hui-iconfont-upload"></i> 浏览文件</a>-->
+                            <!--<input style="margin-top:5px;float: left;" name="voucher_type_5" id="voucher_type_5" onchange="previewImage(this,5)" type="file" name="file-1" class="input-file"/>-->
+                        <!--</span>-->
+                        <!--<span class="dui" style="display: none;"></span>-->
+                    <!--</div>-->
+                    <!--<div id="preview5" style="clear:both; padding-top:15px;">-->
+                        <!--<img src="" alt="" id="imghead5" height="200" width="200" style="display:none;"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+
+            <div class="row cl col-sm-12" style="margin-top:10px;">
+                <div class="col-xs-5 col-sm-5 col-xs-offset-5 col-sm-offset-5">
+                    <input type="hidden" id="id" value="<{$id}>">
+                    <input class="btn btn-primary radius" id="add" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                </div>
+            </div>
+
+        </div>
+    </form>
+</article>
+
+<script type="text/javascript">
+    //图片预览功能
+    function previewImage(file,imgNum)
+    {
+        var MAXWIDTH  = 200;
+        var MAXHEIGHT = 200;
+        var div = document.getElementById('preview'+imgNum);
+        if (file.files && file.files[0])
+        {
+            div.innerHTML ='';
+            var length=0;
+            //imgContent为图片展示的区域
+            var reader=new FileReader();
+            reader.readAsDataURL(file.files[length]);
+            //异步读取图片，读取完会触onload
+            reader.onload=function() {
+                div.innerHTML += "<img src='" + this.result + "' id='imghead"+imgNum+'_'+length+"'/>";
+                var img = document.getElementById('imghead'+imgNum+'_'+length);
+                img.onload = function(){
+                    var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                    img.width  =  rect.width;
+                    img.height =  rect.height;
+                }
+                length++;
+                if (length < file.files.length) {
+                    reader.readAsDataURL(file.files[length]);
+                }
+            }
+//            var length = 0;
+//            div.innerHTML ='<img id=imghead'+imgNum+'_'+length+'>';
+//            var img = document.getElementById('imghead'+imgNum+'_'+length);
+//            img.onload = function(){
+//                var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+//                img.width  =  rect.width;
+//                img.height =  rect.height;
+//                img.style.marginLeft = rect.left+'px';
+//                img.style.marginTop = rect.top+'px';
+//            }
+//            var reader = new FileReader();
+//            reader.onload = function(evt){img.src = evt.target.result;}
+//            reader.readAsDataURL(file.files[length]);
+        }
+        else //
+        {
+            var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+            file.select();
+            var src = document.selection.createRange().text;
+            div.innerHTML = '<img id=imghead'+imgNum+'>';
+            var img = document.getElementById('imghead2');
+            img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+            var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+            status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+            div.innerHTML = "<div id=divhead"+imgNum+" style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+        }
+    }
+    function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+        var param = {top:0, left:0, width:width, height:height};
+        if( width>maxWidth || height>maxHeight )
+        {
+            rateWidth = width / maxWidth;
+            rateHeight = height / maxHeight;
+
+            if( rateWidth > rateHeight )
+            {
+                param.width =  maxWidth;
+                param.height = Math.round(height / rateWidth);
+            }else
+            {
+                param.width = Math.round(width / rateHeight);
+                param.height = maxHeight;
+            }
+        }
+        param.left = Math.round((maxWidth - param.width) / 2);
+        param.top = Math.round((maxHeight - param.height) / 2);
+        return param;
+    }
+
+    // @添加
+    $(function () {
+        $('#add').click(function () {
+            submitTrue();
+
+            console.log($("#voucher_type_1")[0].files[0]);
+            console.log($("#voucher_type_1")[0].files);
+            console.log($("#voucher_type_1")[0].files.length);
+            var num = $("#voucher_type_1")[0].files.length < 2 ? $("#voucher_type_1")[0].files.length : 2;
+
+            var formData = new FormData();
+//            for (var i = 0;i < num;i++) {
+//                formData.append("voucher_type_1"+i,$("#voucher_type_1")[0].files[i]);
+//            }
+            formData.append("id",$("#id").val());
+            formData.append("voucher_type_1",$("#voucher_type_1")[0].files[0]);
+            formData.append("voucher_type_2",$("#voucher_type_2")[0].files[0]);
+//            formData.append("voucher_type_3",$("#voucher_type_3")[0].files[0]);
+//            formData.append("voucher_type_4",$("#voucher_type_4")[0].files[0]);
+//            formData.append("voucher_type_5",$("#voucher_type_5")[0].files[0]);
+
+            layer.load(1, {shade: 0.3});
+
+            $.ajax({
+                url : '<{:U("ErpCustomer/uploadVoucher")}>',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(_data) {
+                    if (_data.status == 1) {
+                        layer.msg(_data.message, {icon: 1});
+                        parent.searchErpCustomerList();
+                        setTimeout(function () {
+                            layer.closeAll();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            submitFalse();
+                        }, 500);
+                    } else {
+                        layer.closeAll();
+                        layer.msg(_data.message, {icon: 2});
+                        submitFalse();
+                    }
+                }
+            });
+//            ajax(url, data, type, dataType, function (_data) {
+//                if (_data.status == 1) {
+//                    layer.closeAll();
+//                    layer.msg(_data.message, {icon: 1});
+//
+//                    top.searchShippingOrderList();
+//                    setTimeout(function () {
+//                        var index = parent.layer.getFrameIndex(window.name);
+//                        parent.layer.close(index);
+//                        submitFalse();
+//                    }, 500);
+//                } else {
+//                    layer.closeAll();
+//                    layer.msg(_data.message, {icon: 2});
+//                    submitFalse();
+//                }
+//            });
+        });
+    });
+</script>

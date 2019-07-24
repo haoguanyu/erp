@@ -1,0 +1,99 @@
+<include file="./Application/Home/View/headers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<style>
+    .input-text {
+        width: 80%
+    }
+</style>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<article class="page-container" style=" overflow:hidden;" id="input_list">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" style="text-align: center;">
+        <div style="overflow: hidden;">
+            <div class="row cl col-sm-12">
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-2 "></label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <empty name="data.data.1">
+
+                            <a href="#" class="c-danger">未上传</a>
+                            <else/>
+
+                            <a href="<{$data['data'][1]}>" target="_blank"><img src="<{$data['data'][1]}>" width="300" height="300"></a>
+
+                        </empty>
+                        <br/><br/>三证合一
+                    </div>
+                </div>
+
+                <div class="row cl col-sm-6">
+                    <label class="form-label col-xs-2 "></label>
+
+                    <div class="formControls col-xs-9 col-sm-4">
+                        <empty name="data.data.2">
+
+                            <a href="#" class="c-danger">未上传</a>
+                            <else/>
+
+                            <a href="<{$data['data'][2]}>" target="_blank"><img src="<{$data['data'][2]}>" width="300" height="300"></a>
+
+                        </empty>
+                        <br/><br/>开票资料
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div>-->
+            <!--<div class="row cl col-sm-12">-->
+                <!--<div class="row cl col-sm-6">-->
+                    <!--<label class="form-label col-xs-2 "></label>-->
+
+                    <!--<div class="formControls col-xs-9 col-sm-4">-->
+                        <!--<a href="<{$data['base_url']}><{$data['data'][3]}>" target="_blank"><img src="<{$data['base_url']}><{$data['data'][3]}>" width="300" height="300"></a>-->
+                        <!--<br/><br/>开户许可证-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="row cl col-sm-6">-->
+                    <!--<label class="form-label col-xs-2 "></label>-->
+
+                    <!--<div class="formControls col-xs-9 col-sm-4">-->
+                        <!--<a href="<{$data['base_url']}><{$data['data'][4]}>" target="_blank"><img src="<{$data['base_url']}><{$data['data'][4]}>" width="300" height="300"></a>-->
+                        <!--<br/><br/><span style="width: 100px;display: inline-block">成品油经营许可证</span>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div>-->
+            <!--<div class="row cl col-sm-12">-->
+                <!--<div class="row cl col-sm-6">-->
+                    <!--<label class="form-label col-xs-2 "></label>-->
+
+                    <!--<div class="formControls col-xs-9 col-sm-4">-->
+                        <!--<a href="<{$data['base_url']}><{$data['data'][5]}>" target="_blank"><img src="<{$data['base_url']}><{$data['data'][5]}>" width="300" height="300"></a>-->
+                        <!--<br/><br/>危化证-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;<label class="form-label col-xs-2 "><span class="c-red">*</span>开票资料:</label>&ndash;&gt;-->
+
+                <!--&lt;!&ndash;<div class="formControls col-xs-9 col-sm-4">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<a href="/front/Public/Uploads/Clients/Photo/2018-09-26/20180926140035339.jpg" target="_blank"><img src="/front/Public/Uploads/Clients/Photo/2018-09-26/20180926140035339.jpg" width="300" height="300"></a>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--</div>-->
+        <!--</div>-->
+
+    </form>
+</article>
+
+<script type="text/javascript">
+
+    // @添加下单按钮禁用属性
+    function submitTrue() {
+        $('#add').attr("disabled", true);
+    }
+
+    // @移除下单按钮禁用属性
+    function submitFalse() {
+        $('#add').attr("disabled", false);
+    }
+</script>

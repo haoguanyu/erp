@@ -1,0 +1,140 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" type="text/css" href="__TPL__/static/assets/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="__TPL__/static/assets/css/wuliu.css">
+    <!--<script src="js/jquery.min.1.8.3.js" ></script>-->
+
+    <title>登录-找油网ERP管理平台</title>
+    <script language="JavaScript">
+        if (window != top)
+            top.location.href = location.href;
+    </script>
+    <style>
+        .mar10{
+            margin-top: 15px;
+        }
+        .btn:hover{
+            background:#4a90e2d1;
+        }
+    </style>
+</head>
+<body class="back" id="login">
+<div class="logo"><img src="__TPL__/static/assets/images/logo2.png"></div>
+<div class="loginBox">
+    <form id="userLoginForm" action="__SELF__" method="post">
+        <div class="erp_logo"><img src="__TPL__/static/assets/images/ERP.png" width="120"></div>
+        <div class="mar10"><input type="text" class="ipt name" placeholder="用户名" id="user_name" name="user_name" value="<{$user_name}>"></div>
+        <div class="mar10"><input type="password" class="ipt pwd" placeholder="密码" id="password" name="password"
+                                  onfocus="this.type='password'" autocomplete="off" value="<{$password}>"></div>
+        <div class="mar10">
+            <select name="erp_company_id" id="erp_company_id">
+                <option value="">请选择账套</option>
+                <volist name="erpCompany" id="vo" key="k">
+                    <option value="<{$key}>">
+                        <{$vo}>
+                    </option>
+                </volist>
+            </select>
+        </div>
+        <div class="wid" style="display: flex;justify-content: space-between;margin: 15px auto;font-size: 16px">
+
+                <div class="pay_list_c1 fl" style="margin-top: 5px;">
+
+                    <input type="radio" name="remember" id="remember" value="1" class="radioclass">
+                    <span>记住密码</span>
+
+                </div>
+                <div class="current" style="margin-top: 10px;">
+                    <a href="<{$reset_password_url}>" target="_self" style="color: #4a90e2;">重置密码</a>
+                </div>
+                <input type="hidden" name='error' id="error" value='0'>
+
+
+        </div>
+        <div style="padding: 0 60px">
+            <!--class="btn_fr"-->
+            <button type="button" class="btn" id="submitBtn">登录</button>
+        </div>
+    </form>
+</div>
+<div class="copr">Copyright &copy; 找油网ERP管理平台</div>
+<div>
+
+</div>
+</body>
+<script type="text/javascript" src="__TPL__/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="__TPL__/static/h-ui/js/H-ui.js"></script>
+<script type="text/javascript" src="__TPL__/lib/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="__TPL__/static/common.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $(".pay_list_c1").on("click", function () {
+            $(this).hasClass("on") ? $(this).removeClass("on") : $(this).addClass("on");
+            if ($(this).hasClass("on")) {
+                $(".radioclass").attr("checked", true);
+            } else {
+                $(".radioclass").attr("checked", false);
+            }
+        })
+    })
+
+    $(function () {
+        $('#changeVerify').click(function () {
+            var src = $('#yzm').attr('src') + '?' + Math.random();
+            $('#yzm').attr('src', src);
+        });
+
+        document.onkeydown = function (e) {
+            //editor:lhw  2017/2/14  17:30
+            if (!e) e = window.event;//火狐中是 window.event
+            //在if语句里面多添加比一个条件，当切晋档信息为正确时才进行按enter键进行确定
+            if ((e.keyCode || e.which) == 13) {
+                //定义一个全局变量用来记录enter的敲击次数
+                //在此处添加一个焦点失去事件
+                $("#user_name").blur();
+                $("#password").blur();
+                var error = $('#error').val();
+                if (error == 0) {
+                    $('#submitBtn').click();
+                } else {
+                    layer.closeAll();
+                    $('#error').val(0);
+                }
+            }
+        }
+        $('#submitBtn').click(function () {
+            $("#user_name").blur();
+            $("#password").blur();
+            var callback = function (_data) {
+                if (_data.status == 1) {
+                    $('#error').val(0);
+                    layer.msg(_data.msg + ',即将进入后台', {icon: 1, time: 1000}, function () {
+                        window.location.href = '<{:U("Index/index")}>';
+                    });
+                    //alert(_data.msg + ',即将进入后台');
+
+                } else {
+                    $('#error').val(1);
+                    layer.alert(_data.msg, function () {
+                        var index = layer.index; //获取当前弹层的索引号
+                        layer.close(index); //关闭当前弹层
+                        $('#error').val(0);
+                        //layer.closeAll();
+                    });
+                    return false;
+                }
+            }
+            ajax('__SELF__', $('#userLoginForm').serializeArray(), 'post', 'json', callback);
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,624 @@
+<include file="./Application/Home/View/headers.html"/>
+<script type="text/javascript" src="__TPL__static/select.js"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 采购管理 <span class="c-gray en">&gt;</span> 我的入库单 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchErp">
+            <input type="hidden" name="search_type" value="2">
+            <span class="ml-10">入库单号：　　</span>
+            <input type="text" class="input-text" style="width:12%;" name="storage_code" id="storage_code" value=""/>
+
+            <span class="ml-10">来源单号：　　</span>
+            <input type="text" class="input-text" style="width:12%;" name="source_number" id="source_number" value=""/>
+
+            <span class="ml-10">起始订单日期：</span>
+            <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:12%;"
+                   placeholder="起始订单日期" readonly
+                   onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+            <span class="ml-10">截止订单日期：</span>
+            <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:12%;"
+                   placeholder="截止订单日期" readonly
+                   onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+            <br/>
+
+            <div class="mt-10">
+                <span class="ml-10">商品代码：　　</span>
+                <select name="goods_code" id="goods_code" class="input-text" style="width:31%">
+                    <option value="0">全部商品</option>
+                    <volist name="data.erpGoods" id="vo" key="k">
+                        <option value='<{$vo.id}>'><{$vo.goods_code}>/<{$vo.goods_name}>/<{$vo.source_from}>/<{$vo.grade}>/<{$vo.level}></option>
+                    </volist>
+                </select>
+                <!--<input type="text" class="input-text" style="width:12%;" name="goods_code" id="goods_code" value=""/>-->
+
+                <span class="ml-10">订单状态：　　</span>
+                <select id="storage_status" name="storage_status" class="input-text" style="width:12%">
+                    <option value="">请选择</option>
+                    <option value="1">未审核</option>
+                    <option value="2">已取消</option>
+                    <option value="10">已审核</option>
+                </select>
+
+                <span class="ml-10">单据类型：　　</span>
+                <select id="storage_type" name="storage_type" class="input-text" style="width:12%">
+                    <option value="">请选择</option>
+                    <volist name="data.order_type" id="vo" key="k">
+                        <option value="<{$k}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <input type="hidden" name="def" value="2">
+            </div>
+
+            <div class="mt-10">
+                <span class="ml-10">省份：　　　　</span>
+                <select name="province" class="input-text" style="width:12%" id="search_province" onchange="changeCity(this.value)">
+                    <optgroup label="城市列表">
+                        <option value="0">全部省份</option>
+                        <volist name="data.provinceList" id="vo" key="k">
+                            <option value="<{$key}>">
+                                <{$vo}>
+                            </option>
+                        </volist>
+                    </optgroup>
+                </select>
+                <span class="ml-10">城市：　　　　</span>
+                <select name="region" class="input-text" style="width:12%;" id="search_region">
+                    <optgroup label="城市列表">
+                        <option value="0">全部城市</option>
+                    </optgroup>
+                </select>
+                <span class="ml-10">起始审核时间：</span>
+                <input type="text" name="examine_start_time" id="examine_start_time" class="input-text Wdate" style="width:12%;"
+                       placeholder="起始审核时间" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <span class="ml-10">终止审核时间：</span>
+                <input type="text" name="examine_end_time" id="examine_end_time" class="input-text Wdate" style="width:12%;"
+                       placeholder="终止审核时间" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+            </div>
+            <div class="mt-10">
+                <span class="ml-10">财务核对状态：</span>
+                <select id="finance_status" name="finance_status" class="input-text" style="width:12%">
+                    <option value="">请选择</option>
+                    <option value="1">未核对</option>
+                    <option value="2">已驳回</option>
+                    <option value="10">已核对</option>
+                </select>
+                <span class="ml-10">是否上传附件：</span>
+                <select id="attachment" name="attachment" class="input-text" style="width:12%">
+                    <option value="">请选择</option>
+                    <option value="1">未上传</option>
+                    <option value="10">已上传</option>
+                </select>
+                 <span class="ml-10">来源申请单： &nbsp;&nbsp; </span>
+                <input type="text" class="input-text" style="width:12%;" name="source_apply_number" id="source_apply_number" value=""/>
+                <span class="ml-10">系统批次号： &nbsp;&nbsp; </span>
+                <input type="text" class="input-text" style="width:12%;" name="batch_sys_bn" id="batch_sys_bn" value=""/>
+                &nbsp;&nbsp;<input type="button" onclick="sub_select()" id="subes" class="btn btn-success radius"
+                                   value="查询"/>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span class="l"><a href="javascript:;" onclick="erpstockin_update('编辑', '<{:U(\'ErpStock/showUpdateErpStockIn\')}>', '', '800','550')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe6df;</i>编辑</a>&nbsp;</span>
+        <span class="l"><a href="javascript:;" onclick="erpstockin_delete('取消')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>取消</a>&nbsp;</span>
+        <!--<span class="l"><a href="javascript:;" onclick="erpstockin_audit('审核')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>审核</a>&nbsp;</span>-->
+        <!--<span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a>&nbsp;</span>-->
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable" width="100%">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>序号</th>
+                <th>订单日期</th>
+                <th>入库单号</th>
+                <th>来源申请单号</th>
+                <th>来源单号</th>
+                <th>单据类型</th>
+                <th>城市</th>
+                <th>仓库</th>
+                <th>商品代码</th>
+                <th>商品名称</th>
+                <th>商品来源</th>
+                <th>商品标号</th>
+                <th>商品级别</th>
+                <th>商品标注</th>
+                <th>入库数量</th>
+                <th>订单状态</th>
+                <th>财务核对状态</th>
+                <th>单价</th>
+                <th>服务商</th>
+                <th>加油网点</th>
+                <th>审核时间</th>
+                <th>审核人</th>
+                <th>备注</th>
+                <th>附件</th>
+                <th>系统批次</th>
+                <th>货权号</th>
+                <th>是否损耗</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+
+    var table = $('.table-sort').dataTable({
+        "paging": true,
+        "serverSide": true,
+        "iDisplayLength": 10,
+        "displayStart": 0,
+        ajax: {
+            //url: "<{:U('Galaxy/orderList')}>",
+            url: "<{:U('ErpStock/myErpStockInList')}>",
+            type: 'post'
+        },
+        "aaSorting": [[2, "desc"]],//默认第几个排序
+        "bStateSave": false, //状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+        ],
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        }],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        "deferRender": true, //延迟渲染
+        "searching": false,
+        "bPaginate": true,
+        "bLengthChange": true,
+        "columns": [
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    return '<input name="check_box_list" type="checkbox"  class="checkchild"  value="' + data.id + '" /><input type="hidden" value="' + data.status + '">';
+                }
+            },
+            {"data": "id"},
+            {"data": "create_time"},
+            {"data": "storage_code"},
+            {"data": "source_apply_number"},
+            {"data": "source_number"},
+            {"data": "storage_type_font"},
+            {"data": "region_font"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if (data.a_storehouse_name) {
+                        return data.a_storehouse_name;
+                    } else if (data.p_storehouse_name) {
+                        return data.p_storehouse_name;
+                    } else {
+                        return '——';
+                    }
+                }
+            },
+            {"data": "goods_code"},
+            {"data": "goods_name"},
+            {"data": "source_from"},
+            {"data": "grade"},
+            {"data": "level"},
+            {"data": "label"},
+            {"data": "actual_storage_num"},
+            {"data": "storage_status"},
+            {"data": "finance_status"},
+            {"data": "price"},
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if (data.a_facilitator_name) {
+                        return data.a_facilitator_name;
+                    } else {
+                        return '——';
+                    }
+                }
+            },
+            {
+                "sClass": "text-c",
+                "data": null,
+                "render": function (data, type, full, meta) {
+                    if (data.a_facilitator_skid_name) {
+                        return data.a_facilitator_skid_name;
+                    } else {
+                        return '——';
+                    }
+                }
+            },
+            {"data": "audit_time"},
+            {"data": "auditor"},
+            {"data": "storage_remark"},
+            {
+                "data": null,
+                render: function (data, type, full, meta) {
+                    var str = '';
+                    var attachment = data.attachment;
+                    if (attachment == '已上传') {
+                        str += '<a href="javascript:;" title="' + attachment + '"  class="c-primary" onclick="attachment_detail(\'附件详情\',\'<{:U(\"/ErpStock/attachmentDetail\")}>\',' + data.id + ',1000,500)">' + attachment + '</a>';
+                    } else {
+                        str += attachment;
+                    }
+                    return str;
+                }
+            },
+            {"data":"batch_sys_bn"},
+            {"data":"cargo_bn"},
+            {"data":"is_loss"},
+        ],
+        footerCallback: function ( row, data, start, end, display,aoData ) {
+
+            if(data == ''){
+                $('tfoot th').eq(0).siblings().html('');
+                $('#sum_total th').eq(0).siblings().html('');
+                //console.log('--');
+                return false;
+            }else{
+                var total_actual_storage_num = data[0].sumTotal['total_actual_storage_num'];
+                $('#sum_total th').eq(15).html(parseFloat(total_actual_storage_num).toFixed(4));
+            }
+            var api = this.api();
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            //Total over all pages
+
+            for(i=0;i<22;i++){
+
+                if(i == 0){
+                    continue;
+                }
+
+                if(i < 15 || i > 15){
+                    $( api.column( i ).footer() ).html("");
+                    continue;
+                }
+
+                var totals;
+                var total = api.column(i).data();
+                if(total.length > 0){
+                    totals = total.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    totals = 0;
+                }
+                // Total over this page
+                var pageTotals;
+                var pageTotal = api.column(i, {page: 'current'}).data();
+                if(pageTotal.length > 0){
+                    pageTotals = pageTotal.reduce(function (a, b) {
+                        if (isNaN(a)) {
+                            a = 0;
+                        }
+                        if (isNaN(b)) {
+                            b = 0;
+                        }
+                        return intVal(a) + intVal(b);
+                    });
+                }else{
+                    pageTotals = 0;
+                }
+                //console.log(pageTotals);
+                pageTotals = intVal(pageTotals) + 0;
+                totals = intVal(totals) + 0;
+                // Update footer
+                $(api.column(i).footer()).html(
+                    '' + parseFloat(pageTotals).toFixed(4)
+                );
+            }
+        }
+    });
+
+    var selectGoodsCode = $("#goods_code").select2({
+        placeholder: '请选择商品',
+        language: "zh-CN",
+        allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var selectProvince = $("#search_province").select2({
+        placeholder: '请选择省份',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+    var selectRegion = $("#search_region").select2({
+        placeholder: '请选择城市',
+        //allowClear: true
+    }).on('select2-open', function () {
+        $(this).data('select2').results.addClass('overflow-hidden').perfectScrollbar();
+    });
+
+    var city2             = <{$data.city2}>;
+
+    /*入库单-编辑*/
+    function erpstockin_update(title, url, id, w, h) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $(".checkchild:checked").val();
+            url = url + '/id/' + id;
+            layer_show(title, url, w, h);
+
+//            var id = $(".checkchild:checked").val();
+//            var info_url = '<{:U("ErpStock/getStockInInfo")}>';
+//            ajax(info_url, {id: id}, 'post', 'json', function (_data) {
+//                if (_data.storage_status == 1) {
+//                    url = url + '/id/' + id;
+//                    layer_show(title, url, w, h);
+//                } else {
+//                    layer.msg('只有未审核的入库单可以编辑', {icon: 2});
+//                    return false;
+//                }
+//            });
+        } else {
+            layer.msg('无法批量编辑，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*入库单-取消*/
+    function erpstockin_delete(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/actDeleteErpStockIn")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否取消！', {
+                btn: ['是', '取消']
+            }, function () {
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpStockInList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                searchErpStockInList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量删除，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*入库单-审核*/
+    function erpstockin_audit(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpStock/actAuditErpStockIn")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否审核！', {
+                btn: ['是', '取消']
+            }, function () {
+                $.ajax({
+                    url: url,
+                    data: {id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                searchErpStockInList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                searchErpStockInList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    /*附件预览*/
+    function attachment_detail(title, url, id, w, h) {
+        if(id){
+            url = url + '/id/' + id + '/type/2';
+            layer_show(title, url, w, h);
+        }else{
+            layer.alert("请选择");
+        }
+    }
+
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchErp').serialize();
+            var url = '<{:U("ErpStock/exportStockInData")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+    // @搜索框搜索查询
+    searchErpStockInList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchErp').serialize();
+        table.api().ajax.url("<{:U('ErpStock/myErpStockInList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchErpStockInList(true);
+    }
+
+    $('.table-sort tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        var status = $('#dataTable tbody tr').eq(index).find('.checkchild').attr('status');
+
+        if (status == 0) {
+            var c = $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked');
+            if (c) {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', false);
+            } else {
+                $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+            }
+        }
+    });
+    $('#dataTable tbody').on('click', 'tr', function () {
+
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+    function changeCity(id){
+        var citylist = city2[id];
+        $('#search_region').html('');
+        if(id <= 0) return false;
+        var options = '<option value=0>请选择</option>';
+        var selected = '';
+        $.each(citylist, function (i, item) {
+            if ($('#search_region').val() == item.id) {
+                selected = 'selected="selected"';
+            }
+            options += '<option value="' + item.id + '" ' + selected + '>' + item.area_name + '</option>';
+        });
+        $('#search_region').html(options);
+    }
+</script>

@@ -1,0 +1,330 @@
+<include file="./Application/Home/View/headers.html"/>
+<!--<link href="__TPL__static/h-ui.admin/css/bootstrap.min.css-v=3.3.5.css"  rel="stylesheet">-->
+<!--<link href="__TPL__static/h-ui.admin/css/style.min.css-v=4.0.0.css"  rel="stylesheet">-->
+    <!--<span class="r">共有数据：<strong>88</strong> 条</span>-->
+<span style="padding-left: 800px;"></span>
+<input class="btn btn-primary radius" id="reset_num" type="button" value="重置数量">
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th>序号</th>
+                <th>商品代码</th>
+                <th>仓库</th>
+                <th>系统批次号</th>
+                <th>货权形式</th>
+                <th>货权号</th>
+                <th>批次可用吨数</th>
+                <th>出库升数</th>
+                <th>出库密度</th>
+                <th>出库吨数</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <input type="hidden" id="order_subsidy_money" value="" name="order_subsidy_money">
+    </div>
+</div>
+
+<!--<include file="./Application/Home/View/footers.html"/>-->
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+<!--<script type="text/javascript" src="__TPL__lib/datatables/1.10.0/dataTables.editor.min.js"></script>-->
+
+<script type="text/javascript">
+    //addressInit('goodsName', 'goodsGrade','goodsLevel', ['请选择','请选择','请选择']);
+    var table = '';
+    /** 控制权限  **/
+    //var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    //getCheckAccess();
+    //var editor;
+    /** end 控制权限  **/
+    $(function () {
+
+        var storehouse_id = $('#storehouse_id').val();
+        var goods_id = $('#goods_id').val();
+        var stock_type = $('#stock_type').val();
+        var our_company_id = $('#our_company_id').val();
+        var business_type = $("#business_type").val();
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            ajax: {
+                url: "<{:U('ErpBatch/erpBatchList')}>",
+                data:{
+                    "storehouse_id":storehouse_id,
+                    "goods_id":goods_id,
+                    "stock_type":stock_type,
+                    "our_company_id":our_company_id,
+                    'business_type': business_type
+                },
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+                //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+                //{"orderable":false,"aTargets":[0,1]}// 制定列不参与排序
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {"data": "id"},
+                {"data": "goods_code"},
+                {"data": "storehouse_name"},
+                {"data": "sys_bn"},
+                {"data": "cargo_bn_type"},
+                {"data": "cargo_bn"},
+                //{"data": "balance_num"},
+                {"data": "actual_balance_num"},
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="litre_' + data.id + '" name="litre_num"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="density_' + data.id + '" name="density"/>';
+                        return str;
+                    }
+                },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+                        str += '<span>0</span><input type="text"  style="display: none;width: 100%;" class="checkchild"  value="0" id="batch_' + data.id + '" name="use_batch_num"/>';
+                        return str;
+                    }
+                },
+            ],
+            "language": { // 定义语言
+                "sProcessing": "加载中...",
+                "sLengthMenu": "_MENU_",
+                "sZeroRecords": "没有匹配的结果",
+                "sInfo": "显示 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(_MAX_条)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上一页",
+                    "sNext": "下一页",
+                    "sLast": "末页"
+                }
+            }
+        });
+        // 重置数量
+        $('#reset_num').on('click',function(){
+            $("#outbound_num").val(0);
+            $("#outbound_num_liter").val(0);
+            table.api().ajax.reload();
+        });
+        // var table = $('.table-sort').dataTable();
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+        $('.table-sort tbody').on('dblclick', 'td', function () {
+            var num = $(this).find('span').html();
+            $(this).find('span').hide();
+            $(this).find('input').show().val(num).focus();
+            $(this).parent().siblings().find('td').find('input').hide();
+            $(this).siblings().find('input').hide();
+            $(this).parent().siblings().find('td').find('span').show();
+            $(this).siblings().find('span').show();
+        });
+        $('.table-sort tbody').on('blur', 'tr', function () {
+            //批次可用数量
+            var balance_num = parseFloat($(this).find('td').eq(6).html());
+            //该批次使用升数
+            var batch_num_litre = parseFloat($(this).find('td').eq(7).find('input').val());
+            //该批次使用密度
+            var density = parseFloat($(this).find('td').eq(8).find('input').val());
+            //验证升数和密度
+            if (batch_num_litre < 0) {
+                layer.msg('升数不能小于0', {icon: 2});
+                return false;
+            }
+            if (density != 0 && (density < 0.7 || density > 1)) {
+                layer.msg('密度不合规', {icon: 2});
+                return false;
+            }
+            //待出总数
+            var wait_outbound_num = parseFloat($("#wait_outbound_num").val());
+            //计算该批次的使用吨数
+            if (batch_num_litre != 0 && density != 0) {
+                var batch_num = batch_num_litre * density / 1000;
+            } else {
+                var batch_num = 0
+            }
+            $(this).find('td').eq(7).find('input').hide().val(batch_num_litre);
+            $(this).find('td').eq(7).find('span').show().html(batch_num_litre);
+            $(this).find('td').eq(8).find('input').hide().val(density);
+            $(this).find('td').eq(8).find('span').show().html(density);
+            $(this).find('td').eq(9).find('input').hide().val(batch_num);
+            $(this).find('td').eq(9).find('span').show().html(batch_num);
+            //验证出库数量和批次可用数量
+            if (batch_num > balance_num) {
+                $(this).find('td').eq(7).find('input').hide().val(0);
+                $(this).find('td').eq(7).find('span').show().html(0);
+                $(this).find('td').eq(8).find('input').hide().val(0);
+                $(this).find('td').eq(8).find('span').show().html(0);
+                $(this).find('td').eq(9).find('input').hide().val(0);
+                $(this).find('td').eq(9).find('span').show().html(0);
+                //批次出库吨数合计
+                var inputs = $('input[name="use_batch_num"]');//找到div里面所有的input
+                var use_batch_num = 0;
+                inputs.each(function(){
+                    use_batch_num += this.value * 1;//值转换为number，然后相加
+                });
+                //批次出库升数合计
+                var inputs_litre = $('input[name="litre_num"]');//找到div里面所有的input
+                var use_batch_num_litre = 0;
+                inputs_litre.each(function(){
+                    use_batch_num_litre +=  + this.value * 1;//值转换为number，然后相加
+                });
+                outbound_num = parseFloat(use_batch_num).toFixed(4);
+                outbound_num_litre = parseFloat(use_batch_num_litre).toFixed(2);
+                $("#outbound_num").val(outbound_num);
+                $("#outbound_num_liter").val(outbound_num_litre);
+                layer.msg('出库数量不能大于批次可用数量', {icon: 2});
+                return false;
+            }
+            //批次出库吨数合计
+            var inputs = $('input[name="use_batch_num"]');//找到div里面所有的input
+            var use_batch_num = 0;
+            inputs.each(function(){
+                use_batch_num += this.value * 1;//值转换为number，然后相加
+            });
+            //批次出库升数合计
+            var inputs_litre = $('input[name="litre_num"]');//找到div里面所有的input
+            var use_batch_num_litre = 0;
+            inputs_litre.each(function(){
+                use_batch_num_litre +=  + this.value * 1;//值转换为number，然后相加
+            });
+            outbound_num = parseFloat(use_batch_num).toFixed(4);
+            outbound_num_litre = parseFloat(use_batch_num_litre).toFixed(2);
+            //验证出库数量和待出数量
+            if (outbound_num > wait_outbound_num) {
+                $(this).find('td').eq(7).find('input').hide().val(0);
+                $(this).find('td').eq(7).find('span').show().html(0);
+                $(this).find('td').eq(8).find('input').hide().val(0);
+                $(this).find('td').eq(8).find('span').show().html(0);
+                $(this).find('td').eq(9).find('input').hide().val(0);
+                $(this).find('td').eq(9).find('span').show().html(0);
+                //批次出库吨数合计
+                var inputs = $('input[name="use_batch_num"]');//找到div里面所有的input
+                var use_batch_num = 0;
+                inputs.each(function(){
+                    use_batch_num += this.value * 1;//值转换为number，然后相加
+                });
+                //批次出库升数合计
+                var inputs_litre = $('input[name="litre_num"]');//找到div里面所有的input
+                var use_batch_num_litre = 0;
+                inputs_litre.each(function(){
+                    use_batch_num_litre +=  + this.value * 1;//值转换为number，然后相加
+                });
+                outbound_num = parseFloat(use_batch_num).toFixed(4);
+                outbound_num_litre = parseFloat(use_batch_num_litre).toFixed(2);
+                $("#outbound_num").val(outbound_num);
+                $("#outbound_num_liter").val(outbound_num_litre);
+                layer.msg('出库数量不能大于待出数量', {icon: 2});
+                return false;
+            }
+            $("#outbound_num").val(outbound_num);
+            $("#outbound_num_liter").val(use_batch_num_litre);
+        });
+    });
+
+//    editor = new $.fn.dataTable.Editor( {
+//        //ajax: "http://erptest.51zhaoyou.me/Editor-PHP/examples/php/staff.php",
+//        ajax: "http://erptest.51zhaoyou.me/Editor-PHP/examples/php/staff.php",
+//        table: ".table-sort",
+//        "idSrc": "id",
+//        fields: [{
+//            //label: "dealer_name:",
+//            name: "inventory_stock_num"
+//        }
+//        ]
+//    });
+
+
+    searchErpInventoryOrderDetail = function (status) {
+        var current_page = status || false;
+        if ($('#goodsName').find('option:selected').val() == '请选择') {
+            $('#goodsName').find('option:selected').val('');
+        }
+        if ($('#goodsLevel').val() == '请选择') {
+            $('#goodsLevel').find('option:selected').val('');
+        }
+        if ($('#goodsGrade').val() == '请选择') {
+            $('#goodsGrade').find('option:selected').val('');
+        }
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpInventory/inventoryOrderDetail')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+
+
+</script>

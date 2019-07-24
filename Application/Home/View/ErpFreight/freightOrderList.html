@@ -1,0 +1,490 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 损耗单管理 <span
+        class="c-gray en">&gt;</span> 运费单列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+
+            <div  class="mt-10">
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <select name="reversed_status" class="input-text" id="reversed_status" style="width:20%">
+                    <option value="0">是否红冲</option>
+                        <option value="1">是</option>
+                        <option value="2">否</option>
+                </select>
+
+            </div>
+            <div class="mt-10">
+                <input type="text" name="order_number" id="order_number" class="input-text" style="width:20%;"
+                       placeholder="单据编号">
+                <select name="order_status" class="input-text" id="order_status" style="width:20%">
+                    <option value="0">订单状态</option>
+                    <volist name="data.order_status" id="vo" key="k">
+                        <option value="<{$key}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <input type="text" name="carrier_company_name" id="carrier_company_name" class="input-text" style="width:20%;"
+                       placeholder="承运商公司">
+                
+            </div>
+            <div class="mt-10">
+            <input type="text" name="source_number" id="source_number" class="input-text" style="width:20%;"
+                       placeholder="来源单号">
+            <input type="text" name="shipping_order_number" id="shipping_order_number" class="input-text" style="width:20%;"
+                       placeholder="配送单号">
+            <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;"  class="btn btn-primary radius" onclick="update_order('运费单编辑', '<{:U(\'ErpFreight/editfreightOrder\')}>', '900','550')" id="update_order"><i class="Hui-iconfont Hui-iconfont-edit2"></i>详情</a></span>
+        <span><a href="javascript:;" onclick="erpFreight_delete('取消')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe609;</i>取消</a>&nbsp;</span>
+
+        <span><a href="javascript:;" onclick="freightAudit('运费单审核', '<{:U(\'ErpFreight/freightAudit\')}>', '900','200')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>审核</a>&nbsp;</span>
+        <span><a href="javascript:;" onclick="erpFreight_confirm('确认')" class="btn btn-success radius"><i class="Hui-iconfont">&#xe6e1;</i>确认</a>&nbsp;</span>
+
+        <span><a href="javascript:;" onclick="erpFreight_reverse('红冲')" class="btn btn-danger check_access" value="ErpFreight-rollBackFreightOrder"><i class="Hui-iconfont">&#xe609;</i>红冲</a>&nbsp;</span>
+
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a></span>
+        <!-- <!-- <span><a href="javascript:;"  class="btn btn-primary radius" onclick="add_in_stock('生成入库单', '<{:U(\'ErpStockInApply/addStockInOrder\')}>', '900','550')" id="add_out_stock"><i class="Hui-iconfont Hui-iconfont-chuku"></i>生成入库单</a></span> -->
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>订单时间</th>
+                <th>单据编号</th>
+                <th>来源单号</th>
+                <th>承运商公司</th>
+                <th>数量</th>
+                <th>抵扣运费</th>
+                <th>状态</th>
+                <th>是否红冲</th>
+                <th>配送单号</th>
+            </tr>
+            </thead>
+            <tbody> 
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+            <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th class="pageAll_transport_num"></th>
+                <th class="pageAll_transport_amount"></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th> 
+                <th class="all_transport_num"></th>
+                <th class="all_transport_amount"></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    /** 控制权限  **/
+    var access_node = <{$access_node}>;
+    //console.log(access_node);
+    var check_access = [];
+    function getCheckAccess(){
+
+        $('.check_access').each(function(){
+            //console.log($.trim($(this).attr('value')));
+            //console.log($.inArray($.trim($(this).attr('value')),access_node));
+            if($.inArray($.trim($(this).attr('value')) , access_node) != -1 && !$.isEmptyObject(access_node)){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        });
+
+    };
+    getCheckAccess();
+    var table = '';
+    $(function () {
+        //数据进行渲染
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            "displayStart": 0,
+            ajax: {
+                url: "<{:U('ErpFreight/freightOrderList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '"/>';
+                        return str;
+                    }
+                },
+
+                {"data": "id"},
+                {"data": "create_time"},
+                {"data": "order_number"},
+                {"data": "source_number"},
+                {"data": "carrier_company_name"},
+                {"data": "transport_num"},
+                {"data": "transport_amount"},
+                {"data": "order_status_name"},
+                {"data": "reversed_status"},
+                {"data": "shipping_order_number"},
+            ],
+            footerCallback: function (row, data, start, end, display,aoData) {
+                if ( data != '') {
+                    var pageAll_transport_num = data[0].sum_total['pageAll_transport_num']
+                    var pageAll_transport_amount     = data[0].sum_total['pageAll_transport_amount']
+                    $(".pageAll_transport_num").html(pageAll_transport_num.toFixed(4));
+                    $(".pageAll_transport_amount").html(pageAll_transport_amount.toFixed(4));
+                    var all_transport_amount = data[0].sum_total['all_transport_amount']
+                    var all_transport_num   = data[0].sum_total['all_transport_num']
+                    $(".all_transport_amount").html(all_transport_amount.toFixed(4));
+                    $(".all_transport_num").html(all_transport_num.toFixed(4));
+                } else {
+                    $(".pageAll_transport_num").html('');
+                    $(".pageAll_transport_amount").html('');
+                    $(".all_transport_amount").html('');
+                    $(".all_transport_num").html('');
+                }
+            }
+        });
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    
+
+    /**编辑运费单**/
+    function update_order(title, url, w, h) {
+
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        url = url + '/freight_id/' + id;
+
+        layer_show(title, url, w, h);
+    }
+
+     /**运费单审核**/
+    function freightAudit(title, url, w, h) {
+        if ($(".checkchild:checked").length > 1) {
+            layer.alert("一次只能选择一条数据");
+            return;
+        } else if ($(".checkchild:checked").length < 1) {
+            layer.alert("请选择一条数据");
+            return;
+        }
+
+        var id = $(".checkchild:checked").val();
+        var info_url = '<{:U("ErpFreight/freightAuditChecking")}>';
+        ajax(info_url, {freight_id: id}, 'post', 'json', function (_data) {
+             if (_data.status == 1) {
+                url = url + '/freight_id/' + id;
+                layer_show(title, url, w, h);
+            } else {
+                layer.msg(_data.message, {icon: 2});
+                return false;
+            }
+        });
+        
+        
+    }
+
+    // /**运费单-审核**/
+    // function erpFreight_audit(title) {
+    //     if ($('.checkchild:checked').length == 0) {
+    //         layer.msg('请选择', {icon: 2});
+    //     } else if ($('.checkchild:checked').length == 1) {
+    //         id = $('.checkchild:checked').val();
+    //         var url = '<{:U("ErpFreight/freightAudit")}>';
+    //         var type = 'post';
+    //         var dataType = 'json';
+    //         layer.confirm('请确认是否审核！', {
+    //             btn: ['是', '取消']
+    //         }, function () {
+    //             layer.load(1, {shade: 0.3});
+    //             $.ajax({
+    //                 url: url,
+    //                 data: {freight_id: id},
+    //                 type: type,
+    //                 dataType: dataType,
+    //                 success: function (_data) {
+    //                     if (_data.status == 1) {
+    //                         layer.msg(_data.message, {icon: 1});
+    //                         setTimeout(function () {
+    //                             layer.closeAll();
+    //                             searchfreightOrderList();
+    //                         }, 1000);
+    //                     } else {
+    //                         layer.msg(_data.message, {icon: 2});
+    //                         setTimeout(function () {
+    //                             layer.closeAll();
+    //                             searchfreightOrderList();
+    //                         }, 1000);
+    //                     }
+    //                 },
+    //                 error: function (XMLHttpRequest, textStatus, errorThrown) {
+    //                     is = 1;
+    //                     console.log(XMLHttpRequest);
+    //                     console.log(textStatus);
+    //                     console.log(errorThrown);
+    //                     console.log('请求异常，请检查！');
+    //                 }
+    //             });
+    //         });
+    //     } else {
+    //         layer.msg('无法批量审核，只能选择一项', {icon: 2});
+    //     }
+    // }
+
+    /*运费单-取消*/
+    function erpFreight_delete(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            var id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpFreight/freightDelete")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否取消！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {freight_id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量删除，只能选择一项', {icon: 2});
+        }
+    }
+
+    /**运费单-确认**/
+    function erpFreight_confirm(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpFreight/freightConfirm")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('是否确认运费单！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {freight_id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+
+    /**运费单-红冲**/
+    function erpFreight_reverse(title) {
+        if ($('.checkchild:checked').length == 0) {
+            layer.msg('请选择', {icon: 2});
+        } else if ($('.checkchild:checked').length == 1) {
+            id = $('.checkchild:checked').val();
+            var url = '<{:U("ErpFreight/freightReverse")}>';
+            var type = 'post';
+            var dataType = 'json';
+            layer.confirm('请确认是否红冲！', {
+                btn: ['是', '取消']
+            }, function () {
+                layer.load(1, {shade: 0.3});
+                $.ajax({
+                    url: url,
+                    data: {freight_id: id},
+                    type: type,
+                    dataType: dataType,
+                    success: function (_data) {
+                        if (_data.status == 1) {
+                            layer.msg(_data.message, {icon: 1});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        } else {
+                            layer.msg(_data.message, {icon: 2});
+                            setTimeout(function () {
+                                layer.closeAll();
+                                searchfreightOrderList();
+                            }, 1000);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        is = 1;
+                        console.log(XMLHttpRequest);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                        console.log('请求异常，请检查！');
+                    }
+                });
+            });
+        } else {
+            layer.msg('无法批量审核，只能选择一项', {icon: 2});
+        }
+    }
+
+    searchfreightOrderList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpFreight/freightOrderList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+    //查询
+    function sub_select() {
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchfreightOrderList(true);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchSupply').serialize();
+            var url = '<{:U("ErpFreight/exportFreightOrderApply")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+</script>

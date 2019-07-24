@@ -1,0 +1,278 @@
+<include file="./Application/Home/View/headers.html"/>
+<style>
+    .input-text {
+        height: 28px;
+        position: relative;
+        vertical-align: middle;
+    }
+</style>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 损耗单管理 <span
+        class="c-gray en">&gt;</span> 其他入库单列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <form id="searchSupply" action="" method="post" autocomplete="off">
+
+            <div  class="mt-10">
+                <input type="text" name="start_time" id="start_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="起始订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+                <input type="text" name="end_time" id="end_time" class="input-text Wdate" style="width:20%;"
+                       placeholder="截止订单日期" readonly
+                       onFocus="WdatePicker({lang:'zh-cn',minDate:'2015-03-01',dateFmt: 'yyyy-MM-dd'})">
+
+                <select name="type" class="input-text" id="type" style="width:20%">
+                    <option value="0">入库类型</option>
+                    <volist name="data.lossTypeStatus" id="vo" key="k">
+                        <option value="<{$key}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <input type="text" name="company_name" id="company_name" class="input-text" style="width:20%;"
+                       placeholder="供应商公司">
+            </div>
+            <div class="mt-10">
+                <input type="text" name="storage_code" id="storage_code" class="input-text" style="width:20%;"
+                       placeholder="单据编号">
+                <input type="text" name="source_number" id="source_number" class="input-text" style="width:20%;"
+                       placeholder="来源单号">
+                <select name="loss_type" class="input-text" id="loss_type" style="width:20%">
+                    <option value="0">损耗类型</option>
+                    <option value="1">超损</option>
+                    <option value="2">合理损耗</option>
+                </select>
+                <select name="storage_status" class="input-text" id="storage_status" style="width:20%">
+                    <option value="0">订单状态</option>
+                    <volist name="data.stockInStatus" id="vo" key="k">
+                        <option value="<{$key}>"><{$vo}></option>
+                    </volist>
+                </select>
+                <input type="hidden" name="otherStock" id="otherStock" class="input-text" value="1" style="width:20%;"
+                       placeholder='入库单'>
+                <input type="button" class="btn btn-success radius" value="查询" onclick="sub_select()" id="subes"/>
+            </div>
+
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <span><a href="javascript:;" onclick="export_excel('导出')" class="btn btn-secondary radius"><i class="Hui-iconfont">&#xe644;</i>导出</a></span>
+    </div>
+    <div class="mt-20" style="overflow-x:scroll;white-space:nowrap;">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="dataTable">
+            <thead>
+            <tr class="text-c">
+                <th></th>
+                <th>ID</th>
+                <th>订单时间</th>
+                <th>单据编号</th>
+                <th>来源单号</th>
+                <th>入库类型</th>
+                <th>损耗类型</th>
+                <th>供应商公司</th>
+                <th>人员</th>
+                <th>城市</th>
+                <th>仓库</th>
+                <th>商品</th>
+                <th>入库数量（吨）</th>
+                <th>单价</th>
+                <th>入库金额</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody> 
+
+            </tbody>
+            <tfoot style="background-color:#f5fafe;">
+             <tr>
+                <th class="text-c">当页</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th class="page_all_stock_num"></th>
+                <th></th>
+                <th class="page_all_price"></th>
+                <th></th>
+            </tr>
+            <tr id="sum_total">
+                <th class="text-c">所有</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th class="all_stock_num"></th>
+                <th></th>
+                <th class="all_price"></th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<include file="./Application/Home/View/footers.html"/>
+<link rel="stylesheet" href="__TPL__lib/select2/css/select2.min.css"/>
+<script type="text/javascript" src="__TPL__lib/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="__TPL__lib/select2/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    var table = '';
+    $(function () {
+        //数据进行渲染
+        table = $('.table-sort').dataTable({
+            "paging": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            "displayStart": 0,
+            ajax: {
+                url: "<{:U('ErpOtherStock/erpStockInList')}>",
+                type: 'post'
+            },
+            "aaSorting": [[2, "desc"]],//默认第几个排序
+            "bStateSave": false, //状态保存
+            "aoColumnDefs": [
+            ],
+            columnDefs: [{
+                orderable: false,
+                className: 'select-checkbox',
+                targets: 0
+            }],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            "deferRender": true, //延迟渲染
+            "searching": false,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "columns": [
+                {
+                    "data": null,
+                    "bSortable": false,
+                    render: function (data, type, full, meta) {
+                        var str = '';
+
+                        str += '<input type="checkbox"  class="checkchild"  value="' + data.id + '"/>';
+                        return str;
+                    }
+                },
+
+                {"data": "id"},
+                {"data": "create_time"},
+                {"data": "storage_code"},
+                {
+                    "sClass": "text-c",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        var onclick = "update_order('编辑', '<{:U(\'ErpLoss/editLoss\')}>', '900','550' ,'" + data.source_number + "')";
+                        return '<a onclick="' + onclick + '" class="c-primary">' + data.source_number + '</a>';
+                    }
+                },
+                // {"data": "source_number"},
+                {"data": "type_name"},
+                {"data": "loss_type_name"},
+                {"data": "company_name"},
+                {"data": "dealer_name"},
+                {"data": "region_name"},
+                {"data": "storehouse_name"},
+                {"data": "goods_name"},
+                {"data": "stock_num"},
+                {"data": "price"},
+                {"data": "all_price"},
+                {"data": "order_status_name"},
+            ],
+            footerCallback: function (row, data, start, end, display,aoData) {
+               if ( data != '') {
+                    var page_all_price = data[0].sum_total['page_all_price']
+                    var page_all_stock_num     = data[0].sum_total['page_all_stock_num']
+                    $(".page_all_price").html(page_all_price.toFixed(4));
+                    $(".page_all_stock_num").html(page_all_stock_num.toFixed(4));
+
+                    var all_price = data[0].sum_total['all_price']
+                    var all_stock_num   = data[0].sum_total['all_stock_num']
+                    $(".all_price").html(all_price.toFixed(4));
+                    $(".all_stock_num").html(all_stock_num.toFixed(4));
+                } else {
+                    $(".page_all_price").html('');
+                    $(".page_all_stock_num").html('');
+                    $(".all_price").html('');
+                    $(".all_stock_num").html('');
+                }
+            }
+        });
+        $('.table-sort tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    
+
+    /**编辑损耗单**/
+    function update_order(title, url, w, h, loss_order_number) {
+
+        url = url + '/loss_order_number/' + loss_order_number;
+
+        layer_show(title, url, w, h);
+    }
+
+    searchOtherStockOrderList = function (status) {
+        var current_page = status || false;
+        var param = $('#searchSupply').serialize();
+
+        table.api().ajax.url("<{:U('ErpOtherStock/erpStockInList')}>?" + param);
+        table.api().ajax.reload(function(){
+            $('#subes').val('查询').attr('disabled', false);
+            layer.closeAll('loading');
+        }, current_page);
+    }
+    //查询
+    function sub_select() {
+        var company_name = $('#company_name').val();
+        var type = $('#type').val();
+        if ( company_name != '' && type == 0 ) {
+            layer.msg('请先选择入库类型！', {icon: 2});
+            return false;
+        }
+        $('#subes').val('查询中...').attr('disabled', true);
+        var index = layer.load(0, {shade: false});
+        searchOtherStockOrderList(true);
+    }
+
+    $('#dataTable tbody').on('click', 'tr', function () {
+        var index = $(this).index();
+        $('#dataTable tbody tr').eq(index).find('.checkchild').prop('checked', true);
+        $('#dataTable tbody tr').eq(index).siblings().find('.checkchild').prop('checked', false);
+
+    });
+    /* 导出 */
+    function export_excel(title) {
+        layer.confirm('确认导出？', {
+            btn: ['是', '取消']
+        }, function () {
+            var param = $('#searchSupply').serialize();
+            var url = '<{:U("ErpOtherStock/exportStock")}>?'+param;
+            layer.load(1, {shade: 0.3});
+            window.location.href = url;
+            setTimeout(function(){
+                layer.closeAll();
+            }, 1000);
+        });
+    }
+
+</script>
